@@ -28,6 +28,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@serialport/parser-readline", "npm:10.5.0"],\
             ["@tsconfig/node18", "npm:1.0.1"],\
             ["@types/electron", "npm:1.6.10"],\
             ["@types/node", "npm:18.15.11"],\
@@ -649,6 +650,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         ["workspace:.", {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@serialport/parser-readline", "npm:10.5.0"],\
             ["@tsconfig/node18", "npm:1.0.1"],\
             ["@types/electron", "npm:1.6.10"],\
             ["@types/node", "npm:18.15.11"],\
