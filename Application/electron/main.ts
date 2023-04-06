@@ -1,4 +1,5 @@
 // TSprech 2023/04/05 13:53:16
+// Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
 
 const {BrowserWindow} = require('electron');
 

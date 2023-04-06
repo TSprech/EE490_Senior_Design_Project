@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "types": ["node18", "electron"]
+    "types": ["node18", "electron"] // Huge thanks: https://stackoverflow.com/questions/42940954/cannot-find-namespace-nodejs-after-webpack-upgrade
   },
   "exclude": [
     "node_modules"
