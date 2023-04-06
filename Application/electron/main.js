@@ -1,7 +1,7 @@
 "use strict";
 // TSprech 2023/04/05 13:53:16
+// Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
 Object.defineProperty(exports, "__esModule", { value: true });
-// import BrowserWindow = require('electron');
 const { BrowserWindow } = require('electron');
 class Main {
     static mainWindow;
@@ -18,8 +18,7 @@ class Main {
     }
     static onReady() {
         Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600 });
-        Main.mainWindow
-            .loadURL('file://' + __dirname + '/index.html');
+        Main.mainWindow.loadFile('index.html');
         Main.mainWindow.on('closed', Main.onClose);
     }
     static main(app, browserWindow) {

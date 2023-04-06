@@ -1,16 +1,19 @@
-"use strict";
 // TSprech 2023/04/05 15:42:58
+
 function ChangeText() {
-    const para_text = document.getElementById("MyText");
-    if (para_text !== null) {
-        para_text.innerHTML = "NEW NEW NEW";
-    }
-    else {
-        alert("Error: Could not find paragraph");
-    }
+  const para_text = document.getElementById("MyText");
+  if (para_text !== null) {
+    para_text.innerHTML = "NEW NEW NEW";
+  } else {
+    alert("Error: Could not find paragraph");
+  }
 }
+
 ChangeText();
+
 console.log("This script is running");
+
+
 // const {SerialPort} = require('serialport');
 // const Readline = require('@serialport/parser-readline');
 // const port = new SerialPort({
