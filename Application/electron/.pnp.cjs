@@ -28,8 +28,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@tsconfig/node18", "npm:1.0.1"],\
+            ["@types/electron", "npm:1.6.10"],\
+            ["@types/node", "npm:18.15.11"],\
             ["electron", "npm:24.0.0"],\
-            ["serialport", "npm:10.5.0"]\
+            ["serialport", "npm:10.5.0"],\
+            ["typescript", "patch:typescript@npm%3A5.0.3#~builtin<compat/typescript>::version=5.0.3&hash=85af82"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -247,6 +251,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@tsconfig/node18", [\
+        ["npm:1.0.1", {\
+          "packageLocation": "./.yarn/cache/@tsconfig-node18-npm-1.0.1-e80e510810-aba11b453e.zip/node_modules/@tsconfig/node18/",\
+          "packageDependencies": [\
+            ["@tsconfig/node18", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/cacheable-request", [\
         ["npm:6.0.3", {\
           "packageLocation": "./.yarn/cache/@types-cacheable-request-npm-6.0.3-770619032a-d9b26403fe.zip/node_modules/@types/cacheable-request/",\
@@ -256,6 +269,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/keyv", "npm:3.1.4"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/responselike", "npm:1.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/electron", [\
+        ["npm:1.6.10", {\
+          "packageLocation": "./.yarn/cache/@types-electron-npm-1.6.10-72448dd4a9-1194d023d4.zip/node_modules/@types/electron/",\
+          "packageDependencies": [\
+            ["@types/electron", "npm:1.6.10"],\
+            ["electron", "workspace:."]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -626,8 +649,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         ["workspace:.", {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@tsconfig/node18", "npm:1.0.1"],\
+            ["@types/electron", "npm:1.6.10"],\
+            ["@types/node", "npm:18.15.11"],\
             ["electron", "npm:24.0.0"],\
-            ["serialport", "npm:10.5.0"]\
+            ["serialport", "npm:10.5.0"],\
+            ["typescript", "patch:typescript@npm%3A5.0.3#~builtin<compat/typescript>::version=5.0.3&hash=85af82"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1773,6 +1800,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/type-fest-npm-0.13.1-7f4486b973-e6bf2e3c44.zip/node_modules/type-fest/",\
           "packageDependencies": [\
             ["type-fest", "npm:0.13.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["typescript", [\
+        ["patch:typescript@npm%3A5.0.3#~builtin<compat/typescript>::version=5.0.3&hash=85af82", {\
+          "packageLocation": "./.yarn/cache/typescript-patch-3de7333024-5580367025.zip/node_modules/typescript/",\
+          "packageDependencies": [\
+            ["typescript", "patch:typescript@npm%3A5.0.3#~builtin<compat/typescript>::version=5.0.3&hash=85af82"]\
           ],\
           "linkType": "HARD"\
         }]\

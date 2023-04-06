@@ -2,13 +2,17 @@
   "name": "electron",
   "packageManager": "yarn@3.5.0",
   "devDependencies": {
-    "electron": "^24.0.0"
+    "@tsconfig/node18": "^1.0.1",
+    "@types/electron": "^1.6.10",
+    "electron": "^24.0.0",
+    "typescript": "^5.0.3"
   },
   "version": "1.0.0",
   "description": "EE490 Senior Design Application",
-  "main": "main.js",
+  "main": "main.ts",
   "scripts": {
-    "start": "electron .",
+    "build": "tsc",
+    "start": "electron ./app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "TSprech",

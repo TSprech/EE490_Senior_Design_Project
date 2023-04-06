@@ -1,27 +1,36 @@
+"use strict";
 // TSprech 2023/04/05 13:53:16
-
-const {app, BrowserWindow} = require('electron');
-// All non-electron based requires should be placed below this comment after pnp.setup(), require('electron') should be above this
-require('./.pnp.cjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
-const {SerialPort} = require('serialport');
-
-const createWindow = () => {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-  })
-
-  win.loadFile('index.html')
+Object.defineProperty(exports, "__esModule", { value: true });
+// import BrowserWindow = require('electron');
+const { BrowserWindow } = require('electron');
+class Main {
+    static mainWindow;
+    static application;
+    static BrowserWindow;
+    static onWindowAllClosed() {
+        if (process.platform !== 'darwin') {
+            Main.application.quit();
+        }
+    }
+    static onClose() {
+        // Dereference the window object.
+        Main.mainWindow = null;
+    }
+    static onReady() {
+        Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600 });
+        Main.mainWindow
+            .loadURL('file://' + __dirname + '/index.html');
+        Main.mainWindow.on('closed', Main.onClose);
+    }
+    static main(app, browserWindow) {
+        // we pass the Electron.App object and the
+        // Electron.BrowserWindow into this function
+        // so this class has no dependencies. This
+        // makes the code easier to write tests for
+        Main.BrowserWindow = browserWindow;
+        Main.application = app;
+        Main.application.on('window-all-closed', Main.onWindowAllClosed);
+        Main.application.on('ready', Main.onReady);
+    }
 }
-
-const port = new SerialPort({
-  path: 'COM5',
-  baudRate: 115200,
-  autoOpen: false
-});
-
-app.whenReady().then(() => {
-  createWindow();
-})
-
-// process.exit(0);
+exports.default = Main;
