@@ -20,18 +20,8 @@ class PortManager {
   }
 
   // Based off: https://medium.com/@machadogj/arduino-and-node-js-via-serial-port-bcf9691fab6a
-  // static Connect(port_info: typeof PortInfo, baudrate: number) {
-  //   this.port = new SerialPort({path: port_info, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
-  //   this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
-  //   this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
-  //     console.log('New JSON Data: ', data);
-  //     this.ParseJSON(data); // Call for the data to be converted from a string into an Object
-  //   });
-  // }
-
   static Connect(port_info: string, baudrate: number) {
-    this.port = new SerialPort({path: port_info, baudRate: baudrate, autoOpen: false}); // Create the new port and open it (autoOpen)
-    this.port.open();
+    this.port = new SerialPort({path: port_info, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
     this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
     this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
       console.log('New JSON Data: ', data);
@@ -47,15 +37,20 @@ class PortManager {
     }
   }
 
-  static Disconnect() {
-    this.port.close()
+  static Write(json_obj: any) { // TODO: Don't write if the port is not open
+    this.port.write(JSON.stringify(json_obj) + '\n'); // Convert the object to a string and append the terminator that indicates end of data (\n)
+  }
+
+  static Disconnect() { // TODO: Complains the port isn't open when called?
+    this.port.close();
   }
 }
 
 PortManager.List().then((port_names) => console.log(port_names))
 PortManager.Connect('COM23', 115200);
 console.log("Connected!");
-PortManager.port.write('{"LED":true}\n')
+PortManager.Write({"LED": true});
+setTimeout(() => PortManager.Write({"LED": false}), 2000);
 // PortManager.Disconnect();
 
 export default class Main {
