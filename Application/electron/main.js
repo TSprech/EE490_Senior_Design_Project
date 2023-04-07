@@ -3,38 +3,54 @@
 // Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
 Object.defineProperty(exports, "__esModule", { value: true });
 const { BrowserWindow } = require('electron');
+const { EventEmitter } = require('events');
 // All non-electron based requires should be placed below this comment after pnp.setup(), require('electron') should be above this
 require('./.pnp.cjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
 const { SerialPort, BindingPort, PortInfo } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 class PortManager {
+    // static on_receive_callback: (json_obj: object) => void;
     static port;
     static parser;
+    static emitter = new EventEmitter();
     static async List() {
-        let port_list = []; // Create an array that will be filled with the port info
-        await SerialPort.list().then(// Get the list of serial ports
-        function (ports) {
-            for (const portsKey in ports) { // Go through each port listed
-                port_list.push(ports.at(portsKey));
-                // port_list.push({ // And create a new object entry in the array
-                // path: ports.at(portsKey).path, // Get the path | eg: "COM6"
-                // friendly_name: ports.at(portsKey).friendlyName, // Get the friendly name | eg. "USB Serial Device (COM6)"
-                // manufacturer: ports.at(portsKey).manufacturer // Get the manufacturer, probably not used but good to have
-                // });
-            }
-        }, function (error) {
-        });
-        return port_list; // Return whatever entries have been added to the PortInfoSmall array
+        return SerialPort.list();
     }
+    // Based off: https://medium.com/@machadogj/arduino-and-node-js-via-serial-port-bcf9691fab6a
+    // static Connect(port_info: typeof PortInfo, baudrate: number) {
+    //   this.port = new SerialPort({path: port_info, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
+    //   this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
+    //   this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
+    //     console.log('New JSON Data: ', data);
+    //     this.ParseJSON(data); // Call for the data to be converted from a string into an Object
+    //   });
+    // }
     static Connect(port_info, baudrate) {
-        this.port = new SerialPort(port_info.path, { baudRate: baudrate });
-        this.parser = this.port.pipe(new ReadlineParser({ delimiter: '\n' }));
+        this.port = new SerialPort({ path: port_info, baudRate: baudrate, autoOpen: false }); // Create the new port and open it (autoOpen)
+        this.port.open();
+        this.parser = this.port.pipe(new ReadlineParser({ delimiter: '\n' })); // Create a parser which parses based on a delimiter (\n)
+        this.parser.on('data', (data) => {
+            console.log('New JSON Data: ', data);
+            this.ParseJSON(data); // Call for the data to be converted from a string into an Object
+        });
+    }
+    static ParseJSON(json_data) {
+        try {
+            this.emitter.emit("PortManager:NewJSON", JSON.parse(json_data)); // Send out the parsed JSON Object for a dispatcher to handle
+        }
+        catch {
+            console.log("Invalid JSON was attempted to be parsed"); // This is not a huge issue as long as it isn't happening too much
+        }
     }
     static Disconnect() {
-        // this.port.
+        this.port.close();
     }
 }
 PortManager.List().then((port_names) => console.log(port_names));
+PortManager.Connect('COM23', 115200);
+console.log("Connected!");
+PortManager.port.write('{"LED":true}\n');
+// PortManager.Disconnect();
 class Main {
     static mainWindow;
     static application;
