@@ -1,8 +1,9 @@
 // TSprech 2023/04/05 13:53:16
 // Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
 
-const {BrowserWindow} = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 const {EventEmitter} = require('events');
+const path = require('path')
 
 // All non-electron based requires should be placed below this comment after pnp.setup(), require('electron') should be above this
 require('./.pnp.cjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
@@ -10,7 +11,6 @@ const {SerialPort, BindingPort, PortInfo} = require('serialport');
 const {ReadlineParser} = require('@serialport/parser-readline');
 
 class PortManager {
-  // static on_receive_callback: (json_obj: object) => void;
   static port: typeof BindingPort;
   static parser: typeof ReadlineParser;
   static emitter = new EventEmitter();
@@ -46,12 +46,11 @@ class PortManager {
   }
 }
 
-PortManager.List().then((port_names) => console.log(port_names))
+// PortManager.List().then((port_names) => console.log(port_names))
 PortManager.Connect('COM23', 115200);
 console.log("Connected!");
-PortManager.Write({"LED": true});
-setTimeout(() => PortManager.Write({"LED": false}), 2000);
-// PortManager.Disconnect();
+// PortManager.Write({"LED": true});
+// setTimeout(() => PortManager.Write({"LED": false}), 2000);
 
 export default class Main {
   static mainWindow: Electron.BrowserWindow;
@@ -65,9 +64,8 @@ export default class Main {
   }
 
   private static onClose() {
-    // Dereference the window object.
     // @ts-ignore
-    Main.mainWindow = null;
+    Main.mainWindow = null; // Dereference the window object.
   }
 
   private static onReady() {
@@ -76,16 +74,21 @@ export default class Main {
       height: 600,
       backgroundColor: "#ccc",
       webPreferences: {
-        nodeIntegration: true, // to allow require
-        contextIsolation: false // allow use with Electron 12+
+        preload: path.join(__dirname, 'preload.js'),
+        // nodeIntegration: true, // to allow require Had to disable these for preload: https://github.com/electron/forge/issues/2931
+        // contextIsolation: false // allow use with Electron 12+
       }
     });
     Main.mainWindow.loadFile('index.html');
     Main.mainWindow.on('closed', Main.onClose);
+
+    ipcMain.on('LED:On', (event, title) => {
+      PortManager.Write({"LED": true});
+      setTimeout(() => PortManager.Write({"LED": false}), 1000);
+    })
   }
 
-  static main(app: Electron.App, browserWindow: typeof BrowserWindow
-  ) {
+  static main(app: Electron.App, browserWindow: typeof BrowserWindow) {
     // we pass the Electron.App object and the
     // Electron.BrowserWindow into this function
     // so this class has no dependencies. This
