@@ -3,34 +3,38 @@
 // Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
 Object.defineProperty(exports, "__esModule", { value: true });
 const { BrowserWindow } = require('electron');
-// import {ReadlineParser, SerialPort} from "serialport";
 // All non-electron based requires should be placed below this comment after pnp.setup(), require('electron') should be above this
 require('./.pnp.cjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
-const { SerialPort } = require('serialport');
-// const {ReadlineParser} = require('@serialport/parser-readline');
-// import {ReadlineParser, SerialPort} from "serialport";
+const { SerialPort, BindingPort, PortInfo } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
 class PortManager {
-    // static port: typeof SerialPort;
-    // static parser: typeof ReadlineParser;
-    static async listSerialPorts() {
-        // await SerialPort.list().then((ports, err) => {
-        await SerialPort.list().then((ports) => {
-            console.log('ports', ports);
-            if (ports.length === 0) {
-                console.log("No ports found");
+    static port;
+    static parser;
+    static async List() {
+        let port_list = []; // Create an array that will be filled with the port info
+        await SerialPort.list().then(// Get the list of serial ports
+        function (ports) {
+            for (const portsKey in ports) { // Go through each port listed
+                port_list.push(ports.at(portsKey));
+                // port_list.push({ // And create a new object entry in the array
+                // path: ports.at(portsKey).path, // Get the path | eg: "COM6"
+                // friendly_name: ports.at(portsKey).friendlyName, // Get the friendly name | eg. "USB Serial Device (COM6)"
+                // manufacturer: ports.at(portsKey).manufacturer // Get the manufacturer, probably not used but good to have
+                // });
             }
+        }, function (error) {
         });
+        return port_list; // Return whatever entries have been added to the PortInfoSmall array
+    }
+    static Connect(port_info, baudrate) {
+        this.port = new SerialPort(port_info.path, { baudRate: baudrate });
+        this.parser = this.port.pipe(new ReadlineParser({ delimiter: '\n' }));
+    }
+    static Disconnect() {
+        // this.port.
     }
 }
-// PortManager.listSerialPorts().then(() => console.log("Done"))
-function listPorts() {
-    // listSerialPorts();
-    PortManager.listSerialPorts().then(() => console.log("Done"));
-    setTimeout(listPorts, 2000);
-}
-// Set a timeout that will check for new serialPorts every 2 seconds.
-// This timeout reschedules itself.
-setTimeout(listPorts, 2000);
+PortManager.List().then((port_names) => console.log(port_names));
 class Main {
     static mainWindow;
     static application;
