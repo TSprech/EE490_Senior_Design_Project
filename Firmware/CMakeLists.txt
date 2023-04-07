@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
+include(FetchContent)
 include(ARMGCCToolchain.cmake) # Defines our cross compiling toolchain (ARM GCC)
 include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 
@@ -6,6 +7,7 @@ project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
 
+set(PICO_BOARD adafruit_feather_rp2040)
 pico_sdk_init() # Initialize the SDK
 
 if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
@@ -21,12 +23,22 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
     pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
     set(RP2040_HW_LIBS pico_stdlib hardware_pwm) # These are the libs from the Pico SDK which will be used
-    target_link_libraries(EE490_Firmware ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
+    target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
 
     pico_add_extra_outputs(EE490_Firmware) # Create map/bin/hex file etc.
 
     add_link_options(--gc-sections) # Throw out unused functions so they aren't taking up extra flash
     add_link_options(--print-memory-usage) # At the end of compilation, print out the flash, memory, etc. usage
+
+    add_compile_options(-Wall -Werror -Wpedantic)
+
+    FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+    FetchContent_MakeAvailable(json)
+
+#    set(JSON_SystemInclude ON)
+    set(JSON_MultipleHeaders ON)
+    target_link_libraries(EE490_Firmware PRIVATE nlohmann_json::nlohmann_json)
+
 elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()

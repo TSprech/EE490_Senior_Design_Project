@@ -1,0 +1,9 @@
+"use strict";
+// TSprech 12:53:55
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const { app, BrowserWindow } = require('electron');
+const main_1 = __importDefault(require("./main"));
+main_1.default.main(app, BrowserWindow);
