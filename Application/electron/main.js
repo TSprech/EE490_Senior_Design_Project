@@ -41,7 +41,7 @@ class PortManager {
     }
 }
 // PortManager.List().then((port_names) => console.log(port_names))
-PortManager.Connect('COM23', 115200);
+// PortManager.Connect('COM23', 115200);
 console.log("Connected!");
 // PortManager.Write({"LED": true});
 // setTimeout(() => PortManager.Write({"LED": false}), 2000);
