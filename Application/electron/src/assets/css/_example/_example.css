@@ -1,22 +1,38 @@
-/* Example stylesheet */
-@media screen and (prefers-color-scheme: light), screen and (prefers-color-scheme: no-preference) {
-  /* Light theme */
-  body{
-    color: #000;
-    background-color: #fff;
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
   }
 }
 
-@media screen and (prefers-color-scheme: dark) {
-  /* Dark theme */
-  body {
-    color: #fff;
-    background-color: #000;
-  }
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
-h1 {
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 21px;
-  font-weight: 200;
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

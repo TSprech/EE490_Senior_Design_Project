@@ -31,6 +31,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.21.4"],\
             ["@babel/preset-env", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:7.21.4"],\
             ["@babel/preset-react", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:7.18.6"],\
+            ["@serialport/parser-readline", "npm:10.5.0"],\
             ["@tsconfig/node18", "npm:1.0.1"],\
             ["@types/electron", "npm:1.6.10"],\
             ["@types/node", "npm:18.15.11"],\
@@ -51,6 +52,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["postcss-pxtorem", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:6.0.0"],\
             ["react", "npm:17.0.2"],\
             ["react-dom", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:17.0.2"],\
+            ["serialport", "npm:10.5.0"],\
             ["style-loader", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:3.3.2"],\
             ["typescript", "patch:typescript@npm%3A5.0.3#~builtin<compat/typescript>::version=5.0.3&hash=85af82"],\
             ["webpack", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:5.78.0"],\
@@ -2886,6 +2888,143 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@serialport/binding-mock", [\
+        ["npm:10.2.2", {\
+          "packageLocation": "./.yarn/cache/@serialport-binding-mock-npm-10.2.2-53721ff234-2f36d66e9f.zip/node_modules/@serialport/binding-mock/",\
+          "packageDependencies": [\
+            ["@serialport/binding-mock", "npm:10.2.2"],\
+            ["@serialport/bindings-interface", "npm:1.2.2"],\
+            ["debug", "virtual:0fc91c1e5edbc963067817b073085c545641c07060ae72d1a3dc51adae3d9e2cfb39ecf702386a2affe57cf2970773f74b004c8e2d018ec03851973461ede410#npm:4.3.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/bindings-cpp", [\
+        ["npm:10.8.0", {\
+          "packageLocation": "./.yarn/unplugged/@serialport-bindings-cpp-npm-10.8.0-b80f3d7e9a/node_modules/@serialport/bindings-cpp/",\
+          "packageDependencies": [\
+            ["@serialport/bindings-cpp", "npm:10.8.0"],\
+            ["@serialport/bindings-interface", "npm:1.2.2"],\
+            ["@serialport/parser-readline", "npm:10.5.0"],\
+            ["debug", "virtual:0fc91c1e5edbc963067817b073085c545641c07060ae72d1a3dc51adae3d9e2cfb39ecf702386a2affe57cf2970773f74b004c8e2d018ec03851973461ede410#npm:4.3.4"],\
+            ["node-addon-api", "npm:5.1.0"],\
+            ["node-gyp", "npm:9.3.1"],\
+            ["node-gyp-build", "npm:4.6.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/bindings-interface", [\
+        ["npm:1.2.2", {\
+          "packageLocation": "./.yarn/cache/@serialport-bindings-interface-npm-1.2.2-e597dbc676-66154b9abe.zip/node_modules/@serialport/bindings-interface/",\
+          "packageDependencies": [\
+            ["@serialport/bindings-interface", "npm:1.2.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-byte-length", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-byte-length-npm-10.5.0-d888c56131-41ce4cf9f2.zip/node_modules/@serialport/parser-byte-length/",\
+          "packageDependencies": [\
+            ["@serialport/parser-byte-length", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-cctalk", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-cctalk-npm-10.5.0-06ccc73e31-a0c4eac183.zip/node_modules/@serialport/parser-cctalk/",\
+          "packageDependencies": [\
+            ["@serialport/parser-cctalk", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-delimiter", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-delimiter-npm-10.5.0-440e6dd34e-7a5d24fa57.zip/node_modules/@serialport/parser-delimiter/",\
+          "packageDependencies": [\
+            ["@serialport/parser-delimiter", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-inter-byte-timeout", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-inter-byte-timeout-npm-10.5.0-6c74b7ac70-dc3bbbed2b.zip/node_modules/@serialport/parser-inter-byte-timeout/",\
+          "packageDependencies": [\
+            ["@serialport/parser-inter-byte-timeout", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-packet-length", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-packet-length-npm-10.5.0-af1624e7d8-d502a13c2e.zip/node_modules/@serialport/parser-packet-length/",\
+          "packageDependencies": [\
+            ["@serialport/parser-packet-length", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-readline", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-readline-npm-10.5.0-960d1a18cd-2c62c450f4.zip/node_modules/@serialport/parser-readline/",\
+          "packageDependencies": [\
+            ["@serialport/parser-readline", "npm:10.5.0"],\
+            ["@serialport/parser-delimiter", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-ready", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-ready-npm-10.5.0-d872ad04ab-aa6043bf51.zip/node_modules/@serialport/parser-ready/",\
+          "packageDependencies": [\
+            ["@serialport/parser-ready", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-regex", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-regex-npm-10.5.0-403f889286-8abdc1ac75.zip/node_modules/@serialport/parser-regex/",\
+          "packageDependencies": [\
+            ["@serialport/parser-regex", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-slip-encoder", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-slip-encoder-npm-10.5.0-214995dba8-7d9a7356d8.zip/node_modules/@serialport/parser-slip-encoder/",\
+          "packageDependencies": [\
+            ["@serialport/parser-slip-encoder", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/parser-spacepacket", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-parser-spacepacket-npm-10.5.0-5b74b2eaa3-c9676c28a5.zip/node_modules/@serialport/parser-spacepacket/",\
+          "packageDependencies": [\
+            ["@serialport/parser-spacepacket", "npm:10.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@serialport/stream", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/@serialport-stream-npm-10.5.0-688d2d7bd5-d286977d62.zip/node_modules/@serialport/stream/",\
+          "packageDependencies": [\
+            ["@serialport/stream", "npm:10.5.0"],\
+            ["@serialport/bindings-interface", "npm:1.2.2"],\
+            ["debug", "virtual:0fc91c1e5edbc963067817b073085c545641c07060ae72d1a3dc51adae3d9e2cfb39ecf702386a2affe57cf2970773f74b004c8e2d018ec03851973461ede410#npm:4.3.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@sindresorhus/is", [\
         ["npm:0.14.0", {\
           "packageLocation": "./.yarn/cache/@sindresorhus-is-npm-0.14.0-9f906ea34b-971e0441dd.zip/node_modules/@sindresorhus/is/",\
@@ -5306,6 +5445,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.21.4"],\
             ["@babel/preset-env", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:7.21.4"],\
             ["@babel/preset-react", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:7.18.6"],\
+            ["@serialport/parser-readline", "npm:10.5.0"],\
             ["@tsconfig/node18", "npm:1.0.1"],\
             ["@types/electron", "npm:1.6.10"],\
             ["@types/node", "npm:18.15.11"],\
@@ -5326,6 +5466,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["postcss-pxtorem", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:6.0.0"],\
             ["react", "npm:17.0.2"],\
             ["react-dom", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:17.0.2"],\
+            ["serialport", "npm:10.5.0"],\
             ["style-loader", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:3.3.2"],\
             ["typescript", "patch:typescript@npm%3A5.0.3#~builtin<compat/typescript>::version=5.0.3&hash=85af82"],\
             ["webpack", "virtual:be83e3958fa89cf675400beca4dd0e9b1008b96e75ef814cd8bb6fcb402380f6cbe4435b4cb58d1d0372f9a17e102fbc06cded82f5a22788bb2ed411f3f5fe1e#npm:5.78.0"],\
@@ -8128,6 +8269,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["node-addon-api", [\
+        ["npm:5.1.0", {\
+          "packageLocation": "./.yarn/unplugged/node-addon-api-npm-5.1.0-b50d00f739/node_modules/node-addon-api/",\
+          "packageDependencies": [\
+            ["node-addon-api", "npm:5.1.0"],\
+            ["node-gyp", "npm:9.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["node-forge", [\
         ["npm:0.10.0", {\
           "packageLocation": "./.yarn/cache/node-forge-npm-0.10.0-605ba7b28b-5aa6dc9922.zip/node_modules/node-forge/",\
@@ -8152,6 +8303,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["semver", "npm:7.3.8"],\
             ["tar", "npm:6.1.13"],\
             ["which", "npm:2.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["node-gyp-build", [\
+        ["npm:4.6.0", {\
+          "packageLocation": "./.yarn/cache/node-gyp-build-npm-4.6.0-5434aac3e5-25d78c5ef1.zip/node_modules/node-gyp-build/",\
+          "packageDependencies": [\
+            ["node-gyp-build", "npm:4.6.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -10555,6 +10715,29 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["serialize-javascript", "npm:6.0.1"],\
             ["randombytes", "npm:2.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["serialport", [\
+        ["npm:10.5.0", {\
+          "packageLocation": "./.yarn/cache/serialport-npm-10.5.0-88ca03bfe0-ec9198de99.zip/node_modules/serialport/",\
+          "packageDependencies": [\
+            ["serialport", "npm:10.5.0"],\
+            ["@serialport/binding-mock", "npm:10.2.2"],\
+            ["@serialport/bindings-cpp", "npm:10.8.0"],\
+            ["@serialport/parser-byte-length", "npm:10.5.0"],\
+            ["@serialport/parser-cctalk", "npm:10.5.0"],\
+            ["@serialport/parser-delimiter", "npm:10.5.0"],\
+            ["@serialport/parser-inter-byte-timeout", "npm:10.5.0"],\
+            ["@serialport/parser-packet-length", "npm:10.5.0"],\
+            ["@serialport/parser-readline", "npm:10.5.0"],\
+            ["@serialport/parser-ready", "npm:10.5.0"],\
+            ["@serialport/parser-regex", "npm:10.5.0"],\
+            ["@serialport/parser-slip-encoder", "npm:10.5.0"],\
+            ["@serialport/parser-spacepacket", "npm:10.5.0"],\
+            ["@serialport/stream", "npm:10.5.0"],\
+            ["debug", "virtual:0fc91c1e5edbc963067817b073085c545641c07060ae72d1a3dc51adae3d9e2cfb39ecf702386a2affe57cf2970773f74b004c8e2d018ec03851973461ede410#npm:4.3.4"]\
           ],\
           "linkType": "HARD"\
         }]\
