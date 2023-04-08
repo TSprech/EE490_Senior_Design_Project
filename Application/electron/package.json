@@ -1,31 +1,18 @@
 {
   "name": "electron",
   "packageManager": "yarn@3.5.0",
-  "devDependencies": {
-    "@tsconfig/node18": "^1.0.1",
-    "@types/electron": "^1.6.10",
-    "@types/node": "^18.15.11",
-    "electron": "^24.0.0",
-    "typescript": "^5.0.3"
-  },
   "version": "1.0.0",
   "description": "EE490 Senior Design Application",
-  "main": "public/electron.js",
+  "main": "main.js",
   "homepage": "./",
   "scripts": {
-    "build": "react-scripts build",
-    "start": "react-scripts start",
-    "electron": "NODE_OPTIONS='--require ./.pnp.cjs' electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prod": "NODE_OPTIONS='--require ./.pnp.cjs' cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
+    "start": "NODE_OPTIONS='--require ./.pnp.cjs' cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.dev.config.js --mode development",
+    "build": "NODE_OPTIONS='--require ./.pnp.cjs' cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
+    "package": "NODE_OPTIONS='--require ./.pnp.cjs' npm run build",
+    "postpackage": "NODE_OPTIONS='--require ./.pnp.cjs' electron-packager ./ --out=./builds"
   },
   "author": "TSprech",
-  "dependencies": {
-    "@serialport/parser-readline": "^10.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "serialport": "^10.5.0"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -37,5 +24,37 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "dependencies": {
+    "postcss": "^8.4.8",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-react": "^7.17.12",
+    "@tsconfig/node18": "^1.0.1",
+    "@types/electron": "^1.6.10",
+    "@types/node": "^18.15.11",
+    "babel-loader": "^8.2.5",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.7.1",
+    "electron": "^24.0.0",
+    "electron-devtools-installer": "^3.2.0",
+    "electron-packager": "^15.5.1",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.6.0",
+    "postcss-import": "^14.1.0",
+    "postcss-loader": "^7.0.0",
+    "postcss-nested": "^5.0.6",
+    "postcss-preset-env": "^7.6.0",
+    "postcss-pxtorem": "^6.0.0",
+    "style-loader": "^3.3.1",
+    "typescript": "^5.0.3",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^3.11.3"
   }
 }
