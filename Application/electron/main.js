@@ -1,99 +1,129 @@
-'use strict'
-
-// Import parts of electron to use
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
-const url = require('url')
-
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
-
-// Keep a reference for dev mode
-let dev = false
-
-// Broken:
-// if (process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath)) {
-//   dev = true
-// }
-
-if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
-  dev = true
-}
-
-function createWindow() {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
-    show: false,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+"use strict";
+// TSprech 2023/04/05 13:53:16
+// Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
+Object.defineProperty(exports, "__esModule", { value: true });
+const { app, BrowserWindow, ipcMain } = require('electron');
+// All non-electron based requires should be placed below this comment after pnp.setup(), require('electron') should be above this
+// require('./.pnp.loader.mjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
+const EventEmitter = require('events');
+const path = require('path');
+const url = require('url');
+// require('./.pnp.cjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
+// require('./.pnp.cjs'); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
+const { SerialPort, BindingPort, PortInfo } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
+class PortManager {
+    static port;
+    static parser;
+    static emitter = new EventEmitter();
+    static async List() {
+        return SerialPort.list();
     }
-  })
-
-  // and load the index.html of the app.
-  let indexPath
-
-  if (dev && process.argv.indexOf('--noDevServer') === -1) {
-    indexPath = url.format({
-      protocol: 'http:',
-      host: 'localhost:8080',
-      pathname: 'index.html',
-      slashes: true
-    })
-  } else {
-    indexPath = url.format({
-      protocol: 'file:',
-      pathname: path.join(__dirname, 'dist', 'index.html'),
-      slashes: true
-    })
-  }
-
-  mainWindow.loadURL(indexPath)
-
-  // Don't show until we are ready and loaded
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show()
-
-    // Open the DevTools automatically if developing
-    if (dev) {
-      const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer')
-
-      installExtension(REACT_DEVELOPER_TOOLS)
-        .catch(err => console.log('Error loading React DevTools: ', err))
-      mainWindow.webContents.openDevTools()
+    // Based off: https://medium.com/@machadogj/arduino-and-node-js-via-serial-port-bcf9691fab6a
+    static Connect(port_info, baudrate) {
+        this.port = new SerialPort({ path: port_info, baudRate: baudrate, autoOpen: true }); // Create the new port and open it (autoOpen)
+        this.parser = this.port.pipe(new ReadlineParser({ delimiter: '\n' })); // Create a parser which parses based on a delimiter (\n)
+        this.parser.on('data', (data) => {
+            console.log('New JSON Data: ', data);
+            this.ParseJSON(data); // Call for the data to be converted from a string into an Object
+        });
     }
-  })
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function() {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  })
+    static ParseJSON(json_data) {
+        try {
+            this.emitter.emit("PortManager:NewJSON", JSON.parse(json_data)); // Send out the parsed JSON Object for a dispatcher to handle
+        }
+        catch {
+            console.log("Invalid JSON was attempted to be parsed"); // This is not a huge issue as long as it isn't happening too much
+        }
+    }
+    static Write(json_obj) {
+        this.port.write(JSON.stringify(json_obj) + '\n'); // Convert the object to a string and append the terminator that indicates end of data (\n)
+    }
+    static Disconnect() {
+        this.port.close();
+    }
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
-
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
+// PortManager.List().then((port_names) => console.log(port_names))
+// PortManager.Connect('COM23', 115200);
+// console.log("Connected!");
+// PortManager.Write({"LED": true});
+// setTimeout(() => PortManager.Write({"LED": false}), 2000);
+class Main {
+    static mainWindow;
+    static application;
+    static BrowserWindow;
+    static dev;
+    static onWindowAllClosed() {
+        if (process.platform !== 'darwin') {
+            Main.application.quit();
+        }
+    }
+    static onClose() {
+        Main.mainWindow = null; // Dereference the window object.
+    }
+    static onReady() {
+        Main.mainWindow = new Main.BrowserWindow({
+            width: 1024,
+            height: 768,
+            show: false,
+            webPreferences: {
+                // preload: path.join(__dirname, 'preload.js'),
+                nodeIntegration: true,
+                contextIsolation: false // allow use with Electron 12+
+            }
+        });
+        // let indexPath: typeof url;
+        let indexPath;
+        if (Main.dev && process.argv.indexOf('--noDevServer') === -1) {
+            indexPath = url.format({
+                protocol: 'http:',
+                host: 'localhost:8080',
+                pathname: 'index.html',
+                slashes: true
+            });
+        }
+        else {
+            indexPath = url.format({
+                protocol: 'file:',
+                pathname: path.join(__dirname, 'dist', 'index.html'),
+                slashes: true
+            });
+        }
+        Main.mainWindow.loadURL(indexPath);
+        Main.mainWindow.on('closed', Main.onClose);
+        // Don't show until we are ready and loaded
+        Main.mainWindow.once('ready-to-show', () => {
+            // @ts-ignore
+            Main.mainWindow.show();
+            // Open the DevTools automatically if developing
+            if (Main.dev) {
+                const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+                // @ts-ignore
+                installExtension(REACT_DEVELOPER_TOOLS).catch(err => console.log('Error loading React DevTools: ', err));
+                // @ts-ignore
+                Main.mainWindow.webContents.openDevTools();
+            }
+        });
+        // ipcMain.on('LED:On', (event, title) => {
+        //   PortManager.Write({"LED": true});
+        //   setTimeout(() => PortManager.Write({"LED": false}), 1000);
+        // })
+    }
+    static main(app, browserWindow) {
+        // we pass the Electron.App object and the
+        // Electron.BrowserWindow into this function
+        // so this class has no dependencies. This
+        // makes the code easier to write tests for
+        Main.BrowserWindow = browserWindow;
+        Main.application = app;
+        Main.application.on('window-all-closed', Main.onWindowAllClosed);
+        Main.application.on('ready', Main.onReady);
+        if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
+            Main.dev = true;
+        }
+    }
+}
+exports.default = Main;
+// const {app, BrowserWindow} = require('electron');
+// import Main from './main';
+Main.main(app, BrowserWindow);

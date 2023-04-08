@@ -6,11 +6,12 @@
   "main": "main.js",
   "homepage": "./",
   "scripts": {
-    "prod": "NODE_OPTIONS='--require ./.pnp.cjs' cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
-    "start": "NODE_OPTIONS='--require ./.pnp.cjs' cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.dev.config.js --mode development",
-    "build": "NODE_OPTIONS='--require ./.pnp.cjs' cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
-    "package": "NODE_OPTIONS='--require ./.pnp.cjs' npm run build",
-    "postpackage": "NODE_OPTIONS='--require ./.pnp.cjs' electron-packager ./ --out=./builds"
+    "prod": "NODE_OPTIONS=\"--require ./.pnp.cjs\" cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
+    "compile": "NODE_OPTIONS=\"--require ./.pnp.cjs\" tsc",
+    "start": "NODE_OPTIONS=\"--require ./.pnp.cjs\" cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.dev.config.js --mode development",
+    "build": "NODE_OPTIONS=\"--require ./.pnp.cjs\" cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
+    "package": "NODE_OPTIONS=\"--require ./.pnp.cjs\" npm run build",
+    "postpackage": "NODE_OPTIONS=\"--require ./.pnp.cjs\" electron-packager ./ --out=./builds"
   },
   "author": "TSprech",
   "browserslist": {
@@ -26,6 +27,8 @@
     ]
   },
   "dependencies": {
+    "@serialport/parser-readline": "^10.5.0",
+    "serialport": "^10.5.0",
     "postcss": "^8.4.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
@@ -34,7 +37,6 @@
     "@babel/core": "^7.18.2",
     "@babel/preset-env": "^7.18.2",
     "@babel/preset-react": "^7.17.12",
-    "@serialport/parser-readline": "^10.5.0",
     "@tsconfig/node18": "^1.0.1",
     "@types/electron": "^1.6.10",
     "@types/node": "^18.15.11",
@@ -52,7 +54,6 @@
     "postcss-nested": "^5.0.6",
     "postcss-preset-env": "^7.6.0",
     "postcss-pxtorem": "^6.0.0",
-    "serialport": "^10.5.0",
     "style-loader": "^3.3.1",
     "typescript": "^5.0.3",
     "webpack": "^5.72.1",
