@@ -2,7 +2,8 @@
   "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "types": ["node", "electron"], // Huge thanks: https://stackoverflow.com/questions/42940954/cannot-find-namespace-nodejs-after-webpack-upgrade
-    "lib": ["DOM"]
+    "lib": ["DOM"],
+    "jsx": "react-native"
   },
   "exclude": [
     "node_modules"

@@ -2,12 +2,15 @@
 // Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
 
 const {app, BrowserWindow, ipcMain} = require('electron');
-const EventEmitter = require('events');
 const path = require('path');
 const url = require('url');
 
 const {SerialPort, BindingPort, PortInfo} = require('serialport');
 const {ReadlineParser} = require('@serialport/parser-readline');
+// const RendererEvents = require('./src/components/App');
+// @ts-ignore
+// import RendererEvents from './src/components/App.js';
+const EventEmitter = require('events');
 
 class PortManager {
   static port: typeof BindingPort;
@@ -22,6 +25,7 @@ class PortManager {
   static Connect(port_info: string, baudrate: number) {
     this.port = new SerialPort({path: port_info, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
     this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
+    // @ts-ignore
     this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
       console.log('New JSON Data: ', data);
       this.ParseJSON(data); // Call for the data to be converted from a string into an Object
@@ -44,12 +48,14 @@ class PortManager {
     this.port.close();
   }
 }
-
-// PortManager.List().then((port_names) => console.log(port_names))
-// PortManager.Connect('COM23', 115200);
-// console.log("Connected!");
-// PortManager.Write({"LED": true});
-// setTimeout(() => PortManager.Write({"LED": false}), 2000);
+PortManager.List().then((port_names) => console.log(port_names))
+PortManager.Connect('COM5', 115200);
+console.log("Connected!");
+PortManager.Write({"LED": true});
+setTimeout(() => PortManager.Write({"LED": false}), 2000);
+// @ts-ignore
+const RendererEvents = require('./src/components/Test');
+RendererEvents.on("BLINK", ()=>PortManager.Write({"LED": true}))
 
 export default class Main {
   static mainWindow: Electron.BrowserWindow | null;
@@ -73,7 +79,6 @@ export default class Main {
       height: 768,
       show: false,
       webPreferences: {
-        // preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: true, // to allow require Had to disable these for preload: https://github.com/electron/forge/issues/2931
         contextIsolation: false // allow use with Electron 12+
       }
@@ -115,11 +120,7 @@ export default class Main {
       }
     });
 
-    ipcMain.on('LED:On', (event, title) => {
-      console.log("LED WOULD BE TURNED ON\n");
-      // PortManager.Write({"LED": true});
-      // setTimeout(() => PortManager.Write({"LED": false}), 1000);
-    })
+
   }
 
   static main(app: Electron.App, browserWindow: typeof BrowserWindow) {

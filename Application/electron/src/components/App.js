@@ -1,6 +1,9 @@
 import React from 'react'
-import logo from './logo.svg';
+// @ts-ignore
+import logo from './logo.svg'
 import '../assets/css/App.css'
+// const EventEmitter = require('events');
+import RendererEvents from './Test';
 
 function App() {
   return (
@@ -18,7 +21,7 @@ function App() {
         >
           Learn React
         </a>
-        <button onClick={() => window.LED.TurnOn("This is the button text!")}>Button</button>
+        <button onClick={() => RendererEvents.serial_event.emit("BLINK")}>Button</button>
       </header>
     </div>
   )
