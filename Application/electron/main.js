@@ -3,13 +3,9 @@
 // Thanks to: https://davembush.medium.com/typescript-and-electron-the-right-way-141c2e15e4e1
 Object.defineProperty(exports, "__esModule", { value: true });
 const { app, BrowserWindow, ipcMain } = require('electron');
-// All non-electron based requires should be placed below this comment after pnp.setup(), require('electron') should be above this
-// require('./.pnp.loader.mjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
 const EventEmitter = require('events');
 const path = require('path');
 const url = require('url');
-// require('./.pnp.cjs').setup(); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
-// require('./.pnp.cjs'); // Required for Yarn PnP (Plug N Play) functionality without changing CL args
 const { SerialPort, BindingPort, PortInfo } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 class PortManager {
@@ -104,10 +100,11 @@ class Main {
                 Main.mainWindow.webContents.openDevTools();
             }
         });
-        // ipcMain.on('LED:On', (event, title) => {
-        //   PortManager.Write({"LED": true});
-        //   setTimeout(() => PortManager.Write({"LED": false}), 1000);
-        // })
+        ipcMain.on('LED:On', (event, title) => {
+            console.log("LED WOULD BE TURNED ON\n");
+            // PortManager.Write({"LED": true});
+            // setTimeout(() => PortManager.Write({"LED": false}), 1000);
+        });
     }
     static main(app, browserWindow) {
         // we pass the Electron.App object and the
