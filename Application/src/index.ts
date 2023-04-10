@@ -51,3 +51,51 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const {SerialPort, BindingPort, PortInfo} = require('serialport');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const {ReadlineParser} = require('@serialport/parser-readline');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const EventEmitter = require('events');
+
+class PortManager {
+  static port: typeof BindingPort;
+  static parser: typeof ReadlineParser;
+  static emitter = new EventEmitter();
+
+  static async List(): Promise<typeof PortInfo[]> {
+    return SerialPort.list();
+  }
+
+  // Based off: https://medium.com/@machadogj/arduino-and-node-js-via-serial-port-bcf9691fab6a
+  static Connect(port_info: string, baudrate: number) {
+    this.port = new SerialPort({path: port_info, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
+    this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
+    this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
+      console.log('New JSON Data: ', data);
+      this.ParseJSON(data); // Call for the data to be converted from a string into an Object
+    });
+  }
+
+  static ParseJSON(json_data: string): any { // TODO: Keep using any and a dispatcher?
+    try {
+      this.emitter.emit("PortManager:NewJSON", JSON.parse(json_data)); // Send out the parsed JSON Object for a dispatcher to handle
+    } catch {
+      console.log("Invalid JSON was attempted to be parsed"); // This is not a huge issue as long as it isn't happening too much
+    }
+  }
+
+  static Write(json_obj: any) { // TODO: Don't write if the port is not open
+    this.port.write(JSON.stringify(json_obj) + '\n'); // Convert the object to a string and append the terminator that indicates end of data (\n)
+  }
+
+  static Disconnect() { // TODO: Complains the port isn't open when called?
+    this.port.close();
+  }
+}
+
+PortManager.List().then((port_names) => console.log(port_names))
+PortManager.Connect('COM5', 115200);
+console.log("Connected!");
+PortManager.Write({"LED": true});
+setTimeout(() => PortManager.Write({"LED": false}), 2000);
