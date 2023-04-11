@@ -15,5 +15,5 @@ export const mainConfig: Configuration = {
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
   },
-  externals: ['serialport'] // Huge thanks: https://github.com/serialport/node-serialport/issues/2464
+  externals: ['serialport'] // Huge thanks: https://github.com/serialport/node-serialport/issues/2464#issuecomment-1122424291A
 };
