@@ -3,3 +3,5 @@
 *.net
 *.op.raw
 *.raw
+*.lprof
+*.pyc
