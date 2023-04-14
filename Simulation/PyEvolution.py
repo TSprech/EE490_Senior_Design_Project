@@ -81,11 +81,34 @@ def FastClone(x):
         ind[elem] = x[elem]
     return ind
 
-# toolbox.register("clone", FastClone)  # Enable for faster copy but slightly less optimized result
+toolbox.register("clone", FastClone)  # Enable for faster copy but slightly less optimized result
+
+def mutBuck(individual, indpb):
+    """Mutate an individual by replacing attributes, with probability *indpb*,
+    by a integer uniformly drawn between *low* and *up* inclusively.
+
+    :param individual: :term:`Sequence <sequence>` individual to be mutated.
+    :param low: The lower bound or a :term:`python:sequence` of
+                of lower bounds of the range from which to draw the new
+                integer.
+    :param up: The upper bound or a :term:`python:sequence` of
+               of upper bounds of the range from which to draw the new
+               integer.
+    :param indpb: Independent probability for each attribute to be mutated.
+    :returns: A tuple of one individual.
+    """
+    if random.random() < indpb:
+        individual[0] = toolbox.attr_frequency()
+    if random.random() < indpb:
+        individual[1] = toolbox.attr_inductance()
+    if random.random() < indpb:
+        individual[2] = toolbox.attr_capacitance()
+
+    return individual,
 
 # register a mutation operator with a probability to
 # flip each attribute/gene of 0.05
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05) # TODO: make this not FlipBit
+toolbox.register("mutate", mutBuck, indpb=0.1) # TODO: make this not FlipBit
 
 # operator for selecting individuals for breeding the next
 # generation: each individual of the current generation
@@ -96,9 +119,9 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 
 # @profile
 def main():
-    random.seed(64)
-    NGEN=1000
-    population = toolbox.population(n=1000)
+    random.seed(128)
+    NGEN=500
+    population = toolbox.population(n=100)
     for gen in range(NGEN):
         offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.25)  # cxpb is probability two individuals are cross, mutpb is probability an individual mutates
         fits = toolbox.map(toolbox.evaluate, offspring)
@@ -124,6 +147,6 @@ def main():
     print(bp.calculate_efficiency(best_ind))
 
 if __name__ == "__main__":
-    main()
-    # t = Timer(main)
-    # print(f'Time: {t.timeit(number = 20)}S')  # Time: 8.3934376 Seconds
+    # main()
+    t = Timer(main)
+    print(f'Time: {t.timeit(number = 10)}S')  # Time: 8.3934376 Seconds
