@@ -19,7 +19,7 @@ toolbox = base.Toolbox()  # Create a toolbox which manages the specific paramete
 
 # Attribute Generators (Genes)
 toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
-toolbox.register("attr_inductance", random.uniform, 0.000000001, 0.001)  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
+toolbox.register("attr_inductance", random.uniform, 0.000000001, 0.00005)  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
 toolbox.register("attr_capacitance", random.uniform, 0.000000001, 0.0001)  # Same as inductance
 
 # Individual Structure Initializer
@@ -41,11 +41,11 @@ toolbox.register("mate", tools.cxTwoPoint)  # Used when crossing 2 individuals
 
 def mutBuck(individual, indpb):  # TODO: Make this shift a small amount based on the current attribute value, not just random
     if random.random() < indpb:
-        individual[0] = toolbox.attr_frequency()
+        individual[0] = (individual[0] + toolbox.attr_frequency()) / 2
     if random.random() < indpb:
-        individual[1] = toolbox.attr_inductance()
+        individual[1] = (individual[1] + toolbox.attr_inductance()) / 2
     if random.random() < indpb:
-        individual[2] = toolbox.attr_capacitance()
+        individual[2] = (individual[2] + toolbox.attr_capacitance()) / 2
     return individual,
 
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     pool = multiprocessing.Pool(cpu_count)
     toolbox.register("map", pool.map)
 
-    pop = toolbox.population(n=20)
+    pop = toolbox.population(n=10)
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", numpy.mean)
@@ -73,7 +73,9 @@ if __name__ == "__main__":
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.9, mutpb=0.9, ngen=500, stats=stats, halloffame=hof)
+    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=500, stats=stats, halloffame=hof)
+    best_ind = tools.selBest(pop, 1)[0]
+    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
     # print(time.process_time())
     pool.close()
