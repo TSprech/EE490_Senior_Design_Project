@@ -1,4 +1,5 @@
 # TSprech 2023/04/13 15:09:20
+import time
 
 RdsN = 0.190  # OHMS The on state resistance of the N FET
 RdsP = 0.180  # OHMS The on state resistance of the P FET
@@ -90,7 +91,10 @@ def calculate_efficiency(individual):
         PI = VI * II + PCond + Psw + Prr + Pdb  #
         Eff = PO / PI  #
 
-        return Eff,  # THIS COMMA IS EXTREMELY IMPORTANT AND VERY SUBTLE, IT MAKES THE RETURN VALUE A LIST OF 1 WHICH DEAP NEEDS
+        # time.sleep(0.1)
+
+        return Eff * 100,  # THIS COMMA IS EXTREMELY IMPORTANT AND VERY SUBTLE, IT MAKES THE RETURN VALUE A LIST OF 1 WHICH DEAP NEEDS
+    # time.sleep(0.1)
     return 0,
 
 # print(calculate_efficiency(100E3, 47000*10**-9, 20*10**-6, ILModel, CRModel))
