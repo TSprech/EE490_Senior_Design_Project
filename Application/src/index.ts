@@ -65,11 +65,9 @@ const port_manager = new PortManager();
 
 port_manager.List().then((port_names) => console.log(port_names))
 
-async function HandleListRequest() {
-  return await port_manager.List();
-}
 
-ipcMain.handle('Serial:List', HandleListRequest);
+ipcMain.handle('Serial:List', port_manager.List);
+ipcMain.handle('Serial:Connect', port_manager.Connect);
 
 // PortManager.Connect('COM5', 115200);
 // console.log("Connected!");

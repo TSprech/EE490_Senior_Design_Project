@@ -13,3 +13,7 @@ console.log("Preload Running\n");
 contextBridge.exposeInMainWorld('SerialIPC', {
     ListIPC: () => ipcRenderer.invoke('Serial:List')
 })
+
+contextBridge.exposeInMainWorld('SerialIPC', {
+    ConnectIPC: (port_path: string, baudrate: number) => ipcRenderer.invoke('Serial:Connect', port_path, baudrate)
+})

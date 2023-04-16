@@ -17,13 +17,14 @@ export default class PortManager {
     }
 
     // Based off: https://medium.com/@machadogj/arduino-and-node-js-via-serial-port-bcf9691fab6a
-    Connect(port_info: string, baudrate: number) {
-        this.port = new SerialPort({path: port_info, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
+    Connect(port_path: string, baudrate: number) {
+        this.port = new SerialPort({path: port_path, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
         this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
         this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
             console.log('New JSON Data: ', data);
             this.ParseJSON(data); // Call for the data to be converted from a string into an Object
         });
+        return this.port.isConnected;
     }
 
     ParseJSON(json_data: string): any { // TODO: Keep using any and a dispatcher?
