@@ -1,65 +1,29 @@
 // import * as ReactDOM from 'react-dom';
-import {createRoot} from "react-dom/client";
+// import * as React from "react";
 import {useState} from "react";
+import './Deposits'
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+import {AppBar, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 
-// const filePath = await window.electronAPI.openFile()
-
-function func() {
-    // window.SerialIPC.ListIPC().then((port_names) => console.log(port_names));
-    let ports;
-    window.SerialIPC.ListIPC().then((port_names) => console.log(port_names));
-
-    return ports;
-}
-
-let port_data = [
-    {
-        path: 'COM1',
-        manufacturer: '(Standard port types)',
-        serialNumber: undefined,
-        pnpId: 'ACPI\\PNP0501\\0',
-        locationId: undefined,
-        friendlyName: 'Communications Port (COM1)',
-        vendorId: undefined,
-        productId: undefined
-    },
-    {
-        path: 'COM4',
-        manufacturer: 'Microsoft',
-        serialNumber: undefined,
-        pnpId: 'BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID&000100CD_PID&0123\\7&AD7B2F8&0&0006668D9155_C00000000',
-        locationId: undefined,
-        friendlyName: 'Standard Serial over Bluetooth link (COM4)',
-        vendorId: undefined,
-        productId: undefined
-    },
-    {
-        path: 'COM3',
-        manufacturer: 'Microsoft',
-        serialNumber: undefined,
-        pnpId: 'BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0000\\7&AD7B2F8&0&000000000000_00000000',
-        locationId: undefined,
-        friendlyName: 'Standard Serial over Bluetooth link (COM3)',
-        vendorId: undefined,
-        productId: undefined
-    }
-]
+const mdTheme = createTheme();
 
 
-class SerialListManager {
-    static ports = []
-    constructor() {
-        SerialListManager.UpdatePorts()
-    }
-
-    static async UpdatePorts() {
-        SerialListManager.ports = await window.SerialIPC.ListIPC();
-    }
-
-    static ListPorts() {
-        return SerialListManager.ports;
-    }
-}
+// class SerialListManager {
+//     static ports = []
+//     constructor() {
+//         SerialListManager.UpdatePorts()
+//     }
+//
+//     static async UpdatePorts() {
+//         SerialListManager.ports = await window.SerialIPC.ListIPC();
+//     }
+//
+//     static ListPorts() {
+//         return SerialListManager.ports;
+//     }
+// }
 
 // function SerialList(){
 //     // const data = await window.SerialIPC.ListIPC();
@@ -77,40 +41,7 @@ class SerialListManager {
 //     );
 // }
 
-
-// function Index() {
-//     const [ports, setPorts] = useState([]);
-//     //
-//     async function handlePortUpdate(e) {
-//         e.preventDefault();
-//         try {
-//             const ret_ports = await window.SerialIPC.ListIPC();
-//             setPorts(ret_ports);
-//         } catch (err) {
-//         }
-//     }
-//
-//     function SerialList(){
-//         const list_items = ports.map(item =>
-//             <li key={item.path}>
-//                 {item.friendlyName}
-//             </li>
-//         );
-//         console.log("New port data: ");
-//         console.log(ports);
-//         return (
-//             <ul>{list_items}</ul>
-//         );
-//     }
-//
-//     return (<div>
-//         <h2>Hello from React!</h2>
-//         <button onClick={() => SerialListManager.UpdatePorts()}>Hi</button>
-//
-//     </div>);
-// }
-
-export default function Form() {
+export default function Index() {
     const [answer, setAnswer] = useState('');
     const [ports, setPorts] = useState([]);
     const [error, setError] = useState(null);
@@ -120,7 +51,7 @@ export default function Form() {
         return <h1>That's right!</h1>
     }
 
-    function SerialList(){
+    function SerialList() {
         const list_items = ports.map(item =>
             <li key={item.path}>
                 {item.friendlyName}
@@ -160,33 +91,34 @@ export default function Form() {
     }
 
     return (
-        <>
-            <h2>City quiz</h2>
-            <p>
-                In which city is there a billboard that turns air into drinkable water?
-            </p>
-            <button onClick={updatePorts} >Update Port List!</button>
-            <SerialList />
-            <form onSubmit={handleSubmit}>
-        <textarea
-            value={answer}
-            onChange={handleTextareaChange}
-            disabled={status === 'submitting'}
-        />
-                <br />
-                <button disabled={
-                    answer.length === 0 ||
-                    status === 'submitting'
-                }>
-                    Submit
-                </button>
-                {error !== null &&
-                    <p className="Error">
-                        {error.message}
-                    </p>
-                }
-            </form>
-        </>
+        <ThemeProvider theme={mdTheme}>
+            {/*<Box sx={{ display: 'flex' }}>*/}
+            {/*  <CssBaseline />*/}
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+                        News
+                    </Typography>
+                    <FormControl variant="standard" sx={{m: 1, minWidth: 120}}>
+                        <InputLabel id="demo-simple-select-standard-label">Age</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-standard-label"
+                            id="demo-simple-select-standard"
+                            value='10'
+                            // onChange={}
+                            label="Age"
+                        >
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            <MenuItem value={10}>Ten</MenuItem>
+                            <MenuItem value={20}>Twenty</MenuItem>
+                            <MenuItem value={30}>Thirty</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Toolbar>
+            </AppBar>
+        </ThemeProvider>
     );
 }
 
