@@ -24,6 +24,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LinkIcon from '@mui/icons-material/Link';
+import LinkOffIcon from '@mui/icons-material/LinkOff';
 
 // custom
 import teamTheme from './theme';
@@ -126,6 +127,7 @@ export default function TeamExample() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [ports, setPorts] = React.useState([]); // Manages the list of available ports
     const [selectedPort, setSelectedPort] = React.useState(new PortPair); // Manages the current port that the user has selected
+    const [connected, setConnected] = React.useState(false); // Manages the current port that the user has selected
 
     async function updatePorts(e) {
         // e.preventDefault();
@@ -154,6 +156,30 @@ export default function TeamExample() {
                 {list_items}
             </Select>
         );
+    }
+
+    function ConnectButton() {
+        // const connected = window.SerialIPC3.ConnectedIPC();
+        const icon = connected ? <LinkIcon/> : <LinkOffIcon/>;
+
+        return (<IconButton
+            size="sm"
+            variant="outlined"
+            color="primary"
+            component="a"
+            onClick={() => {
+                if (!connected) {
+                    setConnected(window.SerialIPC2.ConnectIPC(
+                        {
+                            path: selectedPort.path,
+                            baud: 115200
+                        }))
+                } else {
+                    window.SerialIPC4.DisconnectIPC();
+                    setConnected(false);
+                }
+            }}
+        > {icon} </IconButton>);
     }
 
     return (
@@ -203,17 +229,7 @@ export default function TeamExample() {
                             onClick={updatePorts}
                         > <RefreshIcon/> </IconButton>
 
-                        <IconButton
-                            size="sm"
-                            variant="outlined"
-                            color="primary"
-                            component="a"
-                            onClick={() => window.SerialIPC2.ConnectIPC(
-                                {
-                                    path: selectedPort.path,
-                                    baud: 115200
-                                })}
-                        > <LinkIcon/> </IconButton>
+                        <ConnectButton/>
                         <ColorSchemeToggle/>
                     </Box>
                 </Layout.Header>

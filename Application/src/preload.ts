@@ -17,3 +17,11 @@ contextBridge.exposeInMainWorld('SerialIPC', {
 contextBridge.exposeInMainWorld('SerialIPC2', {
     ConnectIPC: (port_data) => ipcRenderer.invoke('Serial:Connect', port_data)
 })
+
+contextBridge.exposeInMainWorld('SerialIPC3', {
+    ConnectedIPC: () => ipcRenderer.invoke('Serial:Connected')
+})
+
+contextBridge.exposeInMainWorld('SerialIPC4', {
+    DisconnectIPC: () => ipcRenderer.invoke('Serial:Disconnect')
+})
