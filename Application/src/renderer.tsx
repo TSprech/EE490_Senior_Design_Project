@@ -4,12 +4,12 @@ console.log('👋 This message is being logged by "renderer.js", included via we
 
 import Index from './app';
 import { createRoot } from 'react-dom/client';
-import Dashboard from "./Dashboard";
+import TeamExample from './JoyApp'
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 // root.render(<Form />);
-root.render(<Index />);
+root.render(<TeamExample />);
 
 // calling IPC exposed from preload script
 // window.electron.ipcRenderer.once('ipc-example', (arg) => {
