@@ -5,7 +5,11 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 console.log("Preload Running\n");
+//
+// contextBridge.exposeInMainWorld('LED', {
+//     TurnOn: (title: string) => ipcRenderer.send('LED:On', title)
+// })
 
-contextBridge.exposeInMainWorld('LED', {
-    TurnOn: (title: string) => ipcRenderer.send('LED:On', title)
+contextBridge.exposeInMainWorld('SerialIPC', {
+    ListIPC: () => ipcRenderer.invoke('Serial:List')
 })
