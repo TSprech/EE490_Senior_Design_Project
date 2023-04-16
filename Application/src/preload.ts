@@ -14,6 +14,6 @@ contextBridge.exposeInMainWorld('SerialIPC', {
     ListIPC: () => ipcRenderer.invoke('Serial:List')
 })
 
-contextBridge.exposeInMainWorld('SerialIPC', {
-    ConnectIPC: (port_path: string, baudrate: number) => ipcRenderer.invoke('Serial:Connect', port_path, baudrate)
+contextBridge.exposeInMainWorld('SerialIPC2', {
+    ConnectIPC: (port_data) => ipcRenderer.invoke('Serial:Connect', port_data)
 })

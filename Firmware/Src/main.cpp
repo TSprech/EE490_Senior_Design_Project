@@ -33,7 +33,14 @@ int main() {
         }
       }
     }
-    sleep_ms(10);
+    sleep_ms(1000);
+    j.clear();
+    j["Int"] = 24;
+    j["String"] = "Hello World!";
+    j["Float"] = 3.1415;
+    j["Bool"] = true;
+    auto str = j.dump();
+    puts(str.data());
   }
 #pragma clang diagnostic pop
 }

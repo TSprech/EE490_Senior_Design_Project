@@ -124,8 +124,8 @@ class PortPair { // This represents a selectable port
 
 export default function TeamExample() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-    const [ports, setPorts] = React.useState([]);
-    const [selectedPort, setSelectedPort] = React.useState(new PortPair);
+    const [ports, setPorts] = React.useState([]); // Manages the list of available ports
+    const [selectedPort, setSelectedPort] = React.useState(new PortPair); // Manages the current port that the user has selected
 
     async function updatePorts(e) {
         // e.preventDefault();
@@ -208,7 +208,11 @@ export default function TeamExample() {
                             variant="outlined"
                             color="primary"
                             component="a"
-                            // onClick={window.SerialIPC.ConnectIPC()}
+                            onClick={() => window.SerialIPC2.ConnectIPC(
+                                {
+                                    path: selectedPort.path,
+                                    baud: 115200
+                                })}
                         > <LinkIcon/> </IconButton>
                         <ColorSchemeToggle/>
                     </Box>

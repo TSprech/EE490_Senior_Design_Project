@@ -63,11 +63,13 @@ ipcMain.on('LED:On', (event, title) => {
 
 const port_manager = new PortManager();
 
-port_manager.List().then((port_names) => console.log(port_names))
+// port_manager.List().then((port_names) => console.log(port_names))
 
 
 ipcMain.handle('Serial:List', port_manager.List);
-ipcMain.handle('Serial:Connect', port_manager.Connect);
+ipcMain.handle('Serial:Connect', (event, data) => {
+  port_manager.Connect(data.path, data.baud)
+});
 
 // PortManager.Connect('COM5', 115200);
 // console.log("Connected!");
