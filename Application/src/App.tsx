@@ -27,9 +27,9 @@ import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 
 // custom
-import teamTheme from './theme';
+import teamTheme from './Theme';
 import Layout from './components/Layout';
-import {Option, Select} from "@mui/joy";
+import {Option, Select, Tooltip} from "@mui/joy";
 
 function ColorSchemeToggle() {
     const {mode, setMode} = useColorScheme();
@@ -123,7 +123,7 @@ class PortPair { // This represents a selectable port
     friendly_name: string; // Used to inform the user what port options are available
 }
 
-export default function TeamExample() {
+export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [ports, setPorts] = React.useState([]); // Manages the list of available ports
     const [selectedPort, setSelectedPort] = React.useState(new PortPair); // Manages the current port that the user has selected
@@ -132,7 +132,7 @@ export default function TeamExample() {
     async function updatePorts(e) {
         // e.preventDefault();
         try {
-            const ret_ports = await window.SerialIPC.ListIPC();
+            const ret_ports = await window.SerialIPC.List();
             setPorts(ret_ports);
         } catch (err) {
             alert(err);
@@ -151,6 +151,7 @@ export default function TeamExample() {
                 color="primary"
                 placeholder={selectedPort.friendly_name === undefined ? 'Select Port' : selectedPort.friendly_name} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
                 variant="outlined"
+                disabled={connected ? true : false}
                 onChange={(event, selected_key: PortPair) => setSelectedPort(selected_key)} // When a new option is selected, change the state to reflect what port was selected
             >
                 {list_items}
@@ -158,28 +159,28 @@ export default function TeamExample() {
         );
     }
 
-    function ConnectButton() {
-        // const connected = window.SerialIPC3.ConnectedIPC();
-        const icon = connected ? <LinkIcon/> : <LinkOffIcon/>;
-
-        return (<IconButton
-            size="sm"
-            variant="outlined"
-            color="primary"
-            component="a"
-            onClick={() => {
-                if (!connected) {
-                    setConnected(window.SerialIPC2.ConnectIPC(
-                        {
-                            path: selectedPort.path,
-                            baud: 115200
-                        }))
-                } else {
-                    window.SerialIPC4.DisconnectIPC();
-                    setConnected(false);
-                }
-            }}
-        > {icon} </IconButton>);
+    function SerialConnectButton() {
+        return (
+            // The tool tip gives a hint to the user whether pressing the button will connect to the serial device or disconnect from it, as such the tool tip's text depends on whether it is connected
+            <Tooltip title={connected ? "Disconnect" : "Connect"}>
+                <IconButton
+                    size="sm"
+                    variant={connected ? "solid" : "outlined"} //
+                    color={connected ? "danger" : "success"}
+                    component="a"
+                    onClick={() => {
+                        if (!connected) {
+                            setConnected(window.SerialIPC.Connect({ // Call the connect function, which returns whether it successfully connected, and set the connected state to the returned value
+                                path: selectedPort.path,
+                                baud: 115200 // This is just a constant as native USB serial, like the RP2040, does not require a baud rate (and is ignored)
+                            }))
+                        } else {
+                            window.SerialIPC.Disconnect();
+                            setConnected(false);
+                        }
+                    }}
+                > {connected ? <LinkOffIcon/> : <LinkIcon/>} </IconButton>
+            </Tooltip>);
     }
 
     return (
@@ -229,7 +230,7 @@ export default function TeamExample() {
                             onClick={updatePorts}
                         > <RefreshIcon/> </IconButton>
 
-                        <ConnectButton/>
+                        <SerialConnectButton/>
                         <ColorSchemeToggle/>
                     </Box>
                 </Layout.Header>

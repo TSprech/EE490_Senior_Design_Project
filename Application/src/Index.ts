@@ -66,13 +66,9 @@ const port_manager = new PortManager();
 // port_manager.List().then((port_names) => console.log(port_names))
 
 
-function Disc() { // NOTE: This has to be a separate function (it cannot be passed directly to ipcMain.handle) as it seems to be copied and thus the object is not consistent (you get cannot read property of undefined errors)
-  port_manager.Disconnect();
-}
-
-ipcMain.handle('Serial:List', port_manager.List);
-ipcMain.handle('Serial:Connected', port_manager.Connected);
-ipcMain.handle('Serial:Disconnect', Disc);
+ipcMain.handle('Serial:List', () => port_manager.List());
+ipcMain.handle('Serial:Connected', () => port_manager.Connected);
+ipcMain.handle('Serial:Disconnect', () => port_manager.Disconnect()); // NOTE: This has to be a separate (or inline) function (it cannot be passed directly to ipcMain.handle) as it seems to be copied and thus the object is not consistent (you get cannot read property of undefined errors)
 ipcMain.handle('Serial:Connect', (event, data) => {
   port_manager.Connect(data.path, data.baud)
 });

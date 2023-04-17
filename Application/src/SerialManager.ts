@@ -8,7 +8,7 @@ const {ReadlineParser} = require('@serialport/parser-readline');
 const EventEmitter = require('events');
 
 export default class PortManager {
-    port: typeof SerialPort | null;
+    port: typeof BindingPort | null;
     parser: typeof ReadlineParser | null;
     emitter: typeof EventEmitter;
 
@@ -33,11 +33,11 @@ export default class PortManager {
     }
 
     Connected() {
-        // if (this?.port) {
+        if (this?.port) {
             return false;
-        // } else {
-        //     return this?.port?.isConnected;
-        // }
+        } else {
+            return this?.port?.isConnected;
+        }
     }
 
     ParseJSON(json_data: string): any { // TODO: Keep using any and a dispatcher?
@@ -54,6 +54,5 @@ export default class PortManager {
 
     Disconnect() { // TODO: Complains the port isn't open when called?
         this.port.close();
-        // delete this.port;
     }
 }
