@@ -69,8 +69,8 @@ const port_manager = new PortManager();
 ipcMain.handle('Serial:List', () => port_manager.List());
 ipcMain.handle('Serial:Connected', () => port_manager.Connected);
 ipcMain.handle('Serial:Disconnect', () => port_manager.Disconnect()); // NOTE: This has to be a separate (or inline) function (it cannot be passed directly to ipcMain.handle) as it seems to be copied and thus the object is not consistent (you get cannot read property of undefined errors)
-ipcMain.handle('Serial:Connect', (event, data) => {
-  port_manager.Connect(data.path, data.baud)
+ipcMain.handle('Serial:Connect', (event, data): boolean => {
+  return port_manager.Connect(data.path, data.baud)
 });
 
 // PortManager.Connect('COM5', 115200);

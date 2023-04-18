@@ -22,21 +22,25 @@ export default class PortManager {
     }
 
     // Based off: https://medium.com/@machadogj/arduino-and-node-js-via-serial-port-bcf9691fab6a
-    Connect(port_path: string, baudrate: number) {
-        this.port = new SerialPort({path: port_path, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
-        this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
-        this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
-            console.log('New JSON Data: ', data);
-            this.ParseJSON(data); // Call for the data to be converted from a string into an Object
-        });
-        return this.port.isConnected;
+    Connect(port_path: string, baudrate: number): boolean {
+        try {
+            this.port = new SerialPort({path: port_path, baudRate: baudrate, autoOpen: true}); // Create the new port and open it (autoOpen)
+            this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
+            this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
+                console.log('New JSON Data: ', data);
+                this.ParseJSON(data); // Call for the data to be converted from a string into an Object
+            });
+            return true; // TODO: this.port.isOpen does not work properly and always returns false, but if it gets this far it is fair to say it opened successfully
+        } catch (e) {
+            return false;
+        }
     }
 
     Connected() {
         if (this?.port) {
             return false;
         } else {
-            return this?.port?.isConnected;
+            return this?.port?.isOpen;
         }
     }
 
@@ -53,6 +57,12 @@ export default class PortManager {
     }
 
     Disconnect() { // TODO: Complains the port isn't open when called?
-        this.port.close();
+        try {
+            if (this?.port) {
+                this.port.close();
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 }

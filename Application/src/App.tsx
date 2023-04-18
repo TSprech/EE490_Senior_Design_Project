@@ -193,10 +193,13 @@ export default function RenderIndex() {
                     component="a"
                     onClick={() => {
                         if (!connected) {
-                            setConnected(window.SerialIPC.Connect({ // Call the connect function, which returns whether it successfully connected, and set the connected state to the returned value
-                                path: selectedPort.path,
-                                baud: 115200 // This is just a constant as native USB serial, like the RP2040, does not require a baud rate (and is ignored)
-                            }))
+                                window.SerialIPC.Connect({ // Call the connect function, which returns whether it successfully connected, and set the connected state to the returned value
+                                    path: selectedPort.path,
+                                    baud: 115200 // This is just a constant as native USB serial, like the RP2040, does not require a baud rate (and is ignored)
+                                }).then((success: boolean) => {
+                                console.log("Connect success: ");
+                                console.log(success);
+                            setConnected(success);});
                         } else {
                             window.SerialIPC.Disconnect();
                             setConnected(false);
