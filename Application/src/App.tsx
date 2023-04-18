@@ -29,7 +29,7 @@ import LinkOffIcon from '@mui/icons-material/LinkOff';
 // custom
 import teamTheme from './Theme';
 import Layout from './components/Layout';
-import {Option, Select, Tooltip} from "@mui/joy";
+import {Button, Option, Select, Tooltip} from "@mui/joy";
 
 function ColorSchemeToggle() {
     const {mode, setMode} = useColorScheme();
@@ -123,6 +123,29 @@ class PortPair { // This represents a selectable port
     friendly_name: string; // Used to inform the user what port options are available
 }
 
+function EStopButton() {
+    const [eStopped, setEStopped] = React.useState(false);
+    return (
+      // The tool tip gives a hint to the user whether pressing the button will connect to the serial device or disconnect from it, as such the tool tip's text depends on whether it is connected
+      <Tooltip title={eStopped ? "Release E-Stop" : "Engage E-Stop"}>
+          <Button
+            size="sm"
+            variant={eStopped ? "solid" : "outlined"} //
+            color="danger"
+            component="a"
+            onClick={() => {
+                if (!eStopped) {
+                    // Send EStop JSON command
+                    setEStopped(true);
+                } else {
+                    // Send EStop release JSON command
+                    setEStopped(false);
+                }
+            }}
+          > E-Stop </Button>
+      </Tooltip>);
+}
+
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [ports, setPorts] = React.useState([]); // Manages the list of available ports
@@ -185,12 +208,7 @@ export default function RenderIndex() {
 
     return (
         <CssVarsProvider disableTransitionOnChange theme={teamTheme}>
-            <CssBaseline/>
-            {/*{drawerOpen && (*/}
-            {/*    <Layout.SideDrawer onClose={() => setDrawerOpen(false)}>*/}
-            {/*        /!*<TeamNav />*!/*/}
-            {/*    </Layout.SideDrawer>*/}
-            {/*)}*/}
+        <CssBaseline/>
             <Layout.Root
                 // sx={{
                 //     ...(drawerOpen && {
@@ -199,6 +217,7 @@ export default function RenderIndex() {
                 //     }),
                 // }}
             >
+            {/*<p>Here is text</p>*/}
                 <Layout.Header>
                     <Box
                         sx={{
@@ -220,6 +239,7 @@ export default function RenderIndex() {
                         </Typography>
                     </Box>
                     <Box sx={{display: 'flex', flexDirection: 'row', gap: 1.5}}>
+                        <EStopButton/>
                         <SerialList/>
 
                         <IconButton

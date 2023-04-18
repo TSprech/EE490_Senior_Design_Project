@@ -17,6 +17,8 @@ function Root(props: BoxProps) {
           },
           gridTemplateRows: '64px 1fr',
           minHeight: '100vh',
+            width: '100vw',
+            margin: 0
         },
         ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
       ]}
@@ -45,6 +47,7 @@ function Header(props: BoxProps) {
           position: 'sticky',
           top: 0,
           zIndex: 1100,
+          margin: 0
         },
         ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
       ]}

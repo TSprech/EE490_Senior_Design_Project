@@ -9,6 +9,7 @@ const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 // root.render(<Form />);
 root.render(<RenderIndex />);
+// root.render(<><p>Test</p></>);
 
 // calling IPC exposed from preload script
 // window.electron.ipcRenderer.once('ipc-example', (arg) => {
