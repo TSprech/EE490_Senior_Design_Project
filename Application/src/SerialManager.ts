@@ -25,8 +25,6 @@ export default class PortManager {
 
   // Based off: https://medium.com/@machadogj/arduino-and-node-js-via-serial-port-bcf9691fab6a
   async Connect(port_path: string, baudrate: number): Promise<boolean> {
-    // const portOpenPromise = util.promisify(this.port.open);
-
     const portOpenPromise = () => {
       return new Promise<void>((resolve, reject) => {
         this.port.open((err) => {
@@ -36,20 +34,20 @@ export default class PortManager {
       })
     }
 
-    // try {
-    this.port = new SerialPort({path: port_path, baudRate: baudrate, autoOpen: false}); // Create the new port and open it (autoOpen)
-    // this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
-    // this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
-    //     console.log('New JSON Data: ', data);
-    //     this.ParseJSON(data); // Call for the data to be converted from a string into an Object
-    // });
+    try {
+      this.port = new SerialPort({path: port_path, baudRate: baudrate, autoOpen: false}); // Create the new port and open it (autoOpen)
+      this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
+      this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
+        console.log('New JSON Data: ', data);
+        this.ParseJSON(data); // Call for the data to be converted from a string into an Object
+      });
 
-    await portOpenPromise();
-    console.log(this.port.isOpen);
-    return this.port.isOpen; // TODO: this.port.isOpen does not work properly and always returns false, but if it gets this far it is fair to say it opened successfully
-    // } catch (e) {
-    //     return false;
-    // }
+      await portOpenPromise();
+      console.log(this.port.isOpen);
+      return this.port.isOpen; // TODO: this.port.isOpen does not work properly and always returns false, but if it gets this far it is fair to say it opened successfully
+    } catch (e) {
+      return false;
+    }
   }
 
   Connected() {
@@ -74,7 +72,7 @@ export default class PortManager {
 
   Disconnect() { // TODO: Complains the port isn't open when called?
     try {
-      if (this?.port) {
+      if (this?.port?.isOpen) {
         this.port.close();
       }
     } catch (e) {
