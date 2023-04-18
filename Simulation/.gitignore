@@ -1,5 +1,7 @@
-.idea
-*.log
 *.net
 *.op.raw
 *.raw
+*.lprof
+*.pyc
+.idea/
+*.log
