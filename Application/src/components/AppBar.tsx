@@ -44,7 +44,7 @@ function ColorSchemeToggle() {
 }
 
 // async function updatePorts(available_ports: StateObj<any>) {
-async function updatePorts({available_ports}) {
+async function UpdatePorts(available_ports) {
 // async function updatePorts(props) {
   // e.preventDefault();
   try {
@@ -55,8 +55,8 @@ async function updatePorts({available_ports}) {
 }
 
 export class PortPair { // This represents a selectable port
-  path: string; // Used to connect to the device (unique to each device)
-  friendly_name: string; // Used to inform the user what port options are available
+  path = ''; // Used to connect to the device (unique to each device)
+  friendly_name = ''; // Used to inform the user what port options are available
 }
 
 function EStopButton() {
@@ -84,11 +84,7 @@ function EStopButton() {
 
 // function SerialList(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
 function SerialList({available_ports, selected_port, port_connected}) {
-// function SerialList(props) {
-  const pts = available_ports.value;
-  console.log("Trying to read ports");
-  console.log(available_ports);
-  const list_items = pts.map(item =>
+  const list_items = available_ports.value.map(item =>
     <Option value={{path: item.path, friendly_name: item.friendlyName}} key={item.path}>
       {item.friendlyName}
     </Option>
@@ -126,7 +122,8 @@ function SerialConnectButton({available_ports, selected_port, port_connected}) {
             }).then((success: boolean) => {
               console.log("Connect success: ");
               console.log(success);
-              port_connected.value = success;});
+              port_connected.value = success;
+            });
           } else {
             window.SerialIPC.Disconnect();
             port_connected.value = false;
@@ -176,7 +173,7 @@ export default function AppBar({available_ports, selected_port, port_connected})
           variant="outlined"
           color="primary"
           component="a"
-          onClick={updatePorts}
+          onClick={() => UpdatePorts(available_ports)}
         > <RefreshIcon/> </IconButton>
 
         <SerialConnectButton

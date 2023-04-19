@@ -96,20 +96,15 @@ function TeamNav() {
 }
 
 
-function Test({num}) {
-    console.log(num);
-    return (<></>);
-}
-
-
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     // const [ports, setPorts] = React.useState([]); // Manages the list of available ports
     // const [selectedPort, setSelectedPort] = React.useState(new PortPair); // Manages the current port that the user has selected
     // const [connected, setConnected] = React.useState(false); // Manages the current port that the user has selected
 
+    let temp_port_pair = new PortPair();
     const available_ports = new StateObj([]);
-    const selected_port = new StateObj({});
+    const selected_port = new StateObj(temp_port_pair);
     const port_connected = new StateObj(false);
 
     return (
@@ -123,8 +118,6 @@ export default function RenderIndex() {
                 //     }),
                 // }}
             >
-            {/*<p>Here is text</p>*/}
-            {/*<Test num={2}/>*/}
                 <AppBar
                   available_ports={available_ports}
                   selected_port={selected_port}
