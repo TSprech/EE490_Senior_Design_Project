@@ -31,33 +31,10 @@ import teamTheme from './Theme';
 import Layout from './components/Layout';
 import {Button, Option, Select, Tooltip} from "@mui/joy";
 
-function ColorSchemeToggle() {
-    const {mode, setMode} = useColorScheme();
-    const [mounted, setMounted] = React.useState(false);
-    React.useEffect(() => {
-        setMounted(true);
-    }, []);
-    if (!mounted) {
-        return <IconButton size="sm" variant="outlined" color="primary"/>;
-    }
-    return (
-        <IconButton
-            id="toggle-mode"
-            size="sm"
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-                if (mode === 'light') {
-                    setMode('dark');
-                } else {
-                    setMode('light');
-                }
-            }}
-        >
-            {mode === 'light' ? <DarkModeRoundedIcon/> : <LightModeRoundedIcon/>}
-        </IconButton>
-    );
-}
+import StateObj from './useStateObj';
+// import useStateObj from './useStateObj';
+import PortPair from './components/AppBar';
+import AppBar from './components/AppBar';
 
 function TeamNav() {
     return (
@@ -118,96 +95,22 @@ function TeamNav() {
     );
 }
 
-class PortPair { // This represents a selectable port
-    path: string; // Used to connect to the device (unique to each device)
-    friendly_name: string; // Used to inform the user what port options are available
+
+function Test({num}) {
+    console.log(num);
+    return (<></>);
 }
 
-function EStopButton() {
-    const [eStopped, setEStopped] = React.useState(false);
-    return (
-      // The tool tip gives a hint to the user whether pressing the button will connect to the serial device or disconnect from it, as such the tool tip's text depends on whether it is connected
-      <Tooltip title={eStopped ? "Release E-Stop" : "Engage E-Stop"}>
-          <Button
-            size="sm"
-            variant={eStopped ? "solid" : "outlined"} //
-            color="danger"
-            component="a"
-            onClick={() => {
-                if (!eStopped) {
-                    // Send EStop JSON command
-                    setEStopped(true);
-                } else {
-                    // Send EStop release JSON command
-                    setEStopped(false);
-                }
-            }}
-          > E-Stop </Button>
-      </Tooltip>);
-}
 
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-    const [ports, setPorts] = React.useState([]); // Manages the list of available ports
-    const [selectedPort, setSelectedPort] = React.useState(new PortPair); // Manages the current port that the user has selected
-    const [connected, setConnected] = React.useState(false); // Manages the current port that the user has selected
+    // const [ports, setPorts] = React.useState([]); // Manages the list of available ports
+    // const [selectedPort, setSelectedPort] = React.useState(new PortPair); // Manages the current port that the user has selected
+    // const [connected, setConnected] = React.useState(false); // Manages the current port that the user has selected
 
-    async function updatePorts(e) {
-        // e.preventDefault();
-        try {
-            const ret_ports = await window.SerialIPC.List();
-            setPorts(ret_ports);
-        } catch (err) {
-            alert(err);
-        }
-    }
-
-    function SerialList() {
-        const list_items = ports.map(item =>
-            <Option value={{path: item.path, friendly_name: item.friendlyName}} key={item.path}>
-                {item.friendlyName}
-            </Option>
-        );
-
-        return (
-            <Select
-                color="primary"
-                placeholder={selectedPort.friendly_name === undefined ? 'Select Port' : selectedPort.friendly_name} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
-                variant="outlined"
-                disabled={connected ? true : false}
-                onChange={(event, selected_key: PortPair) => setSelectedPort(selected_key)} // When a new option is selected, change the state to reflect what port was selected
-            >
-                {list_items}
-            </Select>
-        );
-    }
-
-    function SerialConnectButton() {
-        return (
-            // The tool tip gives a hint to the user whether pressing the button will connect to the serial device or disconnect from it, as such the tool tip's text depends on whether it is connected
-            <Tooltip title={connected ? "Disconnect" : "Connect"}>
-                <IconButton
-                    size="sm"
-                    variant={connected ? "solid" : "outlined"} //
-                    color={connected ? "danger" : "success"}
-                    component="a"
-                    onClick={() => {
-                        if (!connected) {
-                                window.SerialIPC.Connect({ // Call the connect function, which returns whether it successfully connected, and set the connected state to the returned value
-                                    path: selectedPort.path,
-                                    baud: 115200 // This is just a constant as native USB serial, like the RP2040, does not require a baud rate (and is ignored)
-                                }).then((success: boolean) => {
-                                console.log("Connect success: ");
-                                console.log(success);
-                            setConnected(success);});
-                        } else {
-                            window.SerialIPC.Disconnect();
-                            setConnected(false);
-                        }
-                    }}
-                > {connected ? <LinkOffIcon/> : <LinkIcon/>} </IconButton>
-            </Tooltip>);
-    }
+    const available_ports = new StateObj([]);
+    const selected_port = new StateObj({});
+    const port_connected = new StateObj(false);
 
     return (
         <CssVarsProvider disableTransitionOnChange theme={teamTheme}>
@@ -221,42 +124,11 @@ export default function RenderIndex() {
                 // }}
             >
             {/*<p>Here is text</p>*/}
-                <Layout.Header>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: 1.5,
-                        }}
-                    >
-                        <IconButton
-                            size="sm"
-                            variant="solid"
-                            sx={{display: {xs: 'none', sm: 'inline-flex'}}}
-                        >
-                            <GroupRoundedIcon/>
-                        </IconButton>
-                        <Typography component="h1" fontWeight="xl">
-                            Electron Joy
-                        </Typography>
-                    </Box>
-                    <Box sx={{display: 'flex', flexDirection: 'row', gap: 1.5}}>
-                        <EStopButton/>
-                        <SerialList/>
-
-                        <IconButton
-                            size="sm"
-                            variant="outlined"
-                            color="primary"
-                            component="a"
-                            onClick={updatePorts}
-                        > <RefreshIcon/> </IconButton>
-
-                        <SerialConnectButton/>
-                        <ColorSchemeToggle/>
-                    </Box>
-                </Layout.Header>
+            {/*<Test num={2}/>*/}
+                <AppBar
+                  available_ports={available_ports}
+                  selected_port={selected_port}
+                  port_connected={port_connected}/>
                 {/*<Layout.Main>*/}
                 {/*</Layout.Main>*/}
             </Layout.Root>
