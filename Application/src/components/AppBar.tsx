@@ -7,13 +7,21 @@ import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 import {Button, Option, Select, Tooltip} from "@mui/joy";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import LinkIcon from "@mui/icons-material/Link";
-
-import StateObj from "../useStateObj";
 import Box from "@mui/joy/Box";
 import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 import Typography from "@mui/joy/Typography";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import Layout from "./Layout";
+
+import {
+  PortPair,
+  Serial_Ports_Available_State,
+  Serial_Ports_Connected_State,
+  Serial_Ports_Selected_State,
+  updatePorts
+} from './../Atoms'
+import {selector, useRecoilRefresher_UNSTABLE, useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {Suspense, useEffect} from "react";
 
 function ColorSchemeToggle() {
   const {mode, setMode} = useColorScheme();
@@ -43,21 +51,20 @@ function ColorSchemeToggle() {
   );
 }
 
-// async function updatePorts(available_ports: StateObj<any>) {
-async function UpdatePorts(available_ports) {
-// async function updatePorts(props) {
-  // e.preventDefault();
-  try {
-    available_ports.value = await window.SerialIPC.List();
-  } catch (err) {
-    alert(err);
-  }
-}
 
-export class PortPair { // This represents a selectable port
-  path = ''; // Used to connect to the device (unique to each device)
-  friendly_name = ''; // Used to inform the user what port options are available
-}
+
+// // async function updatePorts(available_ports: StateObj<any>) {
+// async function UpdatePorts() {
+// // async function updatePorts(props) {
+//   // e.preventDefault();
+//   const set_available_ports = useSetRecoilState(updatePorts);
+//   try {
+//     const port_list = await window.SerialIPC.List();
+//     set_available_ports(port_list);
+//   } catch (err) {
+//     alert(err);
+//   }
+// }
 
 function EStopButton() {
   const [eStopped, setEStopped] = React.useState(false);
@@ -83,8 +90,12 @@ function EStopButton() {
 }
 
 // function SerialList(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
-function SerialList({available_ports, selected_port, port_connected}) {
-  const list_items = available_ports.value.map(item =>
+function SerialList() {
+  const get_available_ports = useRecoilValue(Serial_Ports_Available_State);
+  const set_selected_ports = useSetRecoilState(Serial_Ports_Selected_State);
+  const get_port_connected = useRecoilValue(Serial_Ports_Connected_State);
+
+  const list_items = get_available_ports.map(item =>
     <Option value={{path: item.path, friendly_name: item.friendlyName}} key={item.path}>
       {item.friendlyName}
     </Option>
@@ -93,10 +104,10 @@ function SerialList({available_ports, selected_port, port_connected}) {
   return (
     <Select
       color="primary"
-      placeholder={selected_port.value.friendly_name === undefined ? 'Select Port' : selected_port.value.friendly_name} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
+      placeholder={'Select Port'} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
       variant="outlined"
-      disabled={!!port_connected.value}
-      onChange={(event, selected_key: PortPair) => selected_port.value = selected_key} // When a new option is selected, change the state to reflect what port was selected
+      disabled={!!get_port_connected}
+      onChange={(event, selected_key: PortPair) => set_selected_ports(selected_key)} // When a new option is selected, change the state to reflect what port was selected
     >
       {list_items}
     </Select>
@@ -104,43 +115,64 @@ function SerialList({available_ports, selected_port, port_connected}) {
 }
 
 // function SerialConnectButton(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
-function SerialConnectButton({available_ports, selected_port, port_connected}) {
+function SerialConnectButton() {
 // function SerialConnectButton(props) {
+  const get_selected_ports = useRecoilValue(Serial_Ports_Selected_State);
+  const [get_port_connected, set_port_connected] = useRecoilState(Serial_Ports_Connected_State);
+
   return (
     // The tool tip gives a hint to the user whether pressing the button will connect to the serial device or disconnect from it, as such the tool tip's text depends on whether it is connected
-    <Tooltip title={port_connected.value ? "Disconnect" : "Connect"}>
+    <Tooltip title={get_port_connected ? "Disconnect" : "Connect"}>
       <IconButton
         size="sm"
-        variant={port_connected.value ? "solid" : "outlined"} //
-        color={port_connected.value ? "danger" : "success"}
+        variant={get_port_connected ? "solid" : "outlined"} //
+        color={get_port_connected ? "danger" : "success"}
         component="a"
         onClick={() => {
-          if (!port_connected.value) {
+          if (!get_port_connected) {
             window.SerialIPC.Connect({ // Call the connect function, which returns whether it successfully connected, and set the connected state to the returned value
-              path: selected_port.value.path,
+              path: get_selected_ports.path,
               baud: 115200 // This is just a constant as native USB serial, like the RP2040, does not require a baud rate (and is ignored)
             }).then((success: boolean) => {
               console.log("Connect success: ");
               console.log(success);
-              port_connected.value = success;
+              set_port_connected(success);
             });
           } else {
             window.SerialIPC.Disconnect();
-            port_connected.value = false;
+            set_port_connected(false);
           }
         }}
-      > {port_connected.value ? <LinkOffIcon/> : <LinkIcon/>} </IconButton>
+      > {get_port_connected ? <LinkOffIcon/> : <LinkIcon/>} </IconButton>
     </Tooltip>);
 }
 
 // export default function AppBar(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
-export default function AppBar({available_ports, selected_port, port_connected}) {
+export default function AppBar() {
 // export default function AppBar(props) {
-  console.log(available_ports);
-  console.log(selected_port);
-  console.log(port_connected);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const nothing = useSetRecoilState(updatePortTrigger);
+  //     nothing(true);
+  //   }, 2000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // const nothing = useSetRecoilState(updatePortTrigger);
+  // const nothing = useRecoilValue(Serial_Ports_Available_State);
+  const refreshUserInfo = useRecoilRefresher_UNSTABLE(Serial_Ports_Available_State); // Thanks to: https://github.com/facebookexperimental/Recoil/issues/85#issuecomment-973110381
+
   return (
     <Layout.Header>
+      <Suspense // Huge thanks to: https://www.valentinog.com/blog/await-react/
+        fallback={
+          <div>
+            Loading info...
+          </div>
+        }
+      >
+
       <Box
         sx={{
           display: 'flex',
@@ -162,26 +194,20 @@ export default function AppBar({available_ports, selected_port, port_connected})
       </Box>
       <Box sx={{display: 'flex', flexDirection: 'row', gap: 1.5}}>
         <EStopButton/>
-        <SerialList
-          available_ports={available_ports}
-          selected_port={selected_port}
-          port_connected={port_connected}
-        />
+        <SerialList/>
 
         <IconButton
           size="sm"
           variant="outlined"
           color="primary"
           component="a"
-          onClick={() => UpdatePorts(available_ports)}
+          onClick={() => refreshUserInfo()}
         > <RefreshIcon/> </IconButton>
 
-        <SerialConnectButton
-          available_ports={available_ports}
-          selected_port={selected_port}
-          port_connected={port_connected}/>
+        <SerialConnectButton/>
         <ColorSchemeToggle/>
       </Box>
+      </Suspense>
     </Layout.Header>
   );
 }

@@ -11,6 +11,13 @@ import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import ListItemContent from '@mui/joy/ListItemContent';
+import {
+    RecoilRoot,
+    atom,
+    selector,
+    useRecoilState,
+    useRecoilValue,
+} from 'recoil';
 
 // Icons import
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
@@ -102,12 +109,13 @@ export default function RenderIndex() {
     // const [selectedPort, setSelectedPort] = React.useState(new PortPair); // Manages the current port that the user has selected
     // const [connected, setConnected] = React.useState(false); // Manages the current port that the user has selected
 
-    let temp_port_pair = new PortPair();
-    const available_ports = new StateObj([]);
-    const selected_port = new StateObj(temp_port_pair);
-    const port_connected = new StateObj(false);
+    // let temp_port_pair = new PortPair();
+    // const available_ports = new StateObj([]);
+    // const selected_port = new StateObj(temp_port_pair);
+    // const port_connected = new StateObj(false);
 
     return (
+      <RecoilRoot>
         <CssVarsProvider disableTransitionOnChange theme={teamTheme}>
         <CssBaseline/>
             <Layout.Root
@@ -118,13 +126,11 @@ export default function RenderIndex() {
                 //     }),
                 // }}
             >
-                <AppBar
-                  available_ports={available_ports}
-                  selected_port={selected_port}
-                  port_connected={port_connected}/>
+                <AppBar/>
                 {/*<Layout.Main>*/}
                 {/*</Layout.Main>*/}
             </Layout.Root>
         </CssVarsProvider>
+      </RecoilRoot>
     );
 }
