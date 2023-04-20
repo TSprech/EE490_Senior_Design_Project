@@ -1,5 +1,6 @@
 // 2023/04/19 11:15:48
 import * as React from 'react';
+import {Suspense} from 'react';
 import {useColorScheme} from "@mui/joy/styles";
 import IconButton from "@mui/joy/IconButton";
 import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
@@ -17,11 +18,9 @@ import {
   PortPair,
   Serial_Ports_Available_State,
   Serial_Ports_Connected_State,
-  Serial_Ports_Selected_State,
-  updatePorts
+  Serial_Ports_Selected_State
 } from './../Atoms'
-import {selector, useRecoilRefresher_UNSTABLE, useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import {Suspense, useEffect} from "react";
+import {useRecoilRefresher_UNSTABLE, useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 
 function ColorSchemeToggle() {
   const {mode, setMode} = useColorScheme();
@@ -74,9 +73,9 @@ function EStopButton() {
     </Tooltip>);
 }
 
+
 let first_boot = true;
 
-// function SerialList(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
 function SerialList() {
   const get_available_ports = useRecoilValue(Serial_Ports_Available_State);
   const set_selected_ports = useSetRecoilState(Serial_Ports_Selected_State);
@@ -112,7 +111,6 @@ function SerialList() {
 
 
 function SerialConnectButton() {
-// function SerialConnectButton(props) {
   const get_selected_ports = useRecoilValue(Serial_Ports_Selected_State);
   const [get_port_connected, set_port_connected] = useRecoilState(Serial_Ports_Connected_State);
 
@@ -153,9 +151,6 @@ export default function AppBar() {
   //   return () => clearInterval(interval);
   // }, []);
 
-  // const nothing = useSetRecoilState(updatePortTrigger);
-  // const nothing = useRecoilValue(Serial_Ports_Available_State);
-
   return (
     <Layout.Header>
       <Box
@@ -180,7 +175,7 @@ export default function AppBar() {
       <Box sx={{display: 'flex', flexDirection: 'row', gap: 1.5}}>
         <EStopButton/>
         <Suspense // Huge thanks to: https://www.valentinog.com/blog/await-react/
-          fallback={
+          fallback={ // This is literally just whatever the previous state of the select is in so it doesn't flash when updating, also does not have any of the onChange functionality
             <Select
               color="primary"
               placeholder={first_boot ? 'Select Port' : get_selected_ports.friendly_name} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
