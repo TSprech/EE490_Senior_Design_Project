@@ -51,21 +51,6 @@ function ColorSchemeToggle() {
   );
 }
 
-
-
-// // async function updatePorts(available_ports: StateObj<any>) {
-// async function UpdatePorts() {
-// // async function updatePorts(props) {
-//   // e.preventDefault();
-//   const set_available_ports = useSetRecoilState(updatePorts);
-//   try {
-//     const port_list = await window.SerialIPC.List();
-//     set_available_ports(port_list);
-//   } catch (err) {
-//     alert(err);
-//   }
-// }
-
 function EStopButton() {
   const [eStopped, setEStopped] = React.useState(false);
   return (
@@ -89,10 +74,13 @@ function EStopButton() {
     </Tooltip>);
 }
 
+let first_boot = true;
+
 // function SerialList(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
 function SerialList() {
   const get_available_ports = useRecoilValue(Serial_Ports_Available_State);
   const set_selected_ports = useSetRecoilState(Serial_Ports_Selected_State);
+  const get_selected_ports = useRecoilValue(Serial_Ports_Selected_State);
   const get_port_connected = useRecoilValue(Serial_Ports_Connected_State);
 
   const list_items = get_available_ports.map(item =>
@@ -104,17 +92,25 @@ function SerialList() {
   return (
     <Select
       color="primary"
-      placeholder={'Select Port'} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
+      // placeholder={get_selected_ports.friendly_name !== '' ? 'Select Port' : get_selected_ports.friendly_name} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
+      // placeholder={'Select Port'} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
+      placeholder={first_boot ? 'Select Port' : get_selected_ports.friendly_name} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
       variant="outlined"
       disabled={!!get_port_connected}
-      onChange={(event, selected_key: PortPair) => set_selected_ports(selected_key)} // When a new option is selected, change the state to reflect what port was selected
+      onChange={(event, selected_key: PortPair) => {
+        if (selected_key !== null) {
+          console.log(selected_key);
+          set_selected_ports(selected_key);
+          first_boot = false;
+        }
+      }} // When a new option is selected, change the state to reflect what port was selected
     >
       {list_items}
     </Select>
   );
 }
 
-// function SerialConnectButton(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
+
 function SerialConnectButton() {
 // function SerialConnectButton(props) {
   const get_selected_ports = useRecoilValue(Serial_Ports_Selected_State);
@@ -147,32 +143,21 @@ function SerialConnectButton() {
     </Tooltip>);
 }
 
-// export default function AppBar(available_ports: StateObj<any>, selected_port: StateObj<any>, port_connected: StateObj<any>) {
 export default function AppBar() {
-// export default function AppBar(props) {
-
+  const refreshUserInfo = useRecoilRefresher_UNSTABLE(Serial_Ports_Available_State); // Thanks to: https://github.com/facebookexperimental/Recoil/issues/85#issuecomment-973110381
+  const get_selected_ports = useRecoilValue(Serial_Ports_Selected_State);
   // useEffect(() => {
   //   const interval = setInterval(() => {
-  //     const nothing = useSetRecoilState(updatePortTrigger);
-  //     nothing(true);
+  //     refreshUserInfo();
   //   }, 2000);
   //   return () => clearInterval(interval);
   // }, []);
 
   // const nothing = useSetRecoilState(updatePortTrigger);
   // const nothing = useRecoilValue(Serial_Ports_Available_State);
-  const refreshUserInfo = useRecoilRefresher_UNSTABLE(Serial_Ports_Available_State); // Thanks to: https://github.com/facebookexperimental/Recoil/issues/85#issuecomment-973110381
 
   return (
     <Layout.Header>
-      <Suspense // Huge thanks to: https://www.valentinog.com/blog/await-react/
-        fallback={
-          <div>
-            Loading info...
-          </div>
-        }
-      >
-
       <Box
         sx={{
           display: 'flex',
@@ -194,20 +179,29 @@ export default function AppBar() {
       </Box>
       <Box sx={{display: 'flex', flexDirection: 'row', gap: 1.5}}>
         <EStopButton/>
+        <Suspense // Huge thanks to: https://www.valentinog.com/blog/await-react/
+          fallback={
+            <Select
+              color="primary"
+              placeholder={first_boot ? 'Select Port' : get_selected_ports.friendly_name} // Check if no serial port had been selected before (like on startup) and display the Select Port prompt, otherwise display the last selected port name
+              variant="outlined"
+              disabled={false}
+            ></Select>
+          }
+        >
         <SerialList/>
-
+      </Suspense>
         <IconButton
           size="sm"
           variant="outlined"
           color="primary"
           component="a"
-          onClick={() => refreshUserInfo()}
+          onClick={refreshUserInfo}
         > <RefreshIcon/> </IconButton>
 
         <SerialConnectButton/>
         <ColorSchemeToggle/>
       </Box>
-      </Suspense>
     </Layout.Header>
   );
 }
