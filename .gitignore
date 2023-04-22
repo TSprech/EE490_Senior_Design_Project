@@ -1,0 +1,9 @@
+Application/node_modules/*
+Application/.webpack/*
+Application/.idea/*
+Application/electron/.idea/*
+Simulation/.idea/*
+Simulation/LTFiles/*
+Application/yarn-error.log
+
+Simulation/SpiceBatch.log
