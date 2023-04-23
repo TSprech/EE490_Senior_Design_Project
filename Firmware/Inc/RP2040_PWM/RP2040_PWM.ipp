@@ -34,7 +34,7 @@ auto pwm::PWMManager<a_pin, b_pin>::Initialize() -> void {
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::MaxDuty() {
+constexpr auto pwm::PWMManager<a_pin, b_pin>::MaxDuty() {
   return max_duty_;
 }
 

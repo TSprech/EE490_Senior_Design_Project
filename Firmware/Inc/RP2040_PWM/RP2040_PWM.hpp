@@ -25,7 +25,7 @@ namespace pwm {
     /**
    * @returns The integer value which represents 100% duty cycle for the @ref DutyCycle method.
    */
-    [[nodiscard]] static auto MaxDuty();
+    [[nodiscard]] static constexpr auto MaxDuty();
 
     /**
    * @brief Changes the duty cycle of the A and B channels of the PWM channel.

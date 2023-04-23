@@ -15,14 +15,14 @@ if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
 endif ()
 
 if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
-    set(SOURCES Src/main.cpp Inc/RP2040_PWM/RP2040_PWM.ipp) # Put all source files to build here
+    set(SOURCES Src/main.cpp Inc/RP2040_PWM/RP2040_PWM.ipp Src/FastPID.cpp) # Put all source files to build here
     add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 
     # These must come after add_executable as the target needs to be created first
     pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
     pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
-    set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm) # These are the libs from the Pico SDK which will be used
+    set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc) # These are the libs from the Pico SDK which will be used
     target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
 
     pico_add_extra_outputs(EE490_Firmware) # Create map/bin/hex file etc.
