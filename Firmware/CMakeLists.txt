@@ -39,6 +39,11 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
     set(JSON_MultipleHeaders ON)
     target_link_libraries(EE490_Firmware PRIVATE nlohmann_json::nlohmann_json)
 
+    set(DISABLE_IOSTREAM ON)
+    set(DISABLE_PREDEFINED_UNITS ON)
+    set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
+    add_subdirectory(Lib/units)
+    target_link_libraries(EE490_Firmware PUBLIC units)
 
     add_subdirectory(Inc/RP2040_PWM)
     target_link_libraries(EE490_Firmware PRIVATE RP2040_PWM)

@@ -10,10 +10,17 @@ using json = nlohmann::json;
 #include "RP2040_PWM.hpp"
 #include "pico/stdlib.h"
 
+#include "TypedUnits.hpp"
+
 auto pwm_manager = pwm::PWMManager<0, 1>(true);
 
 int main() {
   stdio_init_all();
+
+    auto quant_1 = (units::frequency::hertz_i32_t{82} + static_cast<units::frequency::hertz_i32_t>(units::frequency::hertz_u32_t{32})).value();
+    auto quant_2 = (units::frequency::hertz_i32_t{82} + units::frequency::hertz_i32_t{32}).value();
+//    auto quant_2 = (units::frequency::hertz_i32_t{32} + units::frequency::kilohertz_u32_t{82}).value();
+//    auto quant_3 = (units::frequency::hertz_i32_t{32} + units::frequency::kilohertz_u32_t{2}).value();
 
   constexpr auto led_pin = PICO_DEFAULT_LED_PIN;
   gpio_init(led_pin);
