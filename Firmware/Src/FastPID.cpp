@@ -2,20 +2,19 @@
 #include <algorithm>
 
 void FastPID::clear() {
-  _last_sp = 0;
-  _last_out = 0;
-  _sum = 0;
-  _last_err = 0;
+  last_set_point_ = 0;
+  sum_ = 0;
+  last_error_ = 0;
 }
 
 bool FastPID::setOutputRange(int16_t min, int16_t max) {
   if (min >= max) {
     setCfgErr();
-    return !_cfg_err;
+    return !cfg_err_;
   }
-  _outmin = static_cast<int64_t>(min) * parameter_multipier_;
-  _outmax = static_cast<int64_t>(max) * parameter_multipier_;
-  return !_cfg_err;
+  outmin_ = static_cast<int64_t>(min) * parameter_multipier_;
+  outmax_ = static_cast<int64_t>(max) * parameter_multipier_;
+  return !cfg_err_;
 }
 
 int16_t FastPID::step(int16_t sp, int16_t fb) {
@@ -24,40 +23,30 @@ int16_t FastPID::step(int16_t sp, int16_t fb) {
   int32_t P = 0, I = 0;
   int32_t D = 0;
 
-  if (_p) {
-    // uint16 * int16 = int32
-    P = static_cast<int32_t>(_p) * static_cast<int32_t>(err);
+  if (p_ != 0) {
+    P = static_cast<int32_t>(p_) * static_cast<int32_t>(err); // uint16 * int16 = int32
   }
 
-  if (_i) {
-    // int17 * int16 = int33
-    _sum += static_cast<int64_t>(err) * static_cast<int64_t>(_i);
-
-    // Limit sum to 32-bit signed value so that it saturates, never overflows.
-    _sum = std::clamp(_sum, integral_min_, integral_max_);
-
-    // int32
-    I = static_cast<int32_t>(_sum);
+  if (i_) {
+    sum_ += static_cast<int64_t>(err) * static_cast<int64_t>(i_); // int17 * int16 = int33
+    sum_ = std::clamp(sum_, integral_min_, integral_max_); // Saturate integration
+    I = static_cast<int32_t>(sum_);
   }
 
-  if (_d) {
+  if (d_) {
     // (int17 - int16) - (int16 - int16) = int19
-    int32_t deriv = (err - _last_err) - static_cast<int32_t>(sp - _last_sp);
-    _last_sp = sp;
-    _last_err = err;
+    int32_t deriv = (err - last_error_) - static_cast<int32_t>(sp - last_set_point_);
+    last_set_point_ = sp;
+    last_error_ = err;
 
-    // Limit the derivative to 16-bit signed value.
-    deriv = std::clamp(deriv, derivative_min_, derivative_max_);
-
-    // int16 * int16 = int32
-    D = static_cast<int32_t>(_d) * static_cast<int32_t>(deriv);
+    deriv = std::clamp(deriv, derivative_min_, derivative_max_); // Saturate derivative
+    D = static_cast<int32_t>(d_) * static_cast<int32_t>(deriv); // int16 * int16 = int32
   }
 
   // int32 (P) + int32 (I) + int32 (D) = int34
   int64_t out = static_cast<int64_t>(P) + static_cast<int64_t>(I) + static_cast<int64_t>(D);
 
-  // Make the output saturate
-  out = std::clamp(out, _outmin, _outmax);
+  out = std::clamp(out, outmin_, outmax_); // Make the output saturate
 
   // Remove the integer scaling factor.
   auto rval = static_cast<int16_t>(out >> parameter_shift_);

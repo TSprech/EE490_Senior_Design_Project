@@ -8,35 +8,25 @@
 */
 class FastPID {
  public:
-  constexpr FastPID(float kp, float ki, float kd, float hz, int bits = 16, bool sign = false) {
+  constexpr FastPID(float kp, float ki, float kd, float hz, bool sign = false) {
     setCoefficients(kp, ki, kd, hz);
-    setOutputConfig(bits, sign);
+    setOutputConfig(sign);
   }
 
   constexpr auto setCoefficients(float kp, float ki, float kd, float hz) -> bool {
-    _p = floatToParam(kp);
-    _i = floatToParam(ki / hz);
-    _d = floatToParam(kd * hz);
-    return !_cfg_err;
+    p_ = floatToParam(kp);
+    i_ = floatToParam(ki / hz);
+    d_ = floatToParam(kd * hz);
+    return !cfg_err_;
   }
 
-  constexpr auto setOutputConfig(int bits, bool sign) -> bool {
-    // Set output bits
-    if (bits > 16 || bits < 1) {
-      setCfgErr();
-    } else {
-      if (bits == 16) {
-        _outmax = (0xFFFFULL >> (17 - bits)) * parameter_multipier_;
-      } else {
-        _outmax = (0xFFFFULL >> (16 - bits)) * parameter_multipier_;
-      }
+  constexpr auto setOutputConfig(bool sign) -> bool {
       if (sign) {
-        _outmin = -((0xFFFFULL >> (17 - bits)) + 1) * parameter_multipier_;
+        outmin_ = -((0xFFFFULL >> 1) + 1) * parameter_multipier_;
       } else {
-        _outmin = 0;
+        outmin_ = 0;
       }
-    }
-    return !_cfg_err;
+    return !cfg_err_;
   }
 
   bool setOutputRange(int16_t min, int16_t max);
@@ -45,19 +35,19 @@ class FastPID {
 
   int16_t step(int16_t sp, int16_t fb);
 
-  bool err() const { return _cfg_err; }
+  bool err() const { return cfg_err_; }
 
 // private:
   constexpr auto floatToParam(float in) -> uint32_t {
-    if (in > parameter_multipier_ || in < 0) {
-      _cfg_err = true;
+    if (in > parameter_max_ || in < 0) {
+        cfg_err_ = true;
       return 0;
     }
 
-    uint32_t param = in * parameter_multipier_;
+    auto param = static_cast<uint32_t>(in * parameter_multipier_);
 
     if (in != 0 && param == 0) {
-      _cfg_err = true;
+      cfg_err_ = true;
       return 0;
     }
 
@@ -65,23 +55,22 @@ class FastPID {
   }
 
   constexpr auto setCfgErr() -> void {
-    _cfg_err = true;
-    _p = _i = _d = 0;
+    cfg_err_ = true;
+    p_ = i_ = d_ = 0;
   }
 
   // Configuration
-  uint32_t _p = 0;
-  uint32_t _i = 0;
-  uint32_t _d = 0;
-  int64_t _outmax = 0;
-  int64_t _outmin = 0;
-  bool _cfg_err = false;
+  uint32_t p_ = 0;
+  uint32_t i_ = 0;
+  uint32_t d_ = 0;
+  int64_t outmax_ = (0xFFFFULL >> 1) * parameter_multipier_;
+  int64_t outmin_ = 0;
 
   // State
-  int16_t _last_sp = 0;
-  int16_t _last_out = 0;
-  int64_t _sum = 0;
-  int32_t _last_err = 0;
+  int16_t last_set_point_ = 0;
+  bool cfg_err_ = false;
+  int64_t sum_ = 0;
+  int32_t last_error_ = 0;
 
   static constexpr int64_t integral_max_ = INT32_MAX;
   static constexpr int64_t integral_min_ = INT32_MIN;
@@ -89,8 +78,8 @@ class FastPID {
   static constexpr int32_t derivative_max_ = INT16_MAX;
   static constexpr int32_t derivative_min_ = INT16_MIN;
 
-  static constexpr auto parameter_shift_ = 8;
-  static constexpr auto parameter_bits_ = 16;
+  static constexpr uint8_t parameter_shift_ = 8;
+  static constexpr uint8_t parameter_bits_ = 16;
 
   static constexpr auto parameter_max_ = ((0x1ULL << parameter_bits_) - 1) >> parameter_shift_;
   static constexpr int64_t parameter_multipier_ = ((0x1ULL << parameter_bits_)) >> (parameter_bits_ - parameter_shift_);

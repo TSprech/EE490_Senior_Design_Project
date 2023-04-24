@@ -4,6 +4,7 @@
 #include "pico/stdio.h"
 #include "pico/time.h"
 #include "hardware/adc.h"
+#include <iostream>
 
 using json = nlohmann::json;
 
@@ -17,11 +18,10 @@ using json = nlohmann::json;
 
 auto pwm_manager = pwm::PWMManager<0, 1>(true);
 
-constexpr float Kp=0.5, Ki=1, Kd=0, Hz=20;
-constexpr int output_bits = 16;
+constexpr float Kp=2, Ki=0.5, Kd=0, Hz=10;
 constexpr bool output_signed = false;
 
-constinit FastPID myPID(Kp, Ki, Kd, Hz, output_bits, output_signed);
+constinit FastPID myPID(Kp, Ki, Kd, Hz, output_signed);
 
 int main() {
   stdio_init_all();
@@ -44,7 +44,7 @@ int main() {
 //  json j;
     printf("ADC Example, measuring GPIO26\n");
     sleep_ms(3000);
-    printf("Outmin: %lli, Outmax: %lli, DutyMin: %lu, DutyMax: %lu\n", myPID._outmin, myPID._outmax, 0, pwm::PWMManager<0, 1>::MaxDuty());
+    printf("Outmin: %lli, Outmax: %lli, DutyMin: %lu, DutyMax: %lu\n", myPID.outmin_, myPID.outmax_, 0, pwm::PWMManager<0, 1>::MaxDuty());
       adc_init();
       // Make sure GPIO is high-impedance, no pullups etc
       adc_gpio_init(26);
@@ -63,15 +63,15 @@ int main() {
       uint32_t sum = 0;
       for (int i = 0; i < 100; ++i) {
         sum += adc_read();
-        sleep_us(1);
       }
       auto result = sum / 100;
       int16_t millivoltage = static_cast<float>(result) * conversion_factor * 1000.0;
-      uint16_t output = myPID.step(2000, millivoltage);
-      auto duty = Map<int64_t>(output, myPID._outmin, INT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
+      uint16_t output = myPID.step(2486, millivoltage);
+      auto duty = Map<int64_t>(output, myPID.outmin_, INT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
       pwm_manager.DutyCycle(duty);
-      printf("Output: %u, Duty: %lu, Raw value: 0x%04lx, voltage: %d mV\n", output, duty, result, millivoltage);
-      sleep_ms(48);
+      std::cout << "Output: " << output << " Duty: " << duty << " Voltage: " << millivoltage << "mV\n";
+//      printf("Output: %u, Duty: %lu, Raw value: 0x%04lx, voltage: %d mV\n", output, duty, result, millivoltage);
+      sleep_ms(98);
 
 //    auto in_str = GetLine(buf);                   // Read in some JSON if it is available
 //    if (!in_str.empty()) {                        // If it is available, it will be in the string_view that sits within buf
