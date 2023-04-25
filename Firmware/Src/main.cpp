@@ -21,7 +21,7 @@ auto pwm_manager = pwm::PWMManager<0, 1>(true);
 constexpr float Kp=2, Ki=0.5, Kd=0, Hz=10;
 constexpr bool output_signed = false;
 
-constinit FastPID myPID(Kp, Ki, Kd, Hz, output_signed);
+constinit pid::FastPID myPID(Kp, Ki, Kd, Hz, output_signed);
 
 int main() {
   stdio_init_all();
@@ -67,7 +67,7 @@ int main() {
       auto result = sum / 100;
       int16_t millivoltage = static_cast<float>(result) * conversion_factor * 1000.0;
       uint16_t output = myPID.Evaluate(2486, millivoltage);
-      auto duty = Map<int64_t>(output, 0, INT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
+      auto duty = Map<int64_t>(output, 0, UINT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
       pwm_manager.DutyCycle(duty);
       std::cout << "Output: " << output << " Duty: " << duty << " Voltage: " << millivoltage << "mV\n";
 //      printf("Output: %u, Duty: %lu, Raw value: 0x%04lx, voltage: %d mV\n", output, duty, result, millivoltage);

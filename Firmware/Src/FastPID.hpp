@@ -45,6 +45,7 @@ namespace pid {
      * @returns If there was a configuration error.
      */
     constexpr auto ConfigureOutput(bool sign) -> bool {
+      outmax_ = (sign) ? (0xFFFFULL >> 1) * parameter_multipier_ : 0xFFFFULL * parameter_multipier_;
       outmin_ = (sign) ? -((0xFFFFULL >> 1) + 1) * parameter_multipier_ : 0;
       return !cfg_err_;
     }
@@ -106,10 +107,10 @@ namespace pid {
     }
 
     // Configuration
-    uint32_t p_ = 0; /**< P constant */
-    uint32_t i_ = 0; /**< I constant */
-    uint32_t d_ = 0; /**< D constant */
-    int64_t outmax_ = (0xFFFFULL >> 1) * parameter_multipier_; /**< Upper saturation limit of the output */
+    uint32_t p_ = 0;     /**< P constant */
+    uint32_t i_ = 0;     /**< I constant */
+    uint32_t d_ = 0;     /**< D constant */
+    int64_t outmax_ = 0; /**< Upper saturation limit of the output */
     int64_t outmin_ = 0; /**< Lower saturation limit of the output */
 
     // State
