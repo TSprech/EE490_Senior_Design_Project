@@ -7,7 +7,7 @@ project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
 
-set(PICO_BOARD adafruit_feather_rp2040)
+#set(PICO_BOARD adafruit_feather_rp2040)
 pico_sdk_init() # Initialize the SDK
 
 if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
