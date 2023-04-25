@@ -1,13 +1,13 @@
 #include "FastPID.hpp"
 #include <algorithm>
 
-void FastPID::clear() {
+void FastPID::Reset() {
   last_set_point_ = 0;
   sum_ = 0;
   last_error_ = 0;
 }
 
-bool FastPID::setOutputRange(int16_t min, int16_t max) {
+bool FastPID::OutputSaturationRange(int16_t min, int16_t max) {
   if (min >= max) {
     setCfgErr();
     return !cfg_err_;
@@ -17,34 +17,32 @@ bool FastPID::setOutputRange(int16_t min, int16_t max) {
   return !cfg_err_;
 }
 
-int16_t FastPID::step(int16_t sp, int16_t fb) {
-  // int16 + int16 = int17
-  int32_t err = static_cast<int32_t>(sp) - static_cast<int32_t>(fb);
-  int32_t P = 0, I = 0;
-  int32_t D = 0;
+int16_t FastPID::Evaluate(int16_t sp, int16_t fb) {
+  int32_t err = static_cast<int32_t>(sp) - static_cast<int32_t>(fb); // int16 + int16 = int17
+  int64_t out = 0; // int32 (P) + int32 (I) + int32 (D) = int34
 
-  if (p_ != 0) {
-    P = static_cast<int32_t>(p_) * static_cast<int32_t>(err); // uint16 * int16 = int32
+  if (p_ != 0) [[unlikely]] {
+    auto P = static_cast<int32_t>(p_) * static_cast<int32_t>(err); // uint16 * int16 = int32
+    out += P;
   }
 
-  if (i_) {
+  if (i_ != 0) {
     sum_ += static_cast<int64_t>(err) * static_cast<int64_t>(i_); // int17 * int16 = int33
     sum_ = std::clamp(sum_, integral_min_, integral_max_); // Saturate integration
-    I = static_cast<int32_t>(sum_);
+    auto I = static_cast<int32_t>(sum_);
+    out += I;
   }
 
-  if (d_) {
+  if (d_ != 0) {
     // (int17 - int16) - (int16 - int16) = int19
     int32_t deriv = (err - last_error_) - static_cast<int32_t>(sp - last_set_point_);
     last_set_point_ = sp;
     last_error_ = err;
 
     deriv = std::clamp(deriv, derivative_min_, derivative_max_); // Saturate derivative
-    D = static_cast<int32_t>(d_) * static_cast<int32_t>(deriv); // int16 * int16 = int32
+    auto D = static_cast<int32_t>(d_) * static_cast<int32_t>(deriv); // int16 * int16 = int32
+    out += D;
   }
-
-  // int32 (P) + int32 (I) + int32 (D) = int34
-  int64_t out = static_cast<int64_t>(P) + static_cast<int64_t>(I) + static_cast<int64_t>(D);
 
   out = std::clamp(out, outmin_, outmax_); // Make the output saturate
 

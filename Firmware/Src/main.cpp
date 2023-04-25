@@ -44,7 +44,7 @@ int main() {
 //  json j;
     printf("ADC Example, measuring GPIO26\n");
     sleep_ms(3000);
-    printf("Outmin: %lli, Outmax: %lli, DutyMin: %lu, DutyMax: %lu\n", myPID.outmin_, myPID.outmax_, 0, pwm::PWMManager<0, 1>::MaxDuty());
+//    printf("Outmin: %lli, Outmax: %lli, DutyMin: %lu, DutyMax: %lu\n", myPID.outmin_, myPID.outmax_, 0, pwm::PWMManager<0, 1>::MaxDuty());
       adc_init();
       // Make sure GPIO is high-impedance, no pullups etc
       adc_gpio_init(26);
@@ -66,8 +66,8 @@ int main() {
       }
       auto result = sum / 100;
       int16_t millivoltage = static_cast<float>(result) * conversion_factor * 1000.0;
-      uint16_t output = myPID.step(2486, millivoltage);
-      auto duty = Map<int64_t>(output, myPID.outmin_, INT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
+      uint16_t output = myPID.Evaluate(2486, millivoltage);
+      auto duty = Map<int64_t>(output, 0, INT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
       pwm_manager.DutyCycle(duty);
       std::cout << "Output: " << output << " Duty: " << duty << " Voltage: " << millivoltage << "mV\n";
 //      printf("Output: %u, Duty: %lu, Raw value: 0x%04lx, voltage: %d mV\n", output, duty, result, millivoltage);

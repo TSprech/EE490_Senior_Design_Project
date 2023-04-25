@@ -9,35 +9,32 @@
 class FastPID {
  public:
   constexpr FastPID(float kp, float ki, float kd, float hz, bool sign = false) {
-    setCoefficients(kp, ki, kd, hz);
-    setOutputConfig(sign);
+    ChangeCoefficients(kp, ki, kd, hz);
+    ConfigureOutput(sign);
   }
 
-  constexpr auto setCoefficients(float kp, float ki, float kd, float hz) -> bool {
+  constexpr auto ChangeCoefficients(float kp, float ki, float kd, float hz) -> bool {
     p_ = floatToParam(kp);
     i_ = floatToParam(ki / hz);
     d_ = floatToParam(kd * hz);
     return !cfg_err_;
   }
 
-  constexpr auto setOutputConfig(bool sign) -> bool {
-      if (sign) {
-        outmin_ = -((0xFFFFULL >> 1) + 1) * parameter_multipier_;
-      } else {
-        outmin_ = 0;
-      }
+  constexpr auto ConfigureOutput(bool sign) -> bool {
+    outmin_ = (sign) ? -((0xFFFFULL >> 1) + 1) * parameter_multipier_ : 0;
     return !cfg_err_;
   }
 
-  bool setOutputRange(int16_t min, int16_t max);
+  auto OutputSaturationRange(int16_t min, int16_t max) -> bool;
 
-  void clear();
+  auto Reset() -> void;
 
-  int16_t step(int16_t sp, int16_t fb);
+  auto Evaluate(int16_t sp, int16_t fb) -> int16_t;
 
-  bool err() const { return cfg_err_; }
+  [[nodiscard]]
+  auto Error() const -> bool { return cfg_err_; }
 
-// private:
+ private:
   constexpr auto floatToParam(float in) -> uint32_t {
     if (in > parameter_max_ || in < 0) {
         cfg_err_ = true;
@@ -67,10 +64,10 @@ class FastPID {
   int64_t outmin_ = 0;
 
   // State
-  int16_t last_set_point_ = 0;
-  bool cfg_err_ = false;
   int64_t sum_ = 0;
   int32_t last_error_ = 0;
+  int16_t last_set_point_ = 0;
+  bool cfg_err_ = false;
 
   static constexpr int64_t integral_max_ = INT32_MAX;
   static constexpr int64_t integral_min_ = INT32_MIN;
