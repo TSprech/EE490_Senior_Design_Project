@@ -9,6 +9,9 @@ from deap import algorithms
 
 import BuckParameters as bp
 
+import PyLTSpice as pylt
+from PyLTSpice import SimCommander
+
 import time
 
 
@@ -42,10 +45,13 @@ toolbox.register("mate", tools.cxTwoPoint)  # Used when crossing 2 individuals
 def mutBuck(individual, indpb):  # TODO: Make this shift a small amount based on the current attribute value, not just random
     if random.random() < indpb:
         individual[0] = (individual[0] + toolbox.attr_frequency()) / 2
+        # individual[0] = toolbox.attr_frequency()
     if random.random() < indpb:
         individual[1] = (individual[1] + toolbox.attr_inductance()) / 2
+        # individual[1] = toolbox.attr_inductance()
     if random.random() < indpb:
         individual[2] = (individual[2] + toolbox.attr_capacitance()) / 2
+        # individual[2] = toolbox.attr_capacitance()
     return individual,
 
 
@@ -60,12 +66,12 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 if __name__ == "__main__":
     random.seed(128)
     # print(time.process_time())
-    cpu_count = multiprocessing.cpu_count()
-    print(f"CPU count: {cpu_count}")
-    pool = multiprocessing.Pool(cpu_count)
-    toolbox.register("map", pool.map)
+    # cpu_count = multiprocessing.cpu_count()
+    # print(f"CPU count: {cpu_count}")
+    # pool = multiprocessing.Pool(cpu_count)
+    # toolbox.register("map", pool.map)
 
-    pop = toolbox.population(n=10)
+    pop = toolbox.population(n=50)
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", numpy.mean)
@@ -73,9 +79,9 @@ if __name__ == "__main__":
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=500, stats=stats, halloffame=hof)
+    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=100, stats=stats, halloffame=hof)
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
     # print(time.process_time())
-    pool.close()
+    # pool.close()
