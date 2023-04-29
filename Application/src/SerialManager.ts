@@ -16,6 +16,7 @@ export default class PortManager {
   port: typeof BindingPort | null;
   parser: typeof ReadlineParser | null;
   emitter: typeof EventEmitter;
+  rx_callback: any; // What is the type of a function?
 
   constructor() {
     this.port = null;
@@ -56,11 +57,16 @@ export default class PortManager {
       return this?.port?.isOpen;
   }
 
+  SetDataRecieveCallback(callback) {
+    this.rx_callback = callback;
+  }
+
   ParseJSON(json_data: string): any { // TODO: Keep using any and a dispatcher?
     // const set_json_data_rx = getRecoil(JSON_Data_RX);
     try {
+      this.rx_callback(json_data);
       // setRecoil(JSON_Data_RX, json_data);
-      console.log("Valid JSON: ", json_data);
+      // console.log("Valid JSON: ", json_data);
       // set_json_data_rx(JSON.parse(json_data));
       // this.emitter.emit("PortManager:NewJSON", JSON.parse(json_data)); // Send out the parsed JSON Object for a dispatcher to handle
     } catch (e) {
