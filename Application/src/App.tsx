@@ -20,6 +20,8 @@ import {
     useRecoilValue, useSetRecoilState,
 } from 'recoil';
 
+import './AtomRenderer'
+
 // Icons import
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
@@ -116,10 +118,6 @@ function JSONPrint() {
         <p> {get_json_data_rx} </p>
     );
 }
-
-window.AtomIPC.SerialNewData((event, value) => {
-    setRecoil(JSON_Data_RX, value);
-})
 
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
