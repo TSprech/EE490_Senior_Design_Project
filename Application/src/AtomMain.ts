@@ -5,8 +5,8 @@ import {BrowserWindow} from "electron";
 export default class AtomMain {
     static mainWindow: BrowserWindow;
 
-    static AtomSerialNewData(data: string) {
-        AtomMain.mainWindow.webContents.send('Atom:Serial:NewData', data);
+    static SerialDataRX(data: string) {
+        AtomMain.mainWindow.webContents.send('Serial:Data:RX', data);
     }
 
     static SerialList(data: any[]) {

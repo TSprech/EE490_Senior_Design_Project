@@ -3,7 +3,7 @@
 import {setRecoil} from "recoil-nexus";
 import {JSON_Data_RX, Serial_Ports_Available_State} from "./Atoms";
 
-window.AtomIPC.SerialNewData((event, value: string) => {
+window.SerialIPC.DataRX((event, value: string) => {
     console.log("Serial");
     setRecoil(JSON_Data_RX, value);
 })

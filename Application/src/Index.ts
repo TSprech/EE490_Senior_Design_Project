@@ -84,25 +84,12 @@ let port_manager: PortManager;
 
 app.whenReady().then(() => {
   port_manager = new PortManager();
-  port_manager.SetDataRecieveCallback(AtomMain.AtomSerialNewData);
-  setTimeout(() => AtomMain.AtomSerialNewData("Test"), 5000);
+  port_manager.SetDataRecieveCallback(AtomMain.SerialDataRX);
   setInterval(() => { port_manager.List().then((value) => AtomMain.SerialList(value)); console.log("Interval");}, 1000);
 });
 
-// function Loop() {
-//   setRecoil(JSON_Data_RX, "HELLO");
-// }
-
-
-
-// ipcMain.handle('Serial:List', () => port_manager.List());
 ipcMain.handle('Serial:Connected', () => port_manager.Connected);
 ipcMain.handle('Serial:Disconnect', () => port_manager.Disconnect()); // NOTE: This has to be a separate (or inline) function (it cannot be passed directly to ipcMain.handle) as it seems to be copied and thus the object is not consistent (you get cannot read property of undefined errors)
 ipcMain.handle('Serial:Connect', (event, data): boolean => {
   return port_manager.Connect(data.path, data.baud)
 });
-
-// PortManager.Connect('COM5', 115200);
-// console.log("Connected!");
-// PortManager.Write({"LED": true});
-// setTimeout(() => PortManager.Write({"LED": false}), 2000);

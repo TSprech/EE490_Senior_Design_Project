@@ -1,9 +1,7 @@
 import * as React from 'react';
-import {CssVarsProvider, useColorScheme} from '@mui/joy/styles';
+import {CssVarsProvider} from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
-import Box from '@mui/joy/Box';
 import Chip from '@mui/joy/Chip';
-import Typography from '@mui/joy/Typography';
 import IconButton from '@mui/joy/IconButton';
 import List from '@mui/joy/List';
 import ListSubheader from '@mui/joy/ListSubheader';
@@ -11,14 +9,8 @@ import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import ListItemContent from '@mui/joy/ListItemContent';
-import RecoilNexus, {getRecoil, setRecoil} from "recoil-nexus";
-import {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue, useSetRecoilState,
-} from 'recoil';
+import RecoilNexus from "recoil-nexus";
+import {RecoilRoot, useRecoilValue,} from 'recoil';
 
 import './AtomRenderer'
 
@@ -26,31 +18,14 @@ import './AtomRenderer'
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import ArticleRoundedIcon from '@mui/icons-material/ArticleRounded';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
-import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import MenuIcon from '@mui/icons-material/Menu';
-import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import LinkIcon from '@mui/icons-material/Link';
-import LinkOffIcon from '@mui/icons-material/LinkOff';
 
 // custom
 import teamTheme from './Theme';
 import Layout from './components/Layout';
-import {Button, Option, Select, Textarea, Tooltip} from "@mui/joy";
-
-import StateObj from './useStateObj';
 // import useStateObj from './useStateObj';
-import PortPair from './components/AppBar';
 import AppBar from './components/AppBar';
-import {
-    JSON_Data_RX,
-    Serial_Ports_Available_State,
-    Serial_Ports_Connected_State,
-    Serial_Ports_Selected_State
-} from "./Atoms";
+import {JSON_Data_RX} from "./Atoms";
 
 function TeamNav() {
     return (
