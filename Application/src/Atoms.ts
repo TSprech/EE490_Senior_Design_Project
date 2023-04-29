@@ -1,6 +1,6 @@
 // 2023/04/19 16:12:23
 
-import {atom, selector} from "recoil";
+import {atom, atomFamily, selector} from "recoil";
 
 export class PortPair { // This represents a selectable port
   path: string; // Used to connect to the device (unique to each device)
@@ -34,4 +34,9 @@ export const Serial_Ports_Selected_State = atom<PortPair>({
 export const Serial_Ports_Connected_State = atom<boolean>({
   key: "Serial:Ports:Connected",
   default: false
+});
+
+export const JSON_Data_RX = atom<string>({
+  key: "JSON:RX",
+  default: ""
 });

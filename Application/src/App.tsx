@@ -11,12 +11,13 @@ import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import ListItemContent from '@mui/joy/ListItemContent';
+import RecoilNexus, {getRecoil} from "recoil-nexus";
 import {
     RecoilRoot,
     atom,
     selector,
     useRecoilState,
-    useRecoilValue,
+    useRecoilValue, useSetRecoilState,
 } from 'recoil';
 
 // Icons import
@@ -36,12 +37,18 @@ import LinkOffIcon from '@mui/icons-material/LinkOff';
 // custom
 import teamTheme from './Theme';
 import Layout from './components/Layout';
-import {Button, Option, Select, Tooltip} from "@mui/joy";
+import {Button, Option, Select, Textarea, Tooltip} from "@mui/joy";
 
 import StateObj from './useStateObj';
 // import useStateObj from './useStateObj';
 import PortPair from './components/AppBar';
 import AppBar from './components/AppBar';
+import {
+    JSON_Data_RX,
+    Serial_Ports_Available_State,
+    Serial_Ports_Connected_State,
+    Serial_Ports_Selected_State
+} from "./Atoms";
 
 function TeamNav() {
     return (
@@ -103,6 +110,14 @@ function TeamNav() {
 }
 
 
+function JSONPrint() {
+    const get_json_data_rx = useRecoilValue(JSON_Data_RX);
+    return (
+        <p> {get_json_data_rx} </p>
+    );
+}
+
+
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     // const [ports, setPorts] = React.useState([]); // Manages the list of available ports
@@ -116,6 +131,7 @@ export default function RenderIndex() {
 
     return (
       <RecoilRoot>
+        <RecoilNexus />
         <CssVarsProvider disableTransitionOnChange theme={teamTheme}>
         <CssBaseline/>
             <Layout.Root
@@ -127,8 +143,9 @@ export default function RenderIndex() {
                 // }}
             >
                 <AppBar/>
-                {/*<Layout.Main>*/}
-                {/*</Layout.Main>*/}
+                <Layout.Main>
+                    <JSONPrint/>
+                </Layout.Main>
             </Layout.Root>
         </CssVarsProvider>
       </RecoilRoot>

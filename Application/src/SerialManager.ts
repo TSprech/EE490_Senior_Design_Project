@@ -1,11 +1,16 @@
 // TSprech 2023/04/11 22:02:06
 
+import {useSetRecoilState} from "recoil";
+
 const {SerialPort, BindingPort, PortInfo} = require('serialport');
 // import SerialPort = require('serialport');
 // import type BindingPort = require('serialport');
 // import type PortInfo = require('serialport');
 const {ReadlineParser} = require('@serialport/parser-readline');
 const EventEmitter = require('events');
+
+import {JSON_Data_RX} from "./Atoms"
+import {getRecoil, setRecoil} from "recoil-nexus";
 
 export default class PortManager {
   port: typeof BindingPort | null;
@@ -36,7 +41,7 @@ export default class PortManager {
       this.port = new SerialPort({path: port_path, baudRate: baudrate, autoOpen: false}); // Create the new port and but don't open it
       this.parser = this.port.pipe(new ReadlineParser({delimiter: '\n'})); // Create a parser which parses based on a delimiter (\n)
       this.parser.on('data', (data: string) => { // Whenever JSON data is received, this is called
-        console.log('New JSON Data: ', data);
+        // console.log('New JSON Data: ', data);
         this.ParseJSON(data); // Call for the data to be converted from a string into an Object
       });
 
@@ -52,10 +57,15 @@ export default class PortManager {
   }
 
   ParseJSON(json_data: string): any { // TODO: Keep using any and a dispatcher?
+    // const set_json_data_rx = getRecoil(JSON_Data_RX);
     try {
-      this.emitter.emit("PortManager:NewJSON", JSON.parse(json_data)); // Send out the parsed JSON Object for a dispatcher to handle
-    } catch {
-      console.log("Invalid JSON was attempted to be parsed"); // This is not a huge issue as long as it isn't happening too much
+      // setRecoil(JSON_Data_RX, json_data);
+      console.log("Valid JSON: ", json_data);
+      // set_json_data_rx(JSON.parse(json_data));
+      // this.emitter.emit("PortManager:NewJSON", JSON.parse(json_data)); // Send out the parsed JSON Object for a dispatcher to handle
+    } catch (e) {
+      console.log(e);
+      console.log("Invalid JSON: ", json_data); // This is not a huge issue as long as it isn't happening too much
     }
   }
 

@@ -4,6 +4,12 @@ console.log('👋 This message is being logged by "renderer.js", included via we
 
 import { createRoot } from 'react-dom/client';
 import RenderIndex from './App'
+import {setRecoil} from "recoil-nexus";
+import {JSON_Data_RX} from "./Atoms";
+
+window.electronAPI.handleCounter((event, value) => {
+    console.log("TEXT! ", value);
+})
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -17,3 +23,7 @@ root.render(<RenderIndex />);
     // console.log(arg);
 // });
 // window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
+
+// setTimeout(window.RendererIPC.DoneFirstRender, 2000); // Waits until root.render has fully rendered this is because recoil nexus requires a full first render before trying to alter any states https://github.com/luisanton-io/recoil-nexus/issues/20
+
+// setTimeout(() => setRecoil(JSON_Data_RX, "HELLO"), 2000);
