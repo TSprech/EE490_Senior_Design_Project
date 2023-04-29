@@ -31,6 +31,6 @@ contextBridge.exposeInMainWorld('SerialIPC', {
 //     console.log("Test");
 // }
 
-contextBridge.exposeInMainWorld('electronAPI', {
-    handleCounter: (callback) => ipcRenderer.on('update-counter', callback)
+contextBridge.exposeInMainWorld('AtomIPC', {
+    SerialNewData: (callback) => ipcRenderer.on('Atom:Serial:NewData', callback)
 })

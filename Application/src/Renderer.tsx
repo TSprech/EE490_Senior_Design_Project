@@ -4,12 +4,6 @@ console.log('👋 This message is being logged by "renderer.js", included via we
 
 import { createRoot } from 'react-dom/client';
 import RenderIndex from './App'
-import {setRecoil} from "recoil-nexus";
-import {JSON_Data_RX} from "./Atoms";
-
-window.electronAPI.handleCounter((event, value) => {
-    console.log("TEXT! ", value);
-})
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);

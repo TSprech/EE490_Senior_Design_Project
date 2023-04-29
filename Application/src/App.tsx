@@ -11,7 +11,7 @@ import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import ListItemContent from '@mui/joy/ListItemContent';
-import RecoilNexus, {getRecoil} from "recoil-nexus";
+import RecoilNexus, {getRecoil, setRecoil} from "recoil-nexus";
 import {
     RecoilRoot,
     atom,
@@ -117,6 +117,9 @@ function JSONPrint() {
     );
 }
 
+window.AtomIPC.SerialNewData((event, value) => {
+    setRecoil(JSON_Data_RX, value);
+})
 
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);

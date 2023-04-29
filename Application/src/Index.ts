@@ -33,7 +33,7 @@ const createWindow = (): void => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  setTimeout(() => mainWindow.webContents.send('update-counter', 10), 5000);
+
   // mainWindow.webContents.once('dom-ready', () => setRecoil(JSON_Data_RX, "HELLO"));
 };
 
@@ -80,6 +80,7 @@ ipcMain.on('LED:On', (event, title) => {
 let port_manager: PortManager;
 
 app.whenReady().then(() => {
+  setTimeout(() => mainWindow.webContents.send('Atom:Serial:NewData', 10), 5000);
   // setTimeout(() => mainWindow.webContents.send('Atom:Call'), 5000);
   // setTimeout(() => mainWindow.webContents.send('update-counter', 10), 2000);
   // mainWindow.webContents.send('update-counter', 10);
