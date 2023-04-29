@@ -25,6 +25,7 @@
     "@electron-forge/plugin-webpack": "^6.1.1",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
+    "@types/serialport": "^8.0.2",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
@@ -52,6 +53,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recoil": "^0.7.7",
+    "recoil-nexus": "^0.4.0",
     "serialport": "^10.5.0"
   }
 }

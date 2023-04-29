@@ -17,3 +17,7 @@ root.render(<RenderIndex />);
     // console.log(arg);
 // });
 // window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
+
+// setTimeout(window.RendererIPC.DoneFirstRender, 2000); // Waits until root.render has fully rendered this is because recoil nexus requires a full first render before trying to alter any states https://github.com/luisanton-io/recoil-nexus/issues/20
+
+// setTimeout(() => setRecoil(JSON_Data_RX, "HELLO"), 2000);

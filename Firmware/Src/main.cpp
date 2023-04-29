@@ -17,8 +17,8 @@ auto pwm_manager = pwm::PWMManager<0, 1>(true);
 int main() {
   stdio_init_all();
 
-    auto quant_1 = (units::frequency::hertz_i32_t{82} + static_cast<units::frequency::hertz_i32_t>(units::frequency::hertz_u32_t{32})).value();
-    auto quant_2 = (units::frequency::hertz_i32_t{82} + units::frequency::hertz_i32_t{32}).value();
+//    auto quant_1 = (units::frequency::hertz_i32_t{82} + static_cast<units::frequency::hertz_i32_t>(units::frequency::hertz_u32_t{32})).value();
+//    auto quant_2 = (units::frequency::hertz_i32_t{82} + units::frequency::hertz_i32_t{32}).value();
 //    auto quant_2 = (units::frequency::hertz_i32_t{32} + units::frequency::kilohertz_u32_t{82}).value();
 //    auto quant_3 = (units::frequency::hertz_i32_t{32} + units::frequency::kilohertz_u32_t{2}).value();
 
@@ -34,6 +34,8 @@ int main() {
   std::array<char, 512> buf{};
   json j;
 
+  srand(64);
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
@@ -48,7 +50,8 @@ int main() {
     }
     sleep_ms(1000);
     j.clear();
-    j["Int"] = 24;
+    auto val = rand()%20;
+    j["Int"] = ((val > 10) ? -1 * val : val);
     j["String"] = "Hello World!";
     j["Float"] = 3.1415;
     j["Bool"] = true;
@@ -56,28 +59,28 @@ int main() {
     puts(str.data());
   }
 #pragma clang diagnostic pop
-  stdio_init_all();
-  pwm_manager.Initialize();
-  pwm_manager.DeadBand(1);
-
-  while (true) {
-    pwm_manager.Enable();
-    pwm_manager.Frequency(100'000);
-    for (int i = 0; i < 1'000'000; i += 5'000) {
-      pwm_manager.DutyCycle(i);  // 10%
-      sleep_us(10);
-    }
-    pwm_manager.Disable();
-    sleep_ms(1);
-    pwm_manager.Enable();
-    pwm_manager.Frequency(500'000);
-    for (int i = 0; i < 1'000'000; i += 5'000) {
-      pwm_manager.DutyCycle(i);  // 10%
-      sleep_us(10);
-    }
-    pwm_manager.Disable();
-    sleep_ms(10);
-  }
-
-  return 0;
+//  stdio_init_all();
+//  pwm_manager.Initialize();
+//  pwm_manager.DeadBand(1);
+//
+//  while (true) {
+//    pwm_manager.Enable();
+//    pwm_manager.Frequency(100'000);
+//    for (int i = 0; i < 1'000'000; i += 5'000) {
+//      pwm_manager.DutyCycle(i);  // 10%
+//      sleep_us(10);
+//    }
+//    pwm_manager.Disable();
+//    sleep_ms(1);
+//    pwm_manager.Enable();
+//    pwm_manager.Frequency(500'000);
+//    for (int i = 0; i < 1'000'000; i += 5'000) {
+//      pwm_manager.DutyCycle(i);  // 10%
+//      sleep_us(10);
+//    }
+//    pwm_manager.Disable();
+//    sleep_ms(10);
+//  }
+//
+//  return 0;
 }
