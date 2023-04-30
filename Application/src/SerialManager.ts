@@ -1,16 +1,11 @@
 // TSprech 2023/04/11 22:02:06
 
-import {useSetRecoilState} from "recoil";
-
 const {SerialPort, BindingPort, PortInfo} = require('serialport');
 // import SerialPort = require('serialport');
 // import type BindingPort = require('serialport');
 // import type PortInfo = require('serialport');
 const {ReadlineParser} = require('@serialport/parser-readline');
 const EventEmitter = require('events');
-
-import {JSON_Data_RX} from "./Atoms"
-import {getRecoil, setRecoil} from "recoil-nexus";
 
 export default class PortManager {
   port: typeof BindingPort | null;

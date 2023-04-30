@@ -26,6 +26,11 @@ import Layout from './components/Layout';
 // import useStateObj from './useStateObj';
 import AppBar from './components/AppBar';
 import {JSON_Data_RX} from "./Atoms";
+import {AspectRatio, Button, Card, Divider, Stack, styled} from "@mui/joy";
+import Typography from "@mui/joy/Typography";
+import {BookmarkAdd} from "@mui/icons-material";
+import Box from "@mui/joy/Box";
+import Sheet from "@mui/joy/Sheet";
 
 function TeamNav() {
     return (
@@ -90,9 +95,22 @@ function TeamNav() {
 function JSONPrint() {
     const get_json_data_rx = useRecoilValue(JSON_Data_RX);
     return (
-        <p> {get_json_data_rx} </p>
+        // <p> {get_json_data_rx} </p>
+        // <p> {JSON.parse('{"Bool":true,"Float":3.1415,"Int":2,"String":"Hello World!"}').Int} </p>
+        <p> {JSON.parse(get_json_data_rx).Int} </p>
     );
 }
+
+const Item = styled(Sheet)(({theme}) => ({
+    backgroundColor:
+        theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    borderRadius: 4,
+    color: theme.vars.palette.text.secondary,
+}));
+
 
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -106,24 +124,57 @@ export default function RenderIndex() {
     // const port_connected = new StateObj(false);
 
     return (
-      <RecoilRoot>
-        <RecoilNexus />
-        <CssVarsProvider disableTransitionOnChange theme={teamTheme}>
-        <CssBaseline/>
-            <Layout.Root
-                // sx={{
-                //     ...(drawerOpen && {
-                //         height: '100vh',
-                //         overflow: 'hidden',
-                //     }),
-                // }}
-            >
-                <AppBar/>
-                <Layout.Main>
-                    <JSONPrint/>
-                </Layout.Main>
-            </Layout.Root>
-        </CssVarsProvider>
-      </RecoilRoot>
-    );
+        <RecoilRoot>
+            <RecoilNexus/>
+            <CssVarsProvider disableTransitionOnChange theme={teamTheme}>
+                <CssBaseline/>
+                <Layout.Root
+                    // sx={{
+                    //     ...(drawerOpen && {
+                    //         height: '100vh',
+                    //         overflow: 'hidden',
+                    //     }),
+                    // }}
+                >
+                    <AppBar/>
+                    <Layout.Main>
+                        <JSONPrint/>
+                        <Card variant="outlined" sx={{width: 420}}>
+                            <Typography level="h2" fontSize="md" sx={{mb: 0.5}}>
+                                Voltage In (V)
+                            </Typography>
+                            <AspectRatio minHeight="120px" maxHeight="200px" sx={{my: 2}}>
+                                <img
+                                    src="./dummy_200x120.png"
+                                />
+                            </AspectRatio>
+                            {/*<Box sx={{display: 'flex'}} justifyContent={"center"}>*/}
+                                <Stack direction={"row"} spacing={{ xs: 1, sm: 2 }} justifyContent="space-evenly" divider={<Divider orientation="vertical"/>}>
+                                    <Item>
+                                        <Typography level="body3">Current: </Typography>
+                                        <Typography fontSize="lg" fontWeight="lg">
+                                            $2,900
+                                        </Typography>
+                                    </Item>
+                                    <Item>
+                                        <Typography level="body3">Local Min: </Typography>
+                                        <Typography fontSize="lg" fontWeight="lg">
+                                            $2,900
+                                        </Typography>
+                                    </Item>
+                                <Item>
+                                    <Typography level="body3">Local Max: </Typography>
+                                    <Typography fontSize="lg" fontWeight="lg">
+                                        $2,900
+                                    </Typography>
+                                </Item>
+                        </Stack>
+                    {/*</Box>*/}
+                </Card>
+            </Layout.Main>
+        </Layout.Root>
+</CssVarsProvider>
+</RecoilRoot>
+)
+    ;
 }

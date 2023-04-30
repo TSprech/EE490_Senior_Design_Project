@@ -24,5 +24,5 @@ export const Serial_Ports_Connected_State = atom<boolean>({
 
 export const JSON_Data_RX = atom<string>({
   key: "JSON:Data:RX",
-  default: ""
+  default: "{}"
 });

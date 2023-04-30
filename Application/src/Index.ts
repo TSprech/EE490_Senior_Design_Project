@@ -1,9 +1,6 @@
 import PortManager from './SerialManager'
 
 import {app, BrowserWindow, ipcMain} from 'electron';
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-import {setRecoil} from "recoil-nexus";
-import {JSON_Data_RX} from "./Atoms";
 
 import AtomMain from "./AtomMain";
 
