@@ -117,9 +117,9 @@ const Item = styled(Sheet)(({theme}) => ({
 
 
 let lastDate = 0;
-let data: any[] = []
+let data: {x: number, y: number}[] = []
 const TICKINTERVAL = 86400000
-const XAXISRANGE = 777600000
+const XAXISRANGE = TICKINTERVAL * 20
 
 function resetData(){
     // Alternatively, you can also reset the data at certain intervals to prevent creating a huge series
@@ -151,23 +151,6 @@ class App extends Component {
 
         this.updateCharts = this.updateCharts.bind(this);
 
-        // this.state = {
-        //     options: {
-        //         chart: {
-        //             id: "basic-bar"
-        //         },
-        //         xaxis: {
-        //             categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-        //         }
-        //     },
-        //     series: [
-        //         {
-        //             name: "series-1",
-        //             data: [30, 40, 45, 50, 49, 60, 70, 91]
-        //         }
-        //     ]
-        // };
-
         this.state = {
 
             series: [{
@@ -176,13 +159,12 @@ class App extends Component {
             options: {
                 chart: {
                     id: 'realtime',
-                    height: 350,
                     type: 'line',
                     animations: {
                         enabled: true,
                         easing: 'linear',
                         dynamicAnimation: {
-                            speed: 1000
+                            speed: 100
                         }
                     },
                     toolbar: {
@@ -198,16 +180,12 @@ class App extends Component {
                 stroke: {
                     curve: 'smooth'
                 },
-                title: {
-                    text: 'Dynamic Updating Chart',
-                    align: 'left'
-                },
                 markers: {
                     size: 0
                 },
                 xaxis: {
                     type: 'datetime',
-                    range: 777600000,
+                    range: XAXISRANGE,
                 },
                 yaxis: {
                     max: 100
@@ -239,7 +217,7 @@ class App extends Component {
             //         <div className="mixed-chart">
             <>
                 <button onClick={this.updateCharts}>Update!</button>
-                <Chart options={this.state.options} series={this.state.series} type="line" height={350} />
+                <Chart options={this.state.options} series={this.state.series} type="line" />
             </>
             //         </div>
             //     </div>
