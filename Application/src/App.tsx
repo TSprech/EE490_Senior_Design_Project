@@ -173,7 +173,7 @@ function BasicCard() {
                 <BookmarkAdd />
             </IconButton>
             {/*<AspectRatio minHeight="200px" maxHeight="200px" sx={{ my: 2 }}>*/}
-            <AspectRatio ratio={'1618 / 1000'} sx={{ my: 2 }}>
+            {/*<AspectRatio ratio={'1618 / 1000'} sx={{ my: 2 }}> /!* Ratio as defined in ApexChart's docs: https://apexcharts.com/docs/options/chart/height/*!/*/}
                 <App/>
                 {/*<img*/}
                 {/*    src="https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286"*/}
@@ -181,7 +181,7 @@ function BasicCard() {
                 {/*    loading="lazy"*/}
                 {/*    alt=""*/}
                 {/*/>*/}
-            </AspectRatio>
+            {/*</AspectRatio>*/}
             <Box sx={{ display: 'flex' }}>
                 <div>
                     <Typography level="body3">Total price:</Typography>
