@@ -116,45 +116,120 @@ const Item = styled(Sheet)(({theme}) => ({
 }));
 
 
+let lastDate = 0;
+let data: any[] = []
+const TICKINTERVAL = 86400000
+const XAXISRANGE = 777600000
+
+function resetData(){
+    // Alternatively, you can also reset the data at certain intervals to prevent creating a huge series
+    data = data.slice(data.length - 10, data.length);
+}
+
+function getNewSeries(baseval, yrange) {
+    const newDate = baseval + TICKINTERVAL;
+    lastDate = newDate
+
+    for(var i = 0; i< data.length - 10; i++) {
+        // IMPORTANT
+        // we reset the x and y of the data which is out of drawing area
+        // to prevent memory leaks
+        data[i].x = newDate - XAXISRANGE - TICKINTERVAL
+        data[i].y = 0
+    }
+
+    data.push({
+        x: newDate,
+        y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min
+    })
+}
+
 class App extends Component {
-    constructor(props) {
+
+    constructor(props: any) {
         super(props);
 
         this.updateCharts = this.updateCharts.bind(this);
 
+        // this.state = {
+        //     options: {
+        //         chart: {
+        //             id: "basic-bar"
+        //         },
+        //         xaxis: {
+        //             categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+        //         }
+        //     },
+        //     series: [
+        //         {
+        //             name: "series-1",
+        //             data: [30, 40, 45, 50, 49, 60, 70, 91]
+        //         }
+        //     ]
+        // };
+
         this.state = {
+
+            series: [{
+                data: data.slice()
+            }],
             options: {
                 chart: {
-                    id: "basic-bar"
+                    id: 'realtime',
+                    height: 350,
+                    type: 'line',
+                    animations: {
+                        enabled: true,
+                        easing: 'linear',
+                        dynamicAnimation: {
+                            speed: 1000
+                        }
+                    },
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth'
+                },
+                title: {
+                    text: 'Dynamic Updating Chart',
+                    align: 'left'
+                },
+                markers: {
+                    size: 0
                 },
                 xaxis: {
-                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-                }
+                    type: 'datetime',
+                    range: 777600000,
+                },
+                yaxis: {
+                    max: 100
+                },
+                legend: {
+                    show: false
+                },
             },
-            series: [
-                {
-                    name: "series-1",
-                    data: [30, 40, 45, 50, 49, 60, 70, 91]
-                }
-            ]
+
+
         };
     }
 
     updateCharts() {
-        const min = 0;
-        const max = 100;
-        const newSeries = [];
-
-        this.state.series.map((s) => {
-            const data = s.data.map(() => {
-                return Math.floor(Math.random() * (180 - min + 1)) + min
-            })
-            newSeries.push({ data, name: s.name })
+        getNewSeries(lastDate, {
+            min: 10,
+            max: 90
         })
 
-        this.setState({
-            series: newSeries
-        })
+        ApexCharts.exec('realtime', 'updateSeries', [{
+            data: data
+        }])
     }
 
     render() {
@@ -164,11 +239,7 @@ class App extends Component {
             //         <div className="mixed-chart">
             <>
                 <button onClick={this.updateCharts}>Update!</button>
-                <Chart
-                    options={this.state.options}
-                    series={this.state.series}
-                    type="bar"
-                />
+                <Chart options={this.state.options} series={this.state.series} type="line" height={350} />
             </>
             //         </div>
             //     </div>
