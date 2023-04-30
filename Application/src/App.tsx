@@ -120,6 +120,8 @@ class App extends Component {
     constructor(props) {
         super(props);
 
+        this.updateCharts = this.updateCharts.bind(this);
+
         this.state = {
             options: {
                 chart: {
@@ -138,19 +140,39 @@ class App extends Component {
         };
     }
 
+    updateCharts() {
+        const min = 0;
+        const max = 100;
+        const newSeries = [];
+
+        this.state.series.map((s) => {
+            const data = s.data.map(() => {
+                return Math.floor(Math.random() * (180 - min + 1)) + min
+            })
+            newSeries.push({ data, name: s.name })
+        })
+
+        this.setState({
+            series: newSeries
+        })
+    }
+
     render() {
         return (
-            <div className="app">
-                <div className="row">
-                    <div className="mixed-chart">
-                        <Chart
-                            options={this.state.options}
-                            series={this.state.series}
-                            type="bar"
-                        />
-                    </div>
-                </div>
-            </div>
+            // <div className="app">
+            //     <div className="row">
+            //         <div className="mixed-chart">
+            <>
+                <button onClick={this.updateCharts}>Update!</button>
+                <Chart
+                    options={this.state.options}
+                    series={this.state.series}
+                    type="bar"
+                />
+            </>
+            //         </div>
+            //     </div>
+            // </div>
         );
     }
 }
@@ -175,12 +197,6 @@ function BasicCard() {
             {/*<AspectRatio minHeight="200px" maxHeight="200px" sx={{ my: 2 }}>*/}
             {/*<AspectRatio ratio={'1618 / 1000'} sx={{ my: 2 }}> /!* Ratio as defined in ApexChart's docs: https://apexcharts.com/docs/options/chart/height/*!/*/}
                 <App/>
-                {/*<img*/}
-                {/*    src="https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286"*/}
-                {/*    srcSet="https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286&dpr=2 2x"*/}
-                {/*    loading="lazy"*/}
-                {/*    alt=""*/}
-                {/*/>*/}
             {/*</AspectRatio>*/}
             <Box sx={{ display: 'flex' }}>
                 <div>
