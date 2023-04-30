@@ -118,19 +118,21 @@ const Item = styled(Sheet)(({theme}) => ({
 
 let lastDate = 0;
 let data: {x: number, y: number}[] = []
-const TICKINTERVAL = 86400000
-const XAXISRANGE = TICKINTERVAL * 20
+// const TICKINTERVAL = 86400000 // Number of ms in a day (I think? It was a magic number)
+const TICKINTERVAL = 1 // Number of ms in a day (I think? It was a magic number)
+const NUMBEROFPOINTS = 20
+const XAXISRANGE = TICKINTERVAL * NUMBEROFPOINTS
 
 function resetData(){
     // Alternatively, you can also reset the data at certain intervals to prevent creating a huge series
-    data = data.slice(data.length - 10, data.length);
+    data = data.slice(data.length - NUMBEROFPOINTS, data.length);
 }
 
 function getNewSeries(baseval, yrange) {
     const newDate = baseval + TICKINTERVAL;
     lastDate = newDate
 
-    for(var i = 0; i< data.length - 10; i++) {
+    for(var i = 0; i< data.length - NUMBEROFPOINTS; i++) {
         // IMPORTANT
         // we reset the x and y of the data which is out of drawing area
         // to prevent memory leaks
@@ -184,7 +186,7 @@ class App extends Component {
                     size: 0
                 },
                 xaxis: {
-                    type: 'datetime',
+                    type: 'numeric',
                     range: XAXISRANGE,
                 },
                 yaxis: {
