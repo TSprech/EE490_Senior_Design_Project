@@ -32,6 +32,10 @@ import {BookmarkAdd} from "@mui/icons-material";
 import Box from "@mui/joy/Box";
 import Sheet from "@mui/joy/Sheet";
 
+import ReactApexChart from 'apexcharts'
+import Chart from "react-apexcharts";
+import {Component} from "react";
+
 function TeamNav() {
     return (
         <List size="sm" sx={{'--ListItem-radius': '8px', '--List-gap': '4px'}}>
@@ -112,6 +116,45 @@ const Item = styled(Sheet)(({theme}) => ({
 }));
 
 
+class App extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            options: {
+                chart: {
+                    id: "basic-bar"
+                },
+                xaxis: {
+                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+                }
+            },
+            series: [
+                {
+                    name: "series-1",
+                    data: [30, 40, 45, 50, 49, 60, 70, 91]
+                }
+            ]
+        };
+    }
+
+    render() {
+        return (
+            <div className="app">
+                <div className="row">
+                    <div className="mixed-chart">
+                        <Chart
+                            options={this.state.options}
+                            series={this.state.series}
+                            type="bar"
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
 export default function RenderIndex() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     // const [ports, setPorts] = React.useState([]); // Manages the list of available ports
@@ -139,14 +182,14 @@ export default function RenderIndex() {
                     <AppBar/>
                     <Layout.Main>
                         <JSONPrint/>
+                        {/*<Card variant="outlined" sx={{width: 420}}>*/}
                         <Card variant="outlined" sx={{width: 420}}>
                             <Typography level="h2" fontSize="md" sx={{mb: 0.5}}>
                                 Voltage In (V)
                             </Typography>
-                            <AspectRatio minHeight="120px" maxHeight="200px" sx={{my: 2}}>
-                                <img
-                                    src="./dummy_200x120.png"
-                                />
+                            <AspectRatio minHeight="15rem" maxHeight="16rem" sx={{my: 2}}>
+                                {/*<ApexChart/>*/}
+                                <App/>
                             </AspectRatio>
                             {/*<Box sx={{display: 'flex'}} justifyContent={"center"}>*/}
                                 <Stack direction={"row"} spacing={{ xs: 1, sm: 2 }} justifyContent="space-evenly" divider={<Divider orientation="vertical"/>}>
