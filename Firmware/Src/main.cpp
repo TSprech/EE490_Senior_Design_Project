@@ -15,16 +15,21 @@ using json = nlohmann::json;
 #include "TypedUnits.hpp"
 
 #include "FastPID.hpp"
+#include "pico/time.h"
 
 auto pwm_manager = pwm::PWMManager<0, 1>(true);
 
 constexpr float Kp=2, Ki=0.5, Kd=0, Hz=10;
 constexpr bool output_signed = false;
 
-constinit pid::FastPID myPID(Kp, Ki, Kd, Hz, output_signed);
+constinit pid::FastPID myPID;
 
 int main() {
   stdio_init_all();
+
+  if (!myPID.Initialize(Kp, Ki, Kd, Hz, output_signed)) {
+    puts("PID initialization error");
+  }
 
 //  auto quant_1 = (units::frequency::hertz_i32_t{82} + static_cast<units::frequency::hertz_i32_t>(units::frequency::hertz_u32_t{32})).value();
 //  auto quant_2 = (units::frequency::hertz_i32_t{82} + units::frequency::hertz_i32_t{32}).value();
@@ -66,10 +71,12 @@ int main() {
       }
       auto result = sum / 100;
       int16_t millivoltage = static_cast<float>(result) * conversion_factor * 1000.0;
+      auto start = get_absolute_time();
       uint16_t output = myPID.Evaluate(2486, millivoltage);
+      auto diff = get_absolute_time()._private_us_since_boot - start._private_us_since_boot;
       auto duty = Map<int64_t>(output, 0, UINT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
       pwm_manager.DutyCycle(duty);
-      std::cout << "Output: " << output << " Duty: " << duty << " Voltage: " << millivoltage << "mV\n";
+      std::cout << "Output: " << output << " Duty: " << duty << " Voltage: " << millivoltage << "mV" << "Time: " << diff << "us\n";
 //      printf("Output: %u, Duty: %lu, Raw value: 0x%04lx, voltage: %d mV\n", output, duty, result, millivoltage);
       sleep_ms(98);
 

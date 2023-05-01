@@ -2,23 +2,16 @@
 
 #include <algorithm>
 
-void pid::FastPID::Reset() {
-  last_set_point_ = 0;
-  sum_ = 0;
-  last_error_ = 0;
-}
-
-bool pid::FastPID::OutputSaturationRange(int16_t min, int16_t max) {
+auto pid::FastPID::OutputSaturationRange(int16_t min, int16_t max) -> std::expected<void, FastPIDError> {
   if (min >= max) {
-    setCfgErr();
-    return !cfg_err_;
+    return std::unexpected(FastPIDError::invalid_range);
   }
-  outmin_ = static_cast<int64_t>(min) * parameter_multipier_;
-  outmax_ = static_cast<int64_t>(max) * parameter_multipier_;
-  return !cfg_err_;
+  outmin_ = static_cast<int64_t>(min) * parameter_multiplier_;
+  outmax_ = static_cast<int64_t>(max) * parameter_multiplier_;
+  return {};
 }
 
-int16_t pid::FastPID::Evaluate(int16_t sp, int16_t fb) {
+auto pid::FastPID::Evaluate(int16_t sp, int16_t fb) -> int16_t {
   int32_t err = static_cast<int32_t>(sp) - static_cast<int32_t>(fb);  // int16 + int16 = int17
   int64_t out = 0;                                                    // int32 (P) + int32 (I) + int32 (D) = int34
 
@@ -56,4 +49,10 @@ int16_t pid::FastPID::Evaluate(int16_t sp, int16_t fb) {
   }
 
   return rval;
+}
+
+auto pid::FastPID::Reset() -> void {
+  last_set_point_ = 0;
+  sum_ = 0;
+  last_error_ = 0;
 }
