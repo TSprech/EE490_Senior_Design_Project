@@ -16,6 +16,9 @@ if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
 endif ()
 
 if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
+#    add_compile_options(-mfloat-abi=soft)
+    add_compile_options(-mcpu=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
+
     set(SOURCES Src/main.cpp Inc/RP2040_PWM/RP2040_PWM.ipp Src/FastPID.cpp) # Put all source files to build here
     add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 

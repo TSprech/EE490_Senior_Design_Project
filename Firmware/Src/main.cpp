@@ -73,7 +73,8 @@ int main() {
       int16_t millivoltage = static_cast<float>(result) * conversion_factor * 1000.0;
       auto start = get_absolute_time();
       uint16_t output = myPID.Evaluate(2486, millivoltage);
-      auto diff = get_absolute_time()._private_us_since_boot - start._private_us_since_boot;
+//      auto diff = get_absolute_time()._private_us_since_boot - start._private_us_since_boot;
+      auto diff = 0;
       auto duty = Map<int64_t>(output, 0, UINT16_MAX, 0, pwm::PWMManager<0, 1>::MaxDuty());
       pwm_manager.DutyCycle(duty);
       std::cout << "Output: " << output << " Duty: " << duty << " Voltage: " << millivoltage << "mV" << "Time: " << diff << "us\n";
