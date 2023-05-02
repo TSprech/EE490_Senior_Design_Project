@@ -1,0 +1,58 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default Config",
+      "description": "Default build using Ninja generator",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/default"
+    },
+    {
+      "name": "arm-only",
+      "inherits": "default",
+      "displayName": "arm-only configuration",
+      "description": "This build is only available on ARM",
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "Generic",
+        "CMAKE_SYSTEM_VERSION": "1",
+        "CMAKE_C_COMPILER": "arm-none-eabi-gcc",
+        "CMAKE_CXX_COMPILER": "arm-none-eabi-g++",
+        "CMAKE_ASM_COMPILER": "arm-none-eabi-gcc",
+        "CMAKE_AR": "arm-none-eabi-ar",
+        "CMAKE_OBJCOPY": "arm-none-eabi-objcopy",
+        "CMAKE_OBJDUMP": "arm-none-eabi-objdump",
+        "SIZE": "arm-none-eabi-size",
+        "CMAKE_TRY_COMPILE_TARGET_TYPE": "STATIC_LIBRARY",
+        "PLATFORM": "arm"
+      },
+      "binaryDir": "${sourceDir}/build/arm",
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "ARM GCC 12.2"
+        }
+      }
+    },
+    {
+      "name": "windows-only",
+      "inherits": "default",
+      "displayName": "Windows-only configuration",
+      "description": "This build is only available on Windows",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "MinGW"
+        }
+      }
+    }
+  ]
+}

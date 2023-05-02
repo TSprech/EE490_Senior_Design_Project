@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
-include(ARMGCCToolchain.cmake) # Defines our cross compiling toolchain (ARM GCC)
-include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
+#include(ARMGCCToolchain.cmake) # Defines our cross compiling toolchain (ARM GCC)
 
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
 
+IF ("${PLATFORM}" STREQUAL "arm")
+include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 #set(PICO_BOARD adafruit_feather_rp2040)
 pico_sdk_init() # Initialize the SDK
 
@@ -50,3 +51,7 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
 elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()
+ELSE ()
+    add_executable(EE490_Firmware Test/main.cpp) # Add all sources files to build (this line should be close to the top of the CMake file)
+
+ENDIF ()
