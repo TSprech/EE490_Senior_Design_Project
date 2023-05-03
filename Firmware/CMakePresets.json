@@ -11,7 +11,7 @@
       "displayName": "Default Config",
       "description": "Default build using Ninja generator",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/default"
+      "binaryDir": "${sourceDir}/Build/Default"
     },
     {
       "name": "arm-only",
@@ -31,7 +31,7 @@
         "CMAKE_TRY_COMPILE_TARGET_TYPE": "STATIC_LIBRARY",
         "PLATFORM": "arm"
       },
-      "binaryDir": "${sourceDir}/build/arm",
+      "binaryDir": "${sourceDir}/Build/ARM",
       "vendor": {
         "jetbrains.com/clion": {
           "toolchain": "ARM GCC 12.2"
@@ -43,11 +43,10 @@
       "inherits": "default",
       "displayName": "Windows-only configuration",
       "description": "This build is only available on Windows",
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
+      "cacheVariables": {
+        "PLATFORM": "win"
       },
+      "binaryDir": "${sourceDir}/Build/WIN",
       "vendor": {
         "jetbrains.com/clion": {
           "toolchain": "MinGW"

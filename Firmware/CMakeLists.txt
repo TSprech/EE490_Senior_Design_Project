@@ -55,6 +55,19 @@ elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()
 ELSE ()
-    add_executable(EE490_Firmware Test/main.cpp) # Add all sources files to build (this line should be close to the top of the CMake file)
+    include(FetchContent)
+    FetchContent_Declare(
+            googletest
+            URL https://github.com/google/googletest/archive/a3580180d16923d6d5f488e20b3814608a892f17.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 
+    enable_testing()
+    include(GoogleTest)
+    add_executable(EE490_Firmware Test/BasicTest.cpp)
+
+    target_link_libraries(EE490_Firmware PUBLIC GTest::gtest_main)
+    gtest_discover_tests(EE490_Firmware)
 ENDIF ()
