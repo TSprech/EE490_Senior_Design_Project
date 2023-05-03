@@ -55,6 +55,8 @@ elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()
 ELSE ()
+    set(TEST_SOURCES Src/FastPID_Test.cpp Src/FastPID.cpp)
+
     include(FetchContent)
     FetchContent_Declare(
             googletest
@@ -66,7 +68,7 @@ ELSE ()
 
     enable_testing()
     include(GoogleTest)
-    add_executable(EE490_Firmware Test/BasicTest.cpp)
+    add_executable(EE490_Firmware ${TEST_SOURCES})
 
     target_link_libraries(EE490_Firmware PUBLIC GTest::gtest_main)
     gtest_discover_tests(EE490_Firmware)

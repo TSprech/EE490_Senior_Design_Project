@@ -49,7 +49,7 @@
       "binaryDir": "${sourceDir}/Build/WIN",
       "vendor": {
         "jetbrains.com/clion": {
-          "toolchain": "MinGW"
+          "toolchain": "MinGW 13.1"
         }
       }
     }
