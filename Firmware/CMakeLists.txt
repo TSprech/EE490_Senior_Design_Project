@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
-include(ARMGCCToolchain.cmake) # Defines our cross compiling toolchain (ARM GCC)
-include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
+#include(ARMGCCToolchain.cmake) # Defines our cross compiling toolchain (ARM GCC)
 
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
 
+IF ("${PLATFORM}" STREQUAL "arm")
+include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 #set(PICO_BOARD adafruit_feather_rp2040)
 pico_sdk_init() # Initialize the SDK
 
@@ -15,6 +16,9 @@ if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
 endif ()
 
 if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
+#    add_compile_options(-mfloat-abi=soft)
+    add_compile_options(-mcpu=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
+
     set(SOURCES Src/main.cpp Inc/RP2040_PWM/RP2040_PWM.ipp Src/FastPID.cpp) # Put all source files to build here
     add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 
@@ -50,3 +54,20 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
 elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()
+ELSE ()
+    include(FetchContent)
+    FetchContent_Declare(
+            googletest
+            URL https://github.com/google/googletest/archive/a3580180d16923d6d5f488e20b3814608a892f17.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+
+    enable_testing()
+    include(GoogleTest)
+    add_executable(EE490_Firmware Test/BasicTest.cpp)
+
+    target_link_libraries(EE490_Firmware PUBLIC GTest::gtest_main)
+    gtest_discover_tests(EE490_Firmware)
+ENDIF ()
