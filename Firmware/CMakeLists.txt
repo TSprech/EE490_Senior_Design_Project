@@ -19,7 +19,7 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
 #    add_compile_options(-mfloat-abi=soft)
     add_compile_options(-mcpu=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
 
-    set(SOURCES Src/main.cpp Inc/RP2040_PWM/RP2040_PWM.ipp Src/FastPID.cpp) # Put all source files to build here
+    set(SOURCES Src/main.cpp) # Put all source files to build here
     add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 
     # These must come after add_executable as the target needs to be created first
@@ -55,8 +55,6 @@ elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()
 ELSE ()
-    set(TEST_SOURCES Src/FastPID_Test.cpp Src/FastPID.cpp)
-
     include(FetchContent)
     FetchContent_Declare(
             googletest
@@ -68,8 +66,9 @@ ELSE ()
 
     enable_testing()
     include(GoogleTest)
-    add_executable(EE490_Firmware ${TEST_SOURCES})
+    add_executable(EE490_Firmware Src/test_main.cpp)
 
-    target_link_libraries(EE490_Firmware PUBLIC GTest::gtest_main)
-    gtest_discover_tests(EE490_Firmware)
 ENDIF ()
+
+    add_subdirectory(Inc/FastPID)
+    target_link_libraries(EE490_Firmware PUBLIC FastPID)

@@ -9,12 +9,11 @@
 using json = nlohmann::json;
 
 #include <pico/time.h>
+
+#include "../Inc/FastPID/FastPID.hpp"
 #include "RP2040_PWM.hpp"
-#include "pico/stdlib.h"
-
 #include "TypedUnits.hpp"
-
-#include "FastPID.hpp"
+#include "pico/stdlib.h"
 #include "pico/time.h"
 
 auto pwm_manager = pwm::PWMManager<0, 1>(true);
