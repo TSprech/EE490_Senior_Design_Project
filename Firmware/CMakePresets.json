@@ -44,7 +44,8 @@
       "displayName": "Windows-only configuration",
       "description": "This build is only available on Windows",
       "cacheVariables": {
-        "PLATFORM": "win"
+        "PLATFORM": "win",
+        "UNIT_TESTING": true
       },
       "binaryDir": "${sourceDir}/Build/WIN",
       "vendor": {

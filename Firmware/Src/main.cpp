@@ -10,7 +10,7 @@ using json = nlohmann::json;
 
 #include <pico/time.h>
 
-#include "../Inc/FastPID/FastPID.hpp"
+#include "FastPID.hpp"
 #include "RP2040_PWM.hpp"
 #include "TypedUnits.hpp"
 #include "pico/stdlib.h"
