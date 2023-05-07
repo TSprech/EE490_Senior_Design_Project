@@ -35,6 +35,7 @@ import Sheet from "@mui/joy/Sheet";
 import ReactApexChart from 'apexcharts'
 import Chart from "react-apexcharts";
 import {Component} from "react";
+import {toString} from "ts-loader";
 
 function TeamNav() {
     return (
@@ -115,12 +116,15 @@ const Item = styled(Sheet)(({theme}) => ({
     color: theme.vars.palette.text.secondary,
 }));
 
+let count = 0;
+
 
 class App extends Component {
     lastDate = 0;
     data: {x: number, y: number}[] = []
     TICKINTERVAL = 1 // How much the X axis will be advanced with every new data point
     NUMBEROFPOINTS = 20 // Number of data points that will be shown on the X axis
+    uid = count++;
 
     constructor(props: any) {
         super(props);
@@ -134,7 +138,7 @@ class App extends Component {
             }],
             options: {
                 chart: {
-                    id: 'realtime',
+                    id: 'realtime' + this.uid,
                     type: 'line',
                     animations: {
                         enabled: true,
@@ -205,7 +209,7 @@ class App extends Component {
             max: 90
         })
 
-        ApexCharts.exec('realtime', 'updateSeries', [{
+        ApexCharts.exec('realtime' + this.uid, 'updateSeries', [{
             data: this.data
         }])
     }
