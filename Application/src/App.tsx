@@ -116,37 +116,11 @@ const Item = styled(Sheet)(({theme}) => ({
 }));
 
 
-let lastDate = 0;
-let data: {x: number, y: number}[] = []
-// const TICKINTERVAL = 86400000 // Number of ms in a day (I think? It was a magic number)
-const TICKINTERVAL = 1 // Number of ms in a day (I think? It was a magic number)
-const NUMBEROFPOINTS = 20
-const XAXISRANGE = TICKINTERVAL * NUMBEROFPOINTS
-
-function resetData(){
-    // Alternatively, you can also reset the data at certain intervals to prevent creating a huge series
-    data = data.slice(data.length - NUMBEROFPOINTS, data.length);
-}
-
-function getNewSeries(baseval, yrange) {
-    const newDate = baseval + TICKINTERVAL;
-    lastDate = newDate
-
-    for(var i = 0; i< data.length - NUMBEROFPOINTS; i++) {
-        // IMPORTANT
-        // we reset the x and y of the data which is out of drawing area
-        // to prevent memory leaks
-        data[i].x = newDate - XAXISRANGE - TICKINTERVAL
-        data[i].y = 0
-    }
-
-    data.push({
-        x: newDate,
-        y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min
-    })
-}
-
 class App extends Component {
+    lastDate = 0;
+    data: {x: number, y: number}[] = []
+    TICKINTERVAL = 1 // How much the X axis will be advanced with every new data point
+    NUMBEROFPOINTS = 20 // Number of data points that will be shown on the X axis
 
     constructor(props: any) {
         super(props);
@@ -156,7 +130,7 @@ class App extends Component {
         this.state = {
 
             series: [{
-                data: data.slice()
+                data: this.data.slice()
             }],
             options: {
                 chart: {
@@ -187,7 +161,7 @@ class App extends Component {
                 },
                 xaxis: {
                     type: 'numeric',
-                    range: XAXISRANGE,
+                    range: this.TICKINTERVAL * this.NUMBEROFPOINTS, // This constant scales the X axis accordingly
                 },
                 yaxis: {
                     max: 100
@@ -201,14 +175,38 @@ class App extends Component {
         };
     }
 
+    resetData(){
+        // Alternatively, you can also reset the data at certain intervals to prevent creating a huge series
+        this.data = this.data.slice(this.data.length - this.NUMBEROFPOINTS, this.data.length);
+    }
+
+    getNewSeries(baseval, yrange) {
+        console.log(this.data);
+        const newDate = baseval + this.TICKINTERVAL;
+        this.lastDate = newDate
+
+        for(let i = 0; i< this.data.length - this.NUMBEROFPOINTS; i++) {
+            // IMPORTANT
+            // we reset the x and y of the data which is out of drawing area
+            // to prevent memory leaks
+            this.data[i].x = newDate - this.TICKINTERVAL * this.NUMBEROFPOINTS - this.TICKINTERVAL
+            this.data[i].y = 0
+        }
+
+        this.data.push({
+            x: newDate,
+            y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min
+        })
+    }
+
     updateCharts() {
-        getNewSeries(lastDate, {
+        this.getNewSeries(this.lastDate, {
             min: 10,
             max: 90
         })
 
         ApexCharts.exec('realtime', 'updateSeries', [{
-            data: data
+            data: this.data
         }])
     }
 
