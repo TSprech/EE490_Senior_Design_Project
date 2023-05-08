@@ -69,6 +69,8 @@ set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
 add_subdirectory(Lib/units)
 target_link_libraries(EE490_Firmware PUBLIC units)
 
+add_subdirectory(Inc/TypedUnits)
+target_link_libraries(EE490_Firmware PUBLIC TypedUnits)
 
 add_subdirectory(Inc/FastPID)
 target_link_libraries(EE490_Firmware PUBLIC FastPID)

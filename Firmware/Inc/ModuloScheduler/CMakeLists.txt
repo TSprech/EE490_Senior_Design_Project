@@ -8,10 +8,11 @@ target_link_libraries(ModuloScheduler INTERFACE units)
 
 IF (${UNIT_TESTING})
     add_executable(ModuloScheduler_Test ModuloScheduler_Test.cpp)
-    target_link_libraries(ModuloScheduler_Test INTERFACE ModuloScheduler)
+    target_link_libraries(ModuloScheduler_Test PUBLIC ModuloScheduler)
+    target_link_libraries(ModuloScheduler_Test PUBLIC TypedUnits)
 
     enable_testing()
-    target_link_libraries(ModuloScheduler_Test INTERFACE GTest::gtest_main)
+    target_link_libraries(ModuloScheduler_Test PUBLIC GTest::gtest_main)
     include(GoogleTest)
     gtest_discover_tests(ModuloScheduler_Test)
 ENDIF()
