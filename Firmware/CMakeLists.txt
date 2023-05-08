@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
-#include(ARMGCCToolchain.cmake) # Defines our cross compiling toolchain (ARM GCC)
 
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
 set(CMAKE_C_STANDARD 23) # C++23
@@ -43,12 +42,6 @@ IF ("${PLATFORM}" STREQUAL "arm")
         set(JSON_MultipleHeaders ON)
         target_link_libraries(EE490_Firmware PRIVATE nlohmann_json::nlohmann_json)
 
-        set(DISABLE_IOSTREAM ON)
-        set(DISABLE_PREDEFINED_UNITS ON)
-        set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
-        add_subdirectory(Lib/units)
-        target_link_libraries(EE490_Firmware PUBLIC units)
-
         add_subdirectory(Inc/RP2040_PWM)
         target_link_libraries(EE490_Firmware PRIVATE RP2040_PWM)
     elseif (PICO_ON_DEVICE)
@@ -70,5 +63,15 @@ ELSE ()
 
 ENDIF ()
 
+set(DISABLE_IOSTREAM ON)
+set(DISABLE_PREDEFINED_UNITS ON)
+set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
+add_subdirectory(Lib/units)
+target_link_libraries(EE490_Firmware PUBLIC units)
+
+
 add_subdirectory(Inc/FastPID)
 target_link_libraries(EE490_Firmware PUBLIC FastPID)
+
+add_subdirectory(Inc/ModuloScheduler)
+target_link_libraries(EE490_Firmware PUBLIC ModuloScheduler)

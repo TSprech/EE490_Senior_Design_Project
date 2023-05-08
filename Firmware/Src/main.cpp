@@ -6,7 +6,11 @@
 #include "hardware/adc.h"
 #include <iostream>
 
+#include "ModuloScheduler.hpp"
+
 using json = nlohmann::json;
+
+using namespace units::literals;
 
 #include <pico/time.h>
 
@@ -22,6 +26,14 @@ constexpr float Kp=2, Ki=0.5, Kd=0, Hz=10;
 constexpr bool output_signed = false;
 
 constinit pid::FastPID myPID;
+
+constexpr ModuloTask first = ModuloTask(30_ms_u32, []{});
+constexpr ModuloTask second = ModuloTask(60_ms_u32, []{});
+
+constexpr auto schedu = CreateScheduler(second, first);
+
+static_assert(schedu.tasks_[0].mod_number == 1);
+static_assert(schedu.tasks_[1].mod_number == 2);
 
 int main() {
   stdio_init_all();
