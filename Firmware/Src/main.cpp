@@ -6,7 +6,11 @@
 #include "hardware/adc.h"
 #include <iostream>
 
+#include "ModuloScheduler.hpp"
+
 using json = nlohmann::json;
+
+using namespace units::literals;
 
 #include <pico/time.h>
 
