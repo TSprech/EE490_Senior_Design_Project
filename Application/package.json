@@ -51,6 +51,7 @@
     "@serialport/parser-readline": "^10.5.0",
     "apexcharts": "^3.40.0",
     "electron-squirrel-startup": "^1.0.0",
+    "interprocess": "^0.2.5",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
     "react-dom": "^18.2.0",

@@ -3709,6 +3709,11 @@ interpret@^3.1.1:
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-3.1.1.tgz#5be0ceed67ca79c6c4bc5cf0d7ee843dcea110c4"
   integrity sha512-6xwYfHbajpoF0xLW+iwLkhwgvLoZDfjYfoFNu8ftMoXINzwuymNLd9u/KmwtdT2GbR+/Cz66otEGEVVUHX9QLQ==
 
+interprocess@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/interprocess/-/interprocess-0.2.5.tgz#49da8c39fa6e455fdffa220fc7c31ec34ec03ebf"
+  integrity sha512-/eWdArSnfMdvbM0YNwNAqvMTuT1V+jo0ECu6bjS5UAuNlmC0dOwiL65fD7nTuAvW6+r9Bs8dR4TOAylM7MWawQ==
+
 ip@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ip/-/ip-2.0.0.tgz#4cf4ab182fee2314c75ede1276f8c80b479936da"

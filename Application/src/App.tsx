@@ -126,7 +126,7 @@ class App extends Component {
     NUMBEROFPOINTS = 20 // Number of data points that will be shown on the X axis
     uid = count++;
 
-    constructor(props: any) {
+    constructor( props: any) {
         super(props);
 
         this.updateCharts = this.updateCharts.bind(this);

@@ -1,5 +1,7 @@
-import './index.css';
-import {createRoot} from 'react-dom/client';
+// import './index.css';
+// import {createRoot} from 'react-dom/client';
+
+
 // var lastDate = 0;
 // var data = []
 // var TICKINTERVAL = 86400000
@@ -139,18 +141,19 @@ import {createRoot} from 'react-dom/client';
 //     }
 // }
 
-import RenderIndex from "./App";
+// import RenderIndex from "./App";
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');
 
+const { invoke, handle } = window.api
 
+invoke.getPing('ping')
+handle.getPong()
 
-const container = document.getElementById('root') as HTMLElement;
-const root = createRoot(container);
-// root.render(<Form />);
-root.render(<RenderIndex />);
-// root.render(<App/>);
-// root.render(<><p>Test</p></>);
+// const container = document.getElementById('root') as HTMLElement;
+// const root = createRoot(container);
+// root.render(<RenderIndex />);
+
 
 // calling IPC exposed from preload script
 // window.electron.ipcRenderer.once('ipc-example', (arg) => {

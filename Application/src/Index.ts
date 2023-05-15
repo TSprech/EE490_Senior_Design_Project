@@ -1,6 +1,6 @@
 import PortManager from './SerialManager'
 
-import {app, BrowserWindow, ipcMain} from 'electron';
+import {app, BrowserWindow} from 'electron';
 
 import AtomMain from "./AtomMain";
 
@@ -24,6 +24,7 @@ const createWindow = (): void => {
     width: 1920,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      sandbox: false
     },
   });
 
@@ -59,11 +60,11 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on('LED:On', (event, title) => {
-  // PortManager.Write({"LED": true});
-  // setTimeout(() => PortManager.Write({"LED": false}), 1000);
-  console.log("Got a button event!");
-})
+// ipcMain.on('LED:On', (event, title) => {
+//   // PortManager.Write({"LED": true});
+//   // setTimeout(() => PortManager.Write({"LED": false}), 1000);
+//   console.log("Got a button event!");
+// })
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
@@ -77,16 +78,28 @@ ipcMain.on('LED:On', (event, title) => {
 //     .catch((err) => console.log('An error occurred: ', err));
 // });
 
-let port_manager: PortManager;
+// let port_manager: PortManager;
+
+
+import { ipcMain } from './IPCInterface'
+
+const { handle, invoke } = ipcMain
 
 app.whenReady().then(() => {
-  port_manager = new PortManager();
-  port_manager.SetDataRecieveCallback(AtomMain.SerialDataRX);
-  setInterval(() => { port_manager.List().then((value) => AtomMain.SerialList(value)); console.log("Interval");}, 1000);
+  // port_manager = new PortManager();
+  // port_manager.SetDataRecieveCallback(AtomMain.SerialDataRX);
+  // setInterval(() => { port_manager.List().then((value) => AtomMain.SerialList(value)); console.log("Interval");}, 1000);
+
+
+  handle.getPing()
+
+  mainWindow.webContents.on('dom-ready', () => {
+    invoke.getPong(mainWindow, 'pong')
+  })
 });
 
-ipcMain.handle('Serial:Connected', () => port_manager.Connected);
-ipcMain.handle('Serial:Disconnect', () => port_manager.Disconnect()); // NOTE: This has to be a separate (or inline) function (it cannot be passed directly to ipcMain.handle) as it seems to be copied and thus the object is not consistent (you get cannot read property of undefined errors)
-ipcMain.handle('Serial:Connect', (event, data): boolean => {
-  return port_manager.Connect(data.path, data.baud)
-});
+// ipcMain.handle('Serial:Connected', () => port_manager.Connected);
+// ipcMain.handle('Serial:Disconnect', () => port_manager.Disconnect()); // NOTE: This has to be a separate (or inline) function (it cannot be passed directly to ipcMain.handle) as it seems to be copied and thus the object is not consistent (you get cannot read property of undefined errors)
+// ipcMain.handle('Serial:Connect', (event, data): boolean => {
+//   return port_manager.Connect(data.path, data.baud)
+// });
