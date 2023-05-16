@@ -1,5 +1,6 @@
 import random
 
+import numpy as np
 import pandas as pd
 
 capacitors = pd.read_csv('MurataCapacitors.csv')  # Get all the capacitors from the file
@@ -14,4 +15,15 @@ def random_murata_capacitor(name: str):
     subckt = selected_capacitor['SubCkt'] \
         .replace(selected_capacitor['PartNumber'], name) \
         .replace(';', '\n')
-    return {'PartNumber': selected_capacitor['PartNumber'], 'SubCkt': subckt}
+    return {'PartNumber': selected_capacitor['PartNumber'], 'Capacitance': selected_capacitor['Capacitance'], 'SubCkt': subckt}
+
+
+def find_nearest(array, value: float):  # Thanks: https://stackoverflow.com/a/2566508
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
+
+
+def closest_murata_capacitor(value: float):
+    required_capacitor = find_nearest(capacitors.Capacitance, value)
+    return capacitors.loc[capacitors.Capacitance == required_capacitor]  # https://stackoverflow.com/a/17071908

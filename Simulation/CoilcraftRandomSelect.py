@@ -1,5 +1,6 @@
 import random
 
+import numpy as np
 import pandas as pd
 
 inductors = pd.read_csv('CoilcraftInductors.csv')  # Get all the inductors from the file
@@ -16,4 +17,16 @@ def random_coilcraft_inductor():
         .replace('_imp', '') \
         .replace('_sat', '') \
         .replace(';', '\n')
-    return {'PartNumber': selected_inductor['PartNumber'], 'SubCkt': subckt}
+
+    return {'PartNumber': selected_inductor['PartNumber'], 'Inductance': selected_inductor['Inductance'], 'SubCkt': subckt}
+
+
+def find_nearest(array, value: float):  # Thanks: https://stackoverflow.com/a/2566508
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
+
+
+def closest_coilcraft_inductor(value: float):
+    required_inductor = find_nearest(inductors.Inductance, value)
+    return inductors.loc[inductors.Inductance == required_inductor]  # https://stackoverflow.com/a/17071908
