@@ -6,8 +6,7 @@ import pandas as pd
 capacitors = pd.read_csv('MurataCapacitors.csv')  # Get all the capacitors from the file
 
 
-def random_murata_capacitor(name: str):
-    index = random.randint(0, len(capacitors))  # Pick a random index
+def indexed_murata_capacitor(name: str, index: int):
     selected_capacitor = capacitors.iloc[index]  # Select the capacitor at that index
     # First commonize the part number to Inductor to make it easy for the computer to put in the simulation
     # Then remove teh extra _imp or _sat which is appended to the subckt names
@@ -27,3 +26,7 @@ def find_nearest(array, value: float):  # Thanks: https://stackoverflow.com/a/25
 def closest_murata_capacitor(value: float):
     required_capacitor = find_nearest(capacitors.Capacitance, value)
     return capacitors.loc[capacitors.Capacitance == required_capacitor]  # https://stackoverflow.com/a/17071908
+
+
+def random_murata_capacitor(name: str):
+    indexed_murata_capacitor(name, random.randint(0, len(capacitors)))

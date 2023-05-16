@@ -6,8 +6,7 @@ import pandas as pd
 inductors = pd.read_csv('CoilcraftInductors.csv')  # Get all the inductors from the file
 
 
-def random_coilcraft_inductor():
-    index = random.randint(0, len(inductors))  # Pick a random index
+def indexed_coilcraft_inductor(index: int):
     selected_inductor = inductors.iloc[index]  # Select the inductor at that index
     # First commonize the part number to Inductor to make it easy for the computer to put in the simulation
     # Then remove teh extra _imp or _sat which is appended to the subckt names
@@ -30,3 +29,7 @@ def find_nearest(array, value: float):  # Thanks: https://stackoverflow.com/a/25
 def closest_coilcraft_inductor(value: float):
     required_inductor = find_nearest(inductors.Inductance, value)
     return inductors.loc[inductors.Inductance == required_inductor]  # https://stackoverflow.com/a/17071908
+
+
+def random_coilcraft_inductor():
+    indexed_coilcraft_inductor(random.randint(0, len(inductors)))
