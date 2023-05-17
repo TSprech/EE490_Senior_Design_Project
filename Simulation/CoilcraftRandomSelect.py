@@ -6,6 +6,10 @@ import pandas as pd
 inductors = pd.read_csv('CoilcraftInductors.csv')  # Get all the inductors from the file
 
 
+def number_of_models():
+    return len(inductors) - 1  # -1 to account for the zero indexing
+
+
 def indexed_coilcraft_inductor(index: int):
     selected_inductor = inductors.iloc[index]  # Select the inductor at that index
     # First commonize the part number to Inductor to make it easy for the computer to put in the simulation

@@ -1,29 +1,20 @@
-import copy
 import random
-import time
-# import multiprocessing
-import pathos
-import numpy
+import multiprocessing
+import numpy as np
 from PyLTSpice import RawRead, SimRunner, SpiceEditor
-from deap import algorithms
-from deap import base
-from deap import creator
-from deap import tools
-from pathos.multiprocessing import ProcessingPool
+from deap import algorithms, base, creator, tools
 from scoop import futures, shared
 
 import CoilcraftRandomSelect as crs
 import MurataRandomSelect as mrs
 from LTTraceData import LTTraceData
 
-# if __name__ == "__main__":
 high_side = True
 low_side = False
 
-# top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
 def frequencytoltpulse(frequency, side: bool):
-    deadband = 8  # ns
+    deadband = 1  # ns
     period = 1 / (frequency / 1E9)  # Convert to Gigahertz to ensure the period will be in nanoseconds
     if side == low_side:
         return f"PULSE(3.3 0 0n 1n 1n {period + (deadband * 2)}n {period * 2}n)"
@@ -47,6 +38,7 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
 
     return ltc.run_now(netlist, run_filename=f"I-{ind_index}_C1-{cap1_index}_C2-{cap2_index}_C3-{cap3_index}_C4-{cap4_index}")
 
+
 def evaluate_individual(individual):
     print(f'{individual[0]}, {individual[1]}, {individual[2]}, {individual[3]}, {individual[4]}, {individual[5]}')
     raw, log = simulate_circuit(individual[0], individual[1], individual[2], individual[3], individual[4], individual[5])
@@ -68,23 +60,19 @@ def evaluate_individual(individual):
 
     return ((v_out.average * i_out.average) / (v_in.average * i_in.average)),
 
-creator.create("FitnessMax", base.Fitness, weights=(
-    1.0,))  # Positive weight means the goal is to achieve a maximum, negative would be useful if the evaluate function returned an error and the GA would work to minimize error
-creator.create("Individual", list,
-               fitness=creator.FitnessMax)  # Create the individual definition which is just a list trying to achieve the goal specified above
+
+creator.create("FitnessMax", base.Fitness, weights=(1.0,))  # Positive weight means the goal is to achieve a maximum, negative would be if the evaluate function returned an error and the GA would work to minimize error
+creator.create("Individual", list, fitness=creator.FitnessMax)  # Create the individual definition which is just a list trying to achieve the goal specified above
 
 toolbox = base.Toolbox()  # Create a toolbox which manages the specific parameters for evolution
 
 # Attribute Generators (Genes)
-# toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
-# toolbox.register("attr_frequency", random.randint, 100000, 300000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
-toolbox.register("attr_frequency", random.randint, 100, 300)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
-toolbox.register("attr_inductance", random.randint, 0,
-                 3409)  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
-toolbox.register("attr_capacitance_1", random.randint, 0, 11672)  # Same as inductance
-toolbox.register("attr_capacitance_2", random.randint, 0, 11672)  # Same as inductance
-toolbox.register("attr_capacitance_3", random.randint, 0, 11672)  # Same as inductance
-toolbox.register("attr_capacitance_4", random.randint, 0, 11672)  # Same as inductance
+toolbox.register("attr_frequency", random.randint, 80000, 120000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
+toolbox.register("attr_inductance", random.randint, 0, crs.number_of_models())  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
+toolbox.register("attr_capacitance_1", random.randint, 0, mrs.number_of_models())  # Same as inductance
+toolbox.register("attr_capacitance_2", random.randint, 0, mrs.number_of_models())  # Same as inductance
+toolbox.register("attr_capacitance_3", random.randint, 0, mrs.number_of_models())  # Same as inductance
+toolbox.register("attr_capacitance_4", random.randint, 0, mrs.number_of_models())  # Same as inductance
 
 # Individual Structure Initializer
 toolbox.register("individual", tools.initCycle, creator.Individual, (
@@ -103,20 +91,20 @@ toolbox.register("evaluate",
 toolbox.register("mate", tools.cxTwoPoint)  # Used when crossing 2 individuals
 
 
-def mutBuck(individual,
-            indpb):  # TODO: Make this shift a small amount based on the current attribute value, not just random
+def mutBuck(individual, indpb):  # TODO: Make this shift a small amount based on the current attribute value, not just random
+    shift_amount = 10
     if random.random() < indpb:
-        individual[0] = round((individual[0] + toolbox.attr_frequency()) / 6)
+        individual[0] = round((individual[0] + toolbox.attr_frequency()) / shift_amount)
     if random.random() < indpb:
-        individual[1] = round((individual[1] + toolbox.attr_inductance()) / 6)
+        individual[1] = round((individual[1] + toolbox.attr_inductance()) / shift_amount)
     if random.random() < indpb:
-        individual[2] = round((individual[2] + toolbox.attr_capacitance_1()) / 6)
+        individual[2] = round((individual[2] + toolbox.attr_capacitance_1()) / shift_amount)
     if random.random() < indpb:
-        individual[3] = round((individual[3] + toolbox.attr_capacitance_2()) / 6)
+        individual[3] = round((individual[3] + toolbox.attr_capacitance_2()) / shift_amount)
     if random.random() < indpb:
-        individual[4] = round((individual[4] + toolbox.attr_capacitance_3()) / 6)
+        individual[4] = round((individual[4] + toolbox.attr_capacitance_3()) / shift_amount)
     if random.random() < indpb:
-        individual[5] = round((individual[5] + toolbox.attr_capacitance_4()) / 6)
+        individual[5] = round((individual[5] + toolbox.attr_capacitance_4()) / shift_amount)
     return individual,
 
 
@@ -129,35 +117,27 @@ toolbox.register("mutate", mutBuck,
 # drawn randomly from the current generation.
 toolbox.register("select", tools.selTournament, tournsize=3)
 
+
 def main():
-    shared.setConst(top_netlist=SpiceEditor('LTFiles/EPC23102_Mine.asc'))
+    shared.setConst(top_netlist=SpiceEditor('LTFiles/EPC23102_Mine.asc'))  # This is the LTSpice schematic, it must be a scoop const to prevent simultaneous access to the file
 
     random.seed(128)
-    print(time.process_time())
-    # cpu_count = multiprocessing.cpu_count()
-    # print(f"CPU count: {cpu_count}")
-    # pool = multiprocessing.Pool(cpu_count)
-    # toolbox.register("map", pool.map)
 
-    # pool = ProcessingPool(20)
-    # toolbox.register("map", pool.map)
-
+    print(f"CPU count: {multiprocessing.cpu_count()}")
     toolbox.register("map", futures.map)
 
-    pop = toolbox.population(n=5)
+    pop = toolbox.population(n=20)
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
-    stats.register("avg", numpy.mean)
-    stats.register("std", numpy.std)
-    stats.register("min", numpy.min)
-    stats.register("max", numpy.max)
+    stats.register("avg", np.mean)
+    stats.register("std", np.std)
+    stats.register("min", np.min)
+    stats.register("max", np.max)
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=3, stats=stats, halloffame=hof)
+    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=5, stats=stats, halloffame=hof)
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
-    print(time.process_time())
-    # pool.close()
 
 if __name__ == "__main__":
     main()

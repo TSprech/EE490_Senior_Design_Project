@@ -6,6 +6,10 @@ import pandas as pd
 capacitors = pd.read_csv('MurataCapacitors.csv')  # Get all the capacitors from the file
 
 
+def number_of_models():
+    return len(capacitors) - 1  # -1 to account for the zero indexing
+
+
 def indexed_murata_capacitor(name: str, index: int):
     selected_capacitor = capacitors.iloc[index]  # Select the capacitor at that index
     # First commonize the part number to Inductor to make it easy for the computer to put in the simulation
