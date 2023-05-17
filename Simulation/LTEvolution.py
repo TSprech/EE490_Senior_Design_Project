@@ -1,3 +1,4 @@
+import copy
 import random
 import time
 # import multiprocessing
@@ -9,7 +10,7 @@ from deap import base
 from deap import creator
 from deap import tools
 from pathos.multiprocessing import ProcessingPool
-from scoop import futures
+from scoop import futures, shared
 
 import CoilcraftRandomSelect as crs
 import MurataRandomSelect as mrs
@@ -18,6 +19,8 @@ from LTTraceData import LTTraceData
 # if __name__ == "__main__":
 high_side = True
 low_side = False
+
+# top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
 def frequencytoltpulse(frequency, side: bool):
     deadband = 8  # ns
@@ -30,7 +33,8 @@ def frequencytoltpulse(frequency, side: bool):
 
 def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int, cap3_index: int, cap4_index: int):
     ltc = SimRunner(output_folder='LTFiles', verbose=False)
-    netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
+    netlist = shared.getConst('top_netlist')
+    # netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
     netlist.set_component_value('VHSin', frequencytoltpulse(fsw, high_side))
     netlist.set_component_value('VLSin', frequencytoltpulse(fsw, low_side))
@@ -41,8 +45,7 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
     netlist.add_instruction(mrs.indexed_murata_capacitor('C3', cap3_index)['SubCkt'])
     netlist.add_instruction(mrs.indexed_murata_capacitor('C4', cap4_index)['SubCkt'])
 
-    return ltc.run_now(netlist,
-                       run_filename=f"I-{ind_index}_C1-{cap1_index}_C2-{cap2_index}_C3-{cap3_index}_C4-{cap4_index}")
+    return ltc.run_now(netlist, run_filename=f"I-{ind_index}_C1-{cap1_index}_C2-{cap2_index}_C3-{cap3_index}_C4-{cap4_index}")
 
 def evaluate_individual(individual):
     print(f'{individual[0]}, {individual[1]}, {individual[2]}, {individual[3]}, {individual[4]}, {individual[5]}')
@@ -127,6 +130,8 @@ toolbox.register("mutate", mutBuck,
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 def main():
+    shared.setConst(top_netlist=SpiceEditor('LTFiles/EPC23102_Mine.asc'))
+
     random.seed(128)
     print(time.process_time())
     # cpu_count = multiprocessing.cpu_count()
@@ -147,11 +152,11 @@ def main():
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=10, stats=stats, halloffame=hof)
+    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=3, stats=stats, halloffame=hof)
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
-    # print(time.process_time())
+    print(time.process_time())
     # pool.close()
 
 if __name__ == "__main__":
