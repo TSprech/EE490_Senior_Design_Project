@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 
 inductors = pd.read_csv('CoilcraftInductors.csv')  # Get all the inductors from the file
+inductors = inductors[inductors['PartNumber'].str.contains("0201|0402|0603|0805|1008|1206|1210") == False]
+inductors = inductors[inductors['Inductance'] > 1E-5].reset_index(drop=True)
 
 
 def number_of_models():

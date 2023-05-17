@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 
 capacitors = pd.read_csv('MurataCapacitors.csv')  # Get all the capacitors from the file
-
+# capacitors = capacitors[capacitors['PartNumber'].str.contains("0201|0402|0603|0805|1008|1206|1210") == False]
+capacitors = capacitors[capacitors['Capacitance'] > 1E-6].reset_index(drop=True)
 
 def number_of_models():
     return len(capacitors) - 1  # -1 to account for the zero indexing
