@@ -1,9 +1,9 @@
 import random
 import multiprocessing
+
 import numpy as np
 from PyLTSpice import RawRead, SimRunner, SpiceEditor
 from deap import algorithms, base, creator, tools
-from scoop import futures, shared
 
 import CoilcraftRandomSelect as crs
 import MurataRandomSelect as mrs
@@ -11,6 +11,15 @@ from LTTraceData import LTTraceData
 
 high_side = True
 low_side = False
+
+# top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
+
+# top_netlist = copy.deepcopy(SpiceEditor('LTFiles/EPC23102_Mine.asc'))
+
+
+def init(top_netlist):
+    global netlist
+    netlist = top_netlist
 
 
 def frequencytoltpulse(frequency, side: bool):
@@ -24,8 +33,12 @@ def frequencytoltpulse(frequency, side: bool):
 
 def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int, cap3_index: int, cap4_index: int):
     ltc = SimRunner(output_folder='LTFiles', verbose=False)
-    netlist = shared.getConst('top_netlist')
+    # netlist = shared.getConst('top_netlist')
     # netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
+    # global top_netlist
+    # global top_netlist
+    # netlist = copy.deepcopy(top_netlist)
+    # netlist = test()
 
     netlist.set_component_value('VHSin', frequencytoltpulse(fsw, high_side))
     netlist.set_component_value('VLSin', frequencytoltpulse(fsw, low_side))
@@ -119,14 +132,20 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 
 
 def main():
-    shared.setConst(top_netlist=SpiceEditor('LTFiles/EPC23102_Mine.asc'))  # This is the LTSpice schematic, it must be a scoop const to prevent simultaneous access to the file
+    # shared.setConst(top_netlist=SpiceEditor('LTFiles/EPC23102_Mine.asc'))  # This is the LTSpice schematic, it must be a scoop const to prevent simultaneous access to the file
+    # shared_memory.SharedMemory('schematic', size=3000000, create=True)
+    # global top_netlist
+    # top_netlist = copy.deepcopy(SpiceEditor('LTFiles/EPC23102_Mine.asc'))
+    top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
     random.seed(128)
 
     print(f"CPU count: {multiprocessing.cpu_count()}")
-    toolbox.register("map", futures.map)
+    # pool = ProcessingPool(5)
+    pool = multiprocessing.Pool(multiprocessing.cpu_count(), initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
+    toolbox.register("map", pool.map)
 
-    pop = toolbox.population(n=20)
+    pop = toolbox.population(n=multiprocessing.cpu_count())
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", np.mean)
@@ -138,6 +157,7 @@ def main():
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
+    pool.close()
 
 if __name__ == "__main__":
     main()
