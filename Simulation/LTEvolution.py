@@ -1,4 +1,6 @@
 import random
+random.seed(128)
+
 import multiprocessing
 import numpy as np
 from PyLTSpice import RawRead, SimRunner, SpiceEditor
@@ -44,26 +46,26 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
 
 
 def evaluate_individual(individual):
-    return random.random(),
+    # return random.random(),
     # print(f'{individual[0]}, {individual[1]}, {individual[2]}, {individual[3]}, {individual[4]}, {individual[5]}')
-    # raw, log = simulate_circuit(individual[0], individual[1], individual[2], individual[3], individual[4], individual[5])
-    # if raw is None:
-    #     return 0,
-    #
-    # ltr = RawRead(raw, verbose=False)
-    #
-    # v_in = LTTraceData(ltr, 'V(vin)')
-    # v_out = LTTraceData(ltr, 'V(vout)')
-    # i_in = LTTraceData(ltr, 'I(Vs)')
-    # i_out = LTTraceData(ltr, 'I(Il)')
-    #
-    # if v_out.peak_to_peak > 1:
-    #     return 0,
-    #
-    # if v_out.min < 3 or v_out.max > 7:
-    #     return 0,
-    #
-    # return ((v_out.average * i_out.average) / (v_in.average * i_in.average)),
+    raw, log = simulate_circuit(individual[0], individual[1], individual[2], individual[3], individual[4], individual[5])
+    if raw is None:
+        return 0,
+
+    ltr = RawRead(raw, verbose=False)
+
+    v_in = LTTraceData(ltr, 'V(vin)')
+    v_out = LTTraceData(ltr, 'V(vout)')
+    i_in = LTTraceData(ltr, 'I(Vs)', invert=True)
+    i_out = LTTraceData(ltr, 'I(R1)')
+
+    if v_out.peak_to_peak > 2:
+        return 0,
+
+    if v_out.min < 4 or v_out.max > 8:
+        return 0,
+
+    return ((v_out.average * i_out.average) / (v_in.average * i_in.average)),
 
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))  # Positive weight means the goal is to achieve a maximum, negative would be if the evaluate function returned an error and the GA would work to minimize error
@@ -191,7 +193,7 @@ class myHOF(tools.HallOfFame):
                         self.remove(-1)
                     self.insert(ind)
 
-            self.table.add_row(f'{ind[0]}', f'{ind[1]}', f'{ind[2]}', f'{ind[3]}', f'{ind[4]}', f'{ind[5]}', f'{random.random()}', f'{random.random()}', f'{random.random()}')
+            self.table.add_row(f'{ind[0]}', f'{ind[1]}', f'{ind[2]}', f'{ind[3]}', f'{ind[4]}', f'{ind[5]}', f'{ind.fitness.values}', f'{1}', f'{1}')
         self.console.print(self.table)
 
 
@@ -202,14 +204,13 @@ def main():
     # top_netlist = copy.deepcopy(SpiceEditor('LTFiles/EPC23102_Mine.asc'))
     top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
-    random.seed(31415926)
-
     print(f"CPU count: {multiprocessing.cpu_count()}")
     # pool = ProcessingPool(5)
     pool = multiprocessing.Pool(multiprocessing.cpu_count(), initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
     toolbox.register("map", pool.map)
 
     pop = toolbox.population(n=multiprocessing.cpu_count())
+    # hof = myHOF(1)
     hof = myHOF(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", np.mean)
@@ -217,9 +218,9 @@ def main():
     stats.register("min", np.min)
     stats.register("max", np.max)
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=1, stats=stats, halloffame=hof)
-    # best_ind = tools.selBest(pop, 1)[0]
-    # print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=50, stats=stats, halloffame=hof)
+    best_ind = tools.selBest(pop, 1)[0]
+    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
     pool.close()
 
