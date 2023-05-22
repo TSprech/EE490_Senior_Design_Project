@@ -1,6 +1,7 @@
 import random
-random.seed(128)
+random.seed(64)
 
+import os.path
 import multiprocessing
 import numpy as np
 from PyLTSpice import RawRead, SimRunner, SpiceEditor
@@ -11,6 +12,7 @@ from rich.table import Table
 import CoilcraftRandomSelect as crs
 import MurataRandomSelect as mrs
 from LTTraceData import LTTraceData
+
 
 def init(top_netlist):
     global netlist
@@ -42,7 +44,12 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
     netlist.add_instruction(mrs.indexed_murata_capacitor('C3', cap3_index)['SubCkt'])
     netlist.add_instruction(mrs.indexed_murata_capacitor('C4', cap4_index)['SubCkt'])
 
-    return ltc.run_now(netlist, run_filename=f"_I-{ind_index}_C1-{cap1_index}_C2-{cap2_index}_C3-{cap3_index}_C4-{cap4_index}")
+    filename = f"_F-{fsw}_I-{ind_index}_C1-{cap1_index}_C2-{cap2_index}_C3-{cap3_index}_C4-{cap4_index}"
+    if not os.path.isfile(f"{filename}.raw"):
+        return ltc.run_now(netlist, run_filename=filename)
+    else:
+        print("Sim already ran")
+        return f'LTFiles/{filename}.raw', f'LTFiles/{filename}.log'
 
 
 def evaluate_individual(individual):
@@ -95,21 +102,8 @@ toolbox.register("evaluate",
                  evaluate_individual)  # Set evaluate up to use whatever evaluates the fitness of an individual, in this case, it works to maximize the return value of the passed function
 
 
-def cxSpice(ind1, ind2, indpb=0.3):
-    """Executes a uniform crossover that modify in place the two
-    :term:`sequence` individuals. The attributes are swapped according to the
-    *indpb* probability.
-
-    :param ind1: The first individual participating in the crossover.
-    :param ind2: The second individual participating in the crossover.
-    :param indpb: Independent probability for each attribute to be exchanged.
-    :returns: A tuple of two individuals.
-
-    This function uses the :func:`~random.random` function from the python base
-    :mod:`random` module.
-    """
-    size = 5
-    for i in range(size):
+def cxSpice(ind1, ind2, indpb=0.2):
+    for i in range(len(ind1) - 1):
         if random.random() < indpb:
             ind1[i], ind2[i] = ind2[i], ind1[i]
 
@@ -120,26 +114,46 @@ def cxSpice(ind1, ind2, indpb=0.3):
 toolbox.register("mate", cxSpice)  # Used when crossing 2 individuals
 
 
-def mutBuck(individual, indpb):  # TODO: Make this shift a small amount based on the current attribute value, not just random
-    shift_amount = 10
+def clamp(num, min_value, max_value):
+    return max(min(num, max_value), min_value)
+
+
+def mutate_frequency(current: int) -> int:
+    min_freq, max_freq = 100E3, 300E3
+    random_multiplier = random.uniform(1E-2, 5E-1)
+    offset = round(current * random_multiplier)
+    offset = 1 if random.random() > 0.5 else -1 * offset
+    mutated_freq = current + offset
+    return clamp(mutated_freq, min_freq, max_freq)
+
+
+def mutate_indexed(current: int, min_index: int, max_index: int):
+    random_multiplier = random.uniform(1E-3, 1E-1)
+    offset = round(current * random_multiplier)
+    offset = 1 if random.random() > 0.5 else -1 * offset
+    mutated_index = current + offset
+    return clamp(mutated_index, min_index, max_index)
+
+
+def mutate_netlist(individual, indpb):  # TODO: Make this shift a small amount based on the current attribute value, not just random
     if random.random() < indpb:
-        individual[0] = round(individual[0] + (-1 if random.random() > 0.5 else 1 * toolbox.attr_frequency()) / shift_amount)
-        individual[0] = min(individual[0], 100000)
-    if random.random() < indpb:
-        individual[1] = round(individual[1] + (-1 if random.random() > 0.5 else 1 * toolbox.attr_inductance()) / shift_amount)
-    if random.random() < indpb:
-        individual[2] = round(individual[2] + (-1 if random.random() > 0.5 else 1 * toolbox.attr_capacitance_1()) / shift_amount)
-    if random.random() < indpb:
-        individual[3] = round(individual[3] + (-1 if random.random() > 0.5 else 1 * toolbox.attr_capacitance_2()) / shift_amount)
-    if random.random() < indpb:
-        individual[4] = round(individual[4] + (-1 if random.random() > 0.5 else 1 * toolbox.attr_capacitance_3()) / shift_amount)
-    if random.random() < indpb:
-        individual[5] = round(individual[5] + (-1 if random.random() > 0.5 else 1 * toolbox.attr_capacitance_4()) / shift_amount)
+        option = random.random()
+        if option < 1 / 6:
+            individual[0] = mutate_frequency(individual[0])
+        elif option < 2 / 6:
+            individual[1] = mutate_indexed(individual[1], 0, crs.number_of_models())
+        elif option < 3 / 6:
+            individual[2] = mutate_indexed(individual[2], 0, mrs.number_of_models())
+        elif option < 4 / 6:
+            individual[3] = mutate_indexed(individual[3], 0, mrs.number_of_models())
+        elif option < 5 / 6:
+            individual[4] = mutate_indexed(individual[4], 0, mrs.number_of_models())
+        else:
+            individual[5] = mutate_indexed(individual[5], 0, mrs.number_of_models())
     return individual,
 
 
-toolbox.register("mutate", mutBuck,
-                 indpb=0.4)  # This defines the function used to mutate an individual, along with the probability threshold used inside the passed function
+toolbox.register("mutate", mutate_netlist, indpb=0.9)  # This defines the function used to mutate an individual, along with the probability threshold used inside the passed function
 
 # operator for selecting individuals for breeding the next
 # generation: each individual of the current generation
@@ -175,7 +189,7 @@ class myHOF(tools.HallOfFame):
                            update the hall of fame with.
         """
         for ind in population:
-            if len(self) == 0 and self.maxsize !=0:
+            if len(self) == 0 and self.maxsize != 0:
                 # Working on an empty hall of fame is problematic for the
                 # "for else"
                 self.insert(population[0])
@@ -198,19 +212,14 @@ class myHOF(tools.HallOfFame):
 
 
 def main():
-    # shared.setConst(top_netlist=SpiceEditor('LTFiles/EPC23102_Mine.asc'))  # This is the LTSpice schematic, it must be a scoop const to prevent simultaneous access to the file
-    # shared_memory.SharedMemory('schematic', size=3000000, create=True)
-    # global top_netlist
-    # top_netlist = copy.deepcopy(SpiceEditor('LTFiles/EPC23102_Mine.asc'))
     top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
-    print(f"CPU count: {multiprocessing.cpu_count()}")
-    # pool = ProcessingPool(5)
-    pool = multiprocessing.Pool(multiprocessing.cpu_count(), initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
+    cpu_count = multiprocessing.cpu_count()
+    print(f"CPU count: {cpu_count}")
+    pool = multiprocessing.Pool(cpu_count, initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
     toolbox.register("map", pool.map)
 
-    pop = toolbox.population(n=multiprocessing.cpu_count())
-    # hof = myHOF(1)
+    pop = toolbox.population(n=cpu_count)
     hof = myHOF(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", np.mean)
@@ -218,7 +227,7 @@ def main():
     stats.register("min", np.min)
     stats.register("max", np.max)
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=50, stats=stats, halloffame=hof)
+    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=20, stats=stats, halloffame=hof)
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
