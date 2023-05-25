@@ -19,6 +19,10 @@ using namespace units::literals;
 #include "TypedUnits.hpp"
 #include "pico/stdlib.h"
 #include "pico/time.h"
+#include "hardware/i2c.h"
+
+#include "GPIO.hpp"
+using namespace rpp;
 
 auto pwm_manager = pwm::PWMManager<0, 1>(true);
 
@@ -30,6 +34,7 @@ constinit pid::FastPID myPID;
 int main() {
   stdio_init_all();
 
+  gpio::gpio_0.Init().Direction(gpio::Directions::output).Pull(gpio::Pulls::disable).SlewRate(gpio::SlewRates::fast).DriveStrength(gpio::DriveStrengths::ds_12mA).Write(gpio::Levels::low);
   if (!myPID.Initialize(Kp, Ki, Kd, Hz, output_signed)) {
     puts("PID initialization error");
   }
