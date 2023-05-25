@@ -25,7 +25,7 @@ IF ("${PLATFORM}" STREQUAL "arm")
         pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
         pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
-        set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi) # These are the libs from the Pico SDK which will be used
+        set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma) # These are the libs from the Pico SDK which will be used
         target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
 
         pico_add_extra_outputs(EE490_Firmware) # Create map/bin/hex file etc.
@@ -47,6 +47,9 @@ IF ("${PLATFORM}" STREQUAL "arm")
 
         add_subdirectory(Inc/PicoCpp/GPIO)
         target_link_libraries(EE490_Firmware PRIVATE GPIO)
+
+        add_subdirectory(Inc/PicoCpp/DMA)
+        target_link_libraries(EE490_Firmware PRIVATE DMA)
     elseif (PICO_ON_DEVICE)
         message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
     endif ()
