@@ -13,6 +13,8 @@ import CoilcraftRandomSelect as crs
 import MurataRandomSelect as mrs
 from LTTraceData import LTTraceData
 
+from PyLTSpice.LTSteps import LTSpiceLogReader
+
 
 def init(top_netlist):
     global netlist
@@ -63,20 +65,18 @@ def evaluate_individual(individual):
     if raw is None:
         return 0,
 
-    ltr = RawRead(raw, verbose=False)
+    log_data = LTSpiceLogReader(log_filename = log)
 
-    v_in = LTTraceData(ltr, 'V(vin)')
-    v_out = LTTraceData(ltr, 'V(vout)')
-    i_in = LTTraceData(ltr, 'I(Vs)', invert=True)
-    i_out = LTTraceData(ltr, 'I(R1)')
-
-    efficiency = ((v_out.average * i_out.average) / (v_in.average * i_in.average))
+    efficiency = log_data.get_measure_value('eff')
+    v_out_ptp = log_data.get_measure_value('v_out_ptp')
+    v_out_min = log_data.get_measure_value('v_out_min')
+    v_out_max = log_data.get_measure_value('v_out_max')
 
     acceptable_ripple_ptp = 0.1  # Volts
-    if v_out.peak_to_peak > acceptable_ripple_ptp:
-        return efficiency / (1 * (acceptable_ripple_ptp - v_out.peak_to_peak)),
+    if v_out_ptp > acceptable_ripple_ptp:
+        return efficiency / (1 * (acceptable_ripple_ptp - v_out_ptp)),
 
-    if v_out.min < 4 or v_out.max > 8:
+    if v_out_min < 4 or v_out_max > 7:
         return 0,
 
     return efficiency,
