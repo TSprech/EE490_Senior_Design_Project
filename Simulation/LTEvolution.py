@@ -1,5 +1,5 @@
 import random
-random.seed(64)
+random.seed(128)
 
 import os.path
 import multiprocessing
@@ -45,10 +45,14 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
     netlist.add_instruction(mrs.indexed_murata_capacitor('C4', cap4_index)['SubCkt'])
 
     filename = f"_F-{fsw}_I-{ind_index}_C1-{cap1_index}_C2-{cap2_index}_C3-{cap3_index}_C4-{cap4_index}"
-    if not os.path.isfile(f"{filename}.raw"):
+    if not os.path.isfile(f"LTFiles/{filename}.raw"):
         return ltc.run_now(netlist, run_filename=filename)
     else:
         print("Sim already ran")
+        try:
+            ltr = RawRead(f'LTFiles/{filename}.raw', verbose = False)
+        except:
+            return ltc.run_now(netlist, run_filename = filename)
         return f'LTFiles/{filename}.raw', f'LTFiles/{filename}.log'
 
 
@@ -66,13 +70,16 @@ def evaluate_individual(individual):
     i_in = LTTraceData(ltr, 'I(Vs)', invert=True)
     i_out = LTTraceData(ltr, 'I(R1)')
 
-    if v_out.peak_to_peak > 2:
-        return 0,
+    efficiency = ((v_out.average * i_out.average) / (v_in.average * i_in.average))
+
+    acceptable_ripple_ptp = 0.1  # Volts
+    if v_out.peak_to_peak > acceptable_ripple_ptp:
+        return efficiency / (1 * (acceptable_ripple_ptp - v_out.peak_to_peak)),
 
     if v_out.min < 4 or v_out.max > 8:
         return 0,
 
-    return ((v_out.average * i_out.average) / (v_in.average * i_in.average)),
+    return efficiency,
 
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))  # Positive weight means the goal is to achieve a maximum, negative would be if the evaluate function returned an error and the GA would work to minimize error
@@ -81,7 +88,7 @@ creator.create("Individual", list, fitness=creator.FitnessMax)  # Create the ind
 toolbox = base.Toolbox()  # Create a toolbox which manages the specific parameters for evolution
 
 # Attribute Generators (Genes)
-toolbox.register("attr_frequency", random.randint, 100000, 300000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
+toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
 toolbox.register("attr_inductance", random.randint, 0, crs.number_of_models())  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
 toolbox.register("attr_capacitance_1", random.randint, 0, mrs.number_of_models())  # Same as inductance
 toolbox.register("attr_capacitance_2", random.randint, 0, mrs.number_of_models())  # Same as inductance
@@ -119,7 +126,7 @@ def clamp(num, min_value, max_value):
 
 
 def mutate_frequency(current: int) -> int:
-    min_freq, max_freq = 100E3, 300E3
+    min_freq, max_freq = 100E3, 3000E3
     random_multiplier = random.uniform(1E-2, 5E-1)
     offset = round(current * random_multiplier)
     offset = 1 if random.random() > 0.5 else -1 * offset
@@ -153,7 +160,7 @@ def mutate_netlist(individual, indpb):  # TODO: Make this shift a small amount b
     return individual,
 
 
-toolbox.register("mutate", mutate_netlist, indpb=0.9)  # This defines the function used to mutate an individual, along with the probability threshold used inside the passed function
+toolbox.register("mutate", mutate_netlist, indpb=0.6)  # This defines the function used to mutate an individual, along with the probability threshold used inside the passed function
 
 # operator for selecting individuals for breeding the next
 # generation: each individual of the current generation
@@ -207,7 +214,7 @@ class myHOF(tools.HallOfFame):
                         self.remove(-1)
                     self.insert(ind)
 
-            self.table.add_row(f'{ind[0]}', f'{ind[1]}', f'{ind[2]}', f'{ind[3]}', f'{ind[4]}', f'{ind[5]}', f'{ind.fitness.values}', f'{1}', f'{1}')
+            self.table.add_row(f'{ind[0]}', f'{ind[1]}', f'{ind[2]}', f'{ind[3]}', f'{ind[4]}', f'{ind[5]}', f'{ind.fitness.values[0]}', f'{1}', f'{1}')
         self.console.print(self.table)
 
 
@@ -216,10 +223,10 @@ def main():
 
     cpu_count = multiprocessing.cpu_count()
     print(f"CPU count: {cpu_count}")
-    pool = multiprocessing.Pool(cpu_count, initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
+    pool = multiprocessing.Pool(cpu_count-1, initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
     toolbox.register("map", pool.map)
 
-    pop = toolbox.population(n=cpu_count)
+    pop = toolbox.population(n=cpu_count-1)
     hof = myHOF(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", np.mean)
