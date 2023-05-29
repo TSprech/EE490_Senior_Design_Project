@@ -79,13 +79,8 @@ namespace rpp::dma {
    * @brief Describes a DMA channel and allows interacting with it.
    */
   struct DMA {
-    enum class DMAError : uint8_t {
-      success = 0,
-      no_valid_channel,
-    };
-
     int32_t channel_ = -1;
-    dma_channel_config config_{}; /**< The actual DMA pin being modified by the methods */
+    dma_channel_config config_{};
 
     auto Claim(int32_t channel = -1) -> bool {
       if (channel == -1) [[likely]] {  // Default parameter, let the hardware pick a channel
@@ -188,6 +183,19 @@ namespace rpp::dma {
       dma_channel_wait_for_finish_blocking(this->channel_);
     }
   };
+
+//  constinit DMA dma_0{0};
+//  constinit DMA dma_1{1};
+//  constinit DMA dma_2{2};
+//  constinit DMA dma_3{3};
+//  constinit DMA dma_4{4};
+//  constinit DMA dma_5{5};
+//  constinit DMA dma_6{6};
+//  constinit DMA dma_7{7};
+//  constinit DMA dma_8{8};
+//  constinit DMA dma_9{9};
+//  constinit DMA dma_10{10};
+//  constinit DMA dma_11{11};
 }  // namespace rpp::dma
 
 #endif  //EE490_FIRMWARE_DMA_HPP
