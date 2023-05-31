@@ -1,19 +1,35 @@
 import random
+
+from quantiphy import Quantity
+
 random.seed(128)
+
+import logging
+from rich.logging import RichHandler
+
+FORMAT = "%(message)s"
+logging.basicConfig(
+    level="ERROR", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+)
 
 import os.path
 import multiprocessing
 import numpy as np
-from PyLTSpice import RawRead, SimRunner, SpiceEditor
 from deap import algorithms, base, creator, tools
 from rich.console import Console
 from rich.table import Table
+from MyEASimple import my_ea_simple
 
 import CoilcraftRandomSelect as crs
 import MurataRandomSelect as mrs
 from LTTraceData import LTTraceData
 
+import PyLTSpice
+
+PyLTSpice.set_log_level(logging.DEBUG)
+PyLTSpice.add_log_handler(RichHandler())
 from PyLTSpice.LTSteps import LTSpiceLogReader
+from PyLTSpice import RawRead, SimRunner, SpiceEditor
 
 
 def init(top_netlist):
@@ -25,8 +41,14 @@ high_side = True
 low_side = False
 
 
+deadband = 8  # ns
+
+
+def pulse_period(frequency):
+    half_period = 1 / frequency
+    return {"LS": half_period + (deadband * 1E-9 * 2), "HS": half_period, "Period": half_period * 2}
+
 def frequencytoltpulse(frequency, side: bool):
-    deadband = 1  # ns
     period = 1 / (frequency / 1E9)  # Convert to Gigahertz to ensure the period will be in nanoseconds
     if side == low_side:
         return f"PULSE(3.3 0 0n 1n 1n {period + (deadband * 2)}n {period * 2}n)"
@@ -50,36 +72,85 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
     if not os.path.isfile(f"LTFiles/{filename}.raw"):
         return ltc.run_now(netlist, run_filename=filename)
     else:
-        print("Sim already ran")
+        logging.debug("Sim already ran")
         try:
-            ltr = RawRead(f'LTFiles/{filename}.raw', verbose = False)
+            ltr = RawRead(f'LTFiles/{filename}.raw', verbose=False)
         except:
-            return ltc.run_now(netlist, run_filename = filename)
+            return ltc.run_now(netlist, run_filename=filename)
         return f'LTFiles/{filename}.raw', f'LTFiles/{filename}.log'
 
 
 def evaluate_individual(individual):
-    # return random.random(),
-    # print(f'{individual[0]}, {individual[1]}, {individual[2]}, {individual[3]}, {individual[4]}, {individual[5]}')
+    periods = pulse_period(individual[0])
+    frequency = {
+        "Frequency": Quantity(individual[0], 'Hz'),
+        "Period": Quantity(periods["Period"], 's'),
+        "PeriodLS": Quantity(periods["LS"], 's'),
+        "PeriodHS": Quantity(periods["HS"], 's'),
+        "Deadtime": Quantity(deadband, 'ns'),
+    }
+    inductor = {
+        "Index": individual[1],
+        "Value": Quantity(crs.indexed_coilcraft_inductor(individual[1])["Inductance"], "H"),
+        "PartNumber": crs.indexed_coilcraft_inductor(individual[1])["PartNumber"]
+    }
+    cap1 = {
+        "Index": individual[2],
+        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[2])["Capacitance"], "F"),
+        "PartNumber": mrs.indexed_murata_capacitor("", individual[2])["PartNumber"]
+    }
+    cap2 = {
+        "Index": individual[3],
+        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[3])["Capacitance"], "F"),
+        "PartNumber": mrs.indexed_murata_capacitor("", individual[3])["PartNumber"]
+    }
+    cap3 = {
+        "Index": individual[4],
+        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[4])["Capacitance"], "F"),
+        "PartNumber": mrs.indexed_murata_capacitor("", individual[4])["PartNumber"]
+    }
+    cap4 = {
+        "Index": individual[5],
+        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[5])["Capacitance"], "F"),
+        "PartNumber": mrs.indexed_murata_capacitor("", individual[5])["PartNumber"]
+    }
+    data = dict.fromkeys(["SimOK", "Raw", "Log", "Efficiency", "VOutPtP", "VOutMin", "VOutMax", "Freq", "L", "C1", "C2", "C3", "C4"])
     raw, log = simulate_circuit(individual[0], individual[1], individual[2], individual[3], individual[4], individual[5])
+    data["Raw"], data["Log"] = raw, log
     if raw is None:
-        return 0,
+        data["SimOK"] = False
+        data["Efficiency"] = 0
 
-    log_data = LTSpiceLogReader(log_filename = log)
+    data["SimOK"] = True
+
+    data["Freq"] = frequency
+    data["L"] = inductor
+    data["C1"] = cap1
+    data["C2"] = cap2
+    data["C3"] = cap3
+    data["C4"] = cap4
+
+    log_data = LTSpiceLogReader(log_filename=log)
 
     efficiency = log_data.get_measure_value('eff')
     v_out_ptp = log_data.get_measure_value('v_out_ptp')
     v_out_min = log_data.get_measure_value('v_out_min')
     v_out_max = log_data.get_measure_value('v_out_max')
 
+    data["Efficiency"] = efficiency
+    data["VOutPtP"] = Quantity(v_out_ptp, 'V')
+    data["VOutMin"] = Quantity(v_out_min, 'V')
+    data["VOutMax"] = Quantity(v_out_max, 'V')
+
     acceptable_ripple_ptp = 0.1  # Volts
     if v_out_ptp > acceptable_ripple_ptp:
-        return efficiency / (1 * (acceptable_ripple_ptp - v_out_ptp)),
+        data["Efficiency"] = efficiency / (1 * (acceptable_ripple_ptp - v_out_ptp))
 
     if v_out_min < 4 or v_out_max > 7:
-        return 0,
+        data["Efficiency"] = 0
 
-    return efficiency,
+    data["Efficiency"] *= 100
+    return data
 
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))  # Positive weight means the goal is to achieve a maximum, negative would be if the evaluate function returned an error and the GA would work to minimize error
@@ -89,6 +160,7 @@ toolbox = base.Toolbox()  # Create a toolbox which manages the specific paramete
 
 # Attribute Generators (Genes)
 toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
+# toolbox.register("attr_frequency", random.randint, 100, 300)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
 toolbox.register("attr_inductance", random.randint, 0, crs.number_of_models())  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
 toolbox.register("attr_capacitance_1", random.randint, 0, mrs.number_of_models())  # Same as inductance
 toolbox.register("attr_capacitance_2", random.randint, 0, mrs.number_of_models())  # Same as inductance
@@ -127,6 +199,7 @@ def clamp(num, min_value, max_value):
 
 def mutate_frequency(current: int) -> int:
     min_freq, max_freq = 100E3, 3000E3
+    # min_freq, max_freq = 100, 300
     random_multiplier = random.uniform(1E-2, 5E-1)
     offset = round(current * random_multiplier)
     offset = 1 if random.random() > 0.5 else -1 * offset
@@ -215,18 +288,19 @@ class myHOF(tools.HallOfFame):
                     self.insert(ind)
 
             self.table.add_row(f'{ind[0]}', f'{ind[1]}', f'{ind[2]}', f'{ind[3]}', f'{ind[4]}', f'{ind[5]}', f'{ind.fitness.values[0]}', f'{1}', f'{1}')
-        self.console.print(self.table)
+        # self.console.print(self.table)
 
 
 def main():
     top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
-    cpu_count = multiprocessing.cpu_count()
-    print(f"CPU count: {cpu_count}")
-    pool = multiprocessing.Pool(cpu_count-1, initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
+    # cpu_count = multiprocessing.cpu_count()
+    cpu_count = 5  # TODO: Doesn't work for # of individuals = 2
+    logging.info(f"CPU count: {cpu_count}")
+    pool = multiprocessing.Pool(cpu_count - 1, initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
     toolbox.register("map", pool.map)
 
-    pop = toolbox.population(n=cpu_count-1)
+    pop = toolbox.population(n=cpu_count - 1)
     hof = myHOF(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", np.mean)
@@ -234,9 +308,9 @@ def main():
     stats.register("min", np.min)
     stats.register("max", np.max)
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=20, stats=stats, halloffame=hof)
+    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=1, stats=stats, halloffame=hof)
     best_ind = tools.selBest(pop, 1)[0]
-    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+    logging.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
     pool.close()
 
