@@ -25,8 +25,7 @@ import MurataRandomSelect as mrs
 from LTTraceData import LTTraceData
 
 import PyLTSpice
-
-PyLTSpice.set_log_level(logging.DEBUG)
+PyLTSpice.set_log_level(logging.ERROR)
 PyLTSpice.add_log_handler(RichHandler())
 from PyLTSpice.LTSteps import LTSpiceLogReader
 from PyLTSpice import RawRead, SimRunner, SpiceEditor

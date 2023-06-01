@@ -1,3 +1,4 @@
+import colorsys
 import time
 
 import numpy as np
@@ -133,6 +134,12 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=
     return population, logbook
 
 
+def hsv2rgb(h,s,v):
+    return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h,s,v))
+
+def rgb_to_hex(r, g, b):
+    return '#{:02x}{:02x}{:02x}'.format(r, g, b).upper()
+
 def PrintGeneration(gen: int, data: dict, cons: rich.console):
     tree = Tree(f"Generation {gen}")
     stats = tree.add("Statistics")
@@ -143,8 +150,13 @@ def PrintGeneration(gen: int, data: dict, cons: rich.console):
     stats.add(f"Standard Deviation: {np.std([i['Efficiency'] for i in data]):05.2f}")
     summary = tree.add("Summary")
 
+
     for count, ind in enumerate(data):
-        bar = ProgressBar(total=100, completed=ind["Efficiency"], complete_style='#008888')
+        eff_color = min(max(ind["Efficiency"] * 0.88 / 255, 0), 1)
+        r, g, b = hsv2rgb(eff_color, 0.8, 0.8)
+        ind_color = rgb_to_hex(r, g, b)
+
+        bar = ProgressBar(total=100, completed=ind["Efficiency"], complete_style=f'{ind_color}')
         table = Table(show_header=False, pad_edge=False, show_edge=False, show_lines=False, show_footer=False, box=None)
         table.add_row(f"Individual {count}:", bar, f"{ind['Efficiency']:05.2f} %")
         summary.add(table)
@@ -152,24 +164,28 @@ def PrintGeneration(gen: int, data: dict, cons: rich.console):
     ind_brk = tree.add("Individual Breakdown")
     ind_brk_dict = {}
     for count, ind in enumerate(data):
+        eff_color = min(max(ind["Efficiency"] * 0.88 / 255, 0), 1)
+        r, g, b = hsv2rgb(eff_color, 0.8, 0.8)
+        ind_color = rgb_to_hex(r, g, b)
+
         ind_brk_dict[f"ind_{count}"] = ind_brk.add(f"Individual {count}:")
         ind_brk_dict[f"ind_{count}"].add(f"File Name: {ind['Raw']}")
         ind_brk_dict[f"ind_{count}_param"] = ind_brk_dict[f"ind_{count}"].add(f"Parameters")
         ind_brk_dict[f"ind_{count}_table"] = Table(show_footer=False, box=SIMPLE_HEAD)
-        ind_brk_dict[f"ind_{count}_table"].add_column('[red]Frequency')
-        ind_brk_dict[f"ind_{count}_table"].add_column('[red]Deadtime')
-        ind_brk_dict[f"ind_{count}_table"].add_column('[red]Period')
-        ind_brk_dict[f"ind_{count}_table"].add_column('[red]Period HS')
-        ind_brk_dict[f"ind_{count}_table"].add_column('[red]Period LS')
+        ind_brk_dict[f"ind_{count}_table"].add_column(f'[{ind_color}]Frequency')
+        ind_brk_dict[f"ind_{count}_table"].add_column(f'[{ind_color}]Deadtime')
+        ind_brk_dict[f"ind_{count}_table"].add_column(f'[{ind_color}]Period')
+        ind_brk_dict[f"ind_{count}_table"].add_column(f'[{ind_color}]Period HS')
+        ind_brk_dict[f"ind_{count}_table"].add_column(f'[{ind_color}]Period LS')
         ind_brk_dict[f"ind_{count}_table"].add_row(f"{ind['Freq']['Frequency']}", f"{ind['Freq']['Deadtime']}", f"{ind['Freq']['Period']}", f"{ind['Freq']['PeriodHS']}", f"{ind['Freq']['PeriodLS']}")
         ind_brk_dict[f"ind_{count}_param"].add(ind_brk_dict[f"ind_{count}_table"])
 
         ind_brk_dict[f"ind_{count}_comp"] = ind_brk_dict[f"ind_{count}"].add(f"Components")
         ind_brk_dict[f"ind_{count}_comp_table"] = Table(show_footer=False, box=SIMPLE_HEAD)
-        ind_brk_dict[f"ind_{count}_comp_table"].add_column('[red]Component')
-        ind_brk_dict[f"ind_{count}_comp_table"].add_column('[red]Index')
-        ind_brk_dict[f"ind_{count}_comp_table"].add_column('[red]Value')
-        ind_brk_dict[f"ind_{count}_comp_table"].add_column('[red]Part #')
+        ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Component')
+        ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Index')
+        ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Value')
+        ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Part #')
         ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Inductor ", f"{ind['L']['Index']}", f"{ind['L']['Value']}", f"{ind['L']['PartNumber']}")
         ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Capacitor 1 ", f"{ind['C1']['Index']}", f"{ind['C1']['Value']}", f"{ind['C1']['PartNumber']}")
         ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Capacitor 2 ", f"{ind['C2']['Index']}", f"{ind['C2']['Value']}", f"{ind['C2']['PartNumber']}")
@@ -179,11 +195,17 @@ def PrintGeneration(gen: int, data: dict, cons: rich.console):
 
         ind_brk_dict[f"ind_{count}_perf"] = ind_brk_dict[f"ind_{count}"].add(f"Performance")
         ind_brk_dict[f"ind_{count}_perf_table"] = Table(show_footer=False, box=SIMPLE_HEAD)
-        ind_brk_dict[f"ind_{count}_perf_table"].add_column('[red]Efficiency')
-        ind_brk_dict[f"ind_{count}_perf_table"].add_column('[red]Minimum')
-        ind_brk_dict[f"ind_{count}_perf_table"].add_column('[red]Maximum')
-        ind_brk_dict[f"ind_{count}_perf_table"].add_column('[red]Peak to Peak')
+        ind_brk_dict[f"ind_{count}_perf_table"].add_column(f'[{ind_color}]Efficiency')
+        ind_brk_dict[f"ind_{count}_perf_table"].add_column(f'[{ind_color}]Minimum')
+        ind_brk_dict[f"ind_{count}_perf_table"].add_column(f'[{ind_color}]Maximum')
+        ind_brk_dict[f"ind_{count}_perf_table"].add_column(f'[{ind_color}]Peak to Peak')
         ind_brk_dict[f"ind_{count}_perf_table"].add_row(f"{ind['Efficiency']:05.2f} %", f"{ind['VOutMin']}", f"{ind['VOutMax']}", f"{ind['VOutPtP']}")
         ind_brk_dict[f"ind_{count}_perf"].add(ind_brk_dict[f"ind_{count}_perf_table"])
 
     cons.print(tree)
+
+    # for i in range(0, 101):
+    #     eff_color = min(max(i * 0.88 / 255, 0), 1)
+    #     r, g, b = hsv2rgb(eff_color, 0.8, 0.8)
+    #     ind_color = rgb_to_hex(r, g, b)
+    #     console.log(f'[{ind_color}]Test text here!')
