@@ -7,3 +7,5 @@ Simulation/LTFiles/*
 Application/yarn-error.log
 
 Simulation/SpiceBatch.log
+
+Electronics/SimTest/SimTest/History/
