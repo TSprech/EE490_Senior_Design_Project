@@ -1,0 +1,18 @@
+Component Name : IC - Power Management - DCDC SMPS - TI TPS62825
+
+Part Count : 2
+
+Part : U?
+     Pins - (Normal) : 0
+          Hidden Pins : 
+
+Part : U?
+     Pins - (Normal) : 6
+          GND            4              Power
+          VIN            6              Power
+          FB             3              Input
+          EN             1              Input
+          PG             2              Output
+          SW             5              Power
+          Hidden Pins : 
+
