@@ -1,4 +1,6 @@
 import random
+from enum import Enum
+from pathlib import Path
 
 from quantiphy import Quantity
 
@@ -25,6 +27,7 @@ import MurataRandomSelect as mrs
 from LTTraceData import LTTraceData
 
 import PyLTSpice
+
 PyLTSpice.set_log_level(logging.ERROR)
 PyLTSpice.add_log_handler(RichHandler())
 from PyLTSpice.LTSteps import LTSpiceLogReader
@@ -39,13 +42,13 @@ def init(top_netlist):
 high_side = True
 low_side = False
 
-
 deadband = 8  # ns
 
 
 def pulse_period(frequency):
     half_period = 1 / frequency
     return {"LS": half_period + (deadband * 1E-9 * 2), "HS": half_period, "Period": half_period * 2}
+
 
 def frequencytoltpulse(frequency, side: bool):
     period = 1 / (frequency / 1E9)  # Convert to Gigahertz to ensure the period will be in nanoseconds
@@ -80,75 +83,45 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
 
 
 def evaluate_individual(individual):
-    periods = pulse_period(individual[0])
-    frequency = {
-        "Frequency": Quantity(individual[0], 'Hz'),
-        "Period": Quantity(periods["Period"], 's'),
-        "PeriodLS": Quantity(periods["LS"], 's'),
-        "PeriodHS": Quantity(periods["HS"], 's'),
-        "Deadtime": Quantity(deadband, 'ns'),
-    }
-    inductor = {
-        "Index": individual[1],
-        "Value": Quantity(crs.indexed_coilcraft_inductor(individual[1])["Inductance"], "H"),
-        "PartNumber": crs.indexed_coilcraft_inductor(individual[1])["PartNumber"]
-    }
-    cap1 = {
-        "Index": individual[2],
-        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[2])["Capacitance"], "F"),
-        "PartNumber": mrs.indexed_murata_capacitor("", individual[2])["PartNumber"]
-    }
-    cap2 = {
-        "Index": individual[3],
-        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[3])["Capacitance"], "F"),
-        "PartNumber": mrs.indexed_murata_capacitor("", individual[3])["PartNumber"]
-    }
-    cap3 = {
-        "Index": individual[4],
-        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[4])["Capacitance"], "F"),
-        "PartNumber": mrs.indexed_murata_capacitor("", individual[4])["PartNumber"]
-    }
-    cap4 = {
-        "Index": individual[5],
-        "Value": Quantity(mrs.indexed_murata_capacitor("", individual[5])["Capacitance"], "F"),
-        "PartNumber": mrs.indexed_murata_capacitor("", individual[5])["PartNumber"]
-    }
-    data = dict.fromkeys(["SimOK", "Raw", "Log", "Efficiency", "VOutPtP", "VOutMin", "VOutMax", "Freq", "L", "C1", "C2", "C3", "C4"])
-    raw, log = simulate_circuit(individual[0], individual[1], individual[2], individual[3], individual[4], individual[5])
-    data["Raw"], data["Log"] = raw, log
-    if raw is None:
-        data["SimOK"] = False
-        data["Efficiency"] = 0
+    periods = pulse_period(individual[Genes.FREQUENCY.value])
 
-    data["SimOK"] = True
-
-    data["Freq"] = frequency
-    data["L"] = inductor
-    data["C1"] = cap1
-    data["C2"] = cap2
-    data["C3"] = cap3
-    data["C4"] = cap4
+    raw, log = simulate_circuit(individual[Genes.FREQUENCY.value], individual[Genes.L1.value], individual[Genes.C1.value], individual[Genes.C2.value], individual[Genes.C3.value], individual[Genes.C4.value])
 
     log_data = LTSpiceLogReader(log_filename=log)
 
-    efficiency = log_data.get_measure_value('eff')
+    reward_efficiency = raw_efficiency = log_data.get_measure_value('eff')
     v_out_ptp = log_data.get_measure_value('v_out_ptp')
     v_out_min = log_data.get_measure_value('v_out_min')
     v_out_max = log_data.get_measure_value('v_out_max')
 
-    data["Efficiency"] = efficiency
-    data["VOutPtP"] = Quantity(v_out_ptp, 'V')
-    data["VOutMin"] = Quantity(v_out_min, 'V')
-    data["VOutMax"] = Quantity(v_out_max, 'V')
+    if raw is None:
+        reward_efficiency = 0
 
     acceptable_ripple_ptp = 0.1  # Volts
     if v_out_ptp > acceptable_ripple_ptp:
-        data["Efficiency"] = efficiency / (1 * (acceptable_ripple_ptp - v_out_ptp))
+        reward_efficiency = reward_efficiency / (1 * (acceptable_ripple_ptp - v_out_ptp))
 
     if v_out_min < 4 or v_out_max > 7:
-        data["Efficiency"] = 0
+        reward_efficiency = 0
 
-    data["Efficiency"] *= 100
+    data = {"SimOK": raw is not None, "RawFilename": Path(raw).name, "LogFilename": Path(log).name, "RawEfficiency": raw_efficiency, "AdjustedEfficiency": reward_efficiency, "VOutPtP": Quantity(v_out_ptp, 'V'),
+            "VOutMin": Quantity(v_out_min, 'V'), "VOutMax": Quantity(v_out_max, 'V'), "PWM": {
+            "Frequency": Quantity(individual[Genes.FREQUENCY.value], 'Hz'),
+            "Period": Quantity(periods["Period"], 's'),
+            "PeriodLS": Quantity(periods["LS"], 's'),
+            "PeriodHS": Quantity(periods["HS"], 's'),
+            "Deadtime": Quantity(deadband, 'ns')
+        }, "Inductors": [{
+            "Index": individual[Genes.L1.value],
+            "Value": Quantity(crs.indexed_coilcraft_inductor(individual[Genes.L1.value])["Inductance"], "H"),
+            "PartNumber": crs.indexed_coilcraft_inductor(individual[Genes.L1.value])["PartNumber"]
+        }, ], 'Capacitors': [{
+            "Name": f"C{i}",
+            "Index": individual[i],
+            "Value": Quantity(mrs.indexed_murata_capacitor("", individual[i])["Capacitance"], "F"),
+            "PartNumber": mrs.indexed_murata_capacitor("", individual[i])["PartNumber"]
+        } for i in range(Genes.C1.value, Genes.C4.value+1)]}
+
     return data
 
 
@@ -158,6 +131,7 @@ creator.create("Individual", list, fitness=creator.FitnessMax)  # Create the ind
 toolbox = base.Toolbox()  # Create a toolbox which manages the specific parameters for evolution
 
 # Attribute Generators (Genes)
+toolbox.register("attr_history", str, "")  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
 toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
 # toolbox.register("attr_frequency", random.randint, 100, 300)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
 toolbox.register("attr_inductance", random.randint, 0, crs.number_of_models())  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
@@ -166,9 +140,18 @@ toolbox.register("attr_capacitance_2", random.randint, 0, mrs.number_of_models()
 toolbox.register("attr_capacitance_3", random.randint, 0, mrs.number_of_models())  # Same as inductance
 toolbox.register("attr_capacitance_4", random.randint, 0, mrs.number_of_models())  # Same as inductance
 
+class Genes(Enum):
+    HISTORY = 0
+    FREQUENCY = 1
+    L1 = 2
+    C1 = 3
+    C2 = 4
+    C3 = 5
+    C4 = 6
+
 # Individual Structure Initializer
 toolbox.register("individual", tools.initCycle, creator.Individual, (
-    toolbox.attr_frequency, toolbox.attr_inductance, toolbox.attr_capacitance_1, toolbox.attr_capacitance_2,
+    toolbox.attr_history, toolbox.attr_frequency, toolbox.attr_inductance, toolbox.attr_capacitance_1, toolbox.attr_capacitance_2,
     toolbox.attr_capacitance_3, toolbox.attr_capacitance_4))  #
 
 # Population Structure Initializer
@@ -218,17 +201,17 @@ def mutate_netlist(individual, indpb):  # TODO: Make this shift a small amount b
     if random.random() < indpb:
         option = random.random()
         if option < 1 / 6:
-            individual[0] = mutate_frequency(individual[0])
+            individual[Genes.FREQUENCY.value] = mutate_frequency(individual[Genes.FREQUENCY.value])
         elif option < 2 / 6:
-            individual[1] = mutate_indexed(individual[1], 0, crs.number_of_models())
+            individual[Genes.L1.value] = mutate_indexed(individual[Genes.L1.value], 0, crs.number_of_models())
         elif option < 3 / 6:
-            individual[2] = mutate_indexed(individual[2], 0, mrs.number_of_models())
+            individual[Genes.C1.value] = mutate_indexed(individual[Genes.C1.value], 0, mrs.number_of_models())
         elif option < 4 / 6:
-            individual[3] = mutate_indexed(individual[3], 0, mrs.number_of_models())
+            individual[Genes.C2.value] = mutate_indexed(individual[Genes.C2.value], 0, mrs.number_of_models())
         elif option < 5 / 6:
-            individual[4] = mutate_indexed(individual[4], 0, mrs.number_of_models())
+            individual[Genes.C3.value] = mutate_indexed(individual[Genes.C3.value], 0, mrs.number_of_models())
         else:
-            individual[5] = mutate_indexed(individual[5], 0, mrs.number_of_models())
+            individual[Genes.C4.value] = mutate_indexed(individual[Genes.C4.value], 0, mrs.number_of_models())
     return individual,
 
 
