@@ -83,6 +83,10 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
 
 
 def evaluate_individual(individual):
+    try:
+        print(f"Got individual {individual[0]['Name']}")
+    except:
+        pass
     periods = pulse_period(individual[Genes.FREQUENCY.value])
 
     raw, log = simulate_circuit(individual[Genes.FREQUENCY.value], individual[Genes.L1.value], individual[Genes.C1.value], individual[Genes.C2.value], individual[Genes.C3.value], individual[Genes.C4.value])
@@ -104,7 +108,7 @@ def evaluate_individual(individual):
     if v_out_min < 4 or v_out_max > 7:
         reward_efficiency = 0
 
-    individual[0] = {"SimOK": raw is not None, "RawFilename": Path(raw).name, "LogFilename": Path(log).name, "RawEfficiency": raw_efficiency, "AdjustedEfficiency": reward_efficiency, "VOutPtP": Quantity(v_out_ptp, 'V'),
+    individual[0].update({"SimOK": raw is not None, "RawFilename": Path(raw).name, "LogFilename": Path(log).name, "RawEfficiency": raw_efficiency, "AdjustedEfficiency": reward_efficiency, "VOutPtP": Quantity(v_out_ptp, 'V'),
                      "VOutMin": Quantity(v_out_min, 'V'), "VOutMax": Quantity(v_out_max, 'V'), "PWM": {
             "Frequency": Quantity(individual[Genes.FREQUENCY.value], 'Hz'),
             "Period": Quantity(periods["Period"], 's'),
@@ -120,7 +124,7 @@ def evaluate_individual(individual):
             "Index": individual[i],
             "Value": Quantity(mrs.indexed_murata_capacitor("", individual[i])["Capacitance"], "F"),
             "PartNumber": mrs.indexed_murata_capacitor("", individual[i])["PartNumber"]
-        } for i in range(Genes.C1.value, Genes.C4.value + 1)]}
+        } for i in range(Genes.C1.value, Genes.C4.value + 1)]})
 
     return individual
 
@@ -166,8 +170,12 @@ toolbox.register("evaluate",
 
 
 def cxSpice(ind1, ind2, indpb=0.2):
-    for i in range(1, len(ind1) - 1):  # Offset by 1 to avoid crossing history
+    for i in range(Genes.FREQUENCY.value, Genes.C4.value):  # Offset by 1 to avoid crossing history
         if random.random() < indpb:
+            ind1[0]['Cross'] = ind2[0]['Parent']
+            ind2[0]['Cross'] = ind1[0]['Parent']
+            ind1[0]['Crosses'].append(Genes(i).name)
+            ind2[0]['Crosses'].append(Genes(i).name)
             ind1[i], ind2[i] = ind2[i], ind1[i]
 
     return ind1, ind2
@@ -203,17 +211,29 @@ def mutate_netlist(individual, indpb):  # TODO: Make this shift a small amount b
     if random.random() < indpb:
         option = random.random()
         if option < 1 / 6:
-            individual[Genes.FREQUENCY.value] = mutate_frequency(individual[Genes.FREQUENCY.value])
+            new_frequency = mutate_frequency(individual[Genes.FREQUENCY.value])
+            individual[0]['Mutations'].append({f'{Genes.FREQUENCY.name}': new_frequency - individual[Genes.FREQUENCY.value]})
+            individual[Genes.FREQUENCY.value] = new_frequency
         elif option < 2 / 6:
-            individual[Genes.L1.value] = mutate_indexed(individual[Genes.L1.value], 0, crs.number_of_models())
+            new_index = mutate_indexed(individual[Genes.L1.value], 0, crs.number_of_models())
+            individual[0]['Mutations'].append({f'{Genes.L1.name}': new_index - individual[Genes.L1.value]})
+            individual[Genes.L1.value] = new_index
         elif option < 3 / 6:
-            individual[Genes.C1.value] = mutate_indexed(individual[Genes.C1.value], 0, mrs.number_of_models())
+            new_index = mutate_indexed(individual[Genes.C1.value], 0, mrs.number_of_models())
+            individual[0]['Mutations'].append({f'{Genes.C1.name}': new_index - individual[Genes.C1.value]})
+            individual[Genes.C1.value] = new_index
         elif option < 4 / 6:
-            individual[Genes.C2.value] = mutate_indexed(individual[Genes.C2.value], 0, mrs.number_of_models())
+            new_index = mutate_indexed(individual[Genes.C2.value], 0, mrs.number_of_models())
+            individual[0]['Mutations'].append({f'{Genes.C2.name}': new_index - individual[Genes.C2.value]})
+            individual[Genes.C2.value] = new_index
         elif option < 5 / 6:
-            individual[Genes.C3.value] = mutate_indexed(individual[Genes.C3.value], 0, mrs.number_of_models())
+            new_index = mutate_indexed(individual[Genes.C3.value], 0, mrs.number_of_models())
+            individual[0]['Mutations'].append({f'{Genes.C3.name}': new_index - individual[Genes.C3.value]})
+            individual[Genes.C3.value] = new_index
         else:
-            individual[Genes.C4.value] = mutate_indexed(individual[Genes.C4.value], 0, mrs.number_of_models())
+            new_index = mutate_indexed(individual[Genes.C4.value], 0, mrs.number_of_models())
+            individual[0]['Mutations'].append({f'{Genes.C4.name}': new_index - individual[Genes.C4.value]})
+            individual[Genes.C4.value] = new_index
     return individual,
 
 
@@ -292,7 +312,7 @@ def main():
     stats.register("min", np.min)
     stats.register("max", np.max)
 
-    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=1, stats=stats, halloffame=hof)
+    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=4, stats=stats, halloffame=hof)
     best_ind = tools.selBest(pop, 1)[0]
     logging.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 

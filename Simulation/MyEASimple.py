@@ -1,7 +1,9 @@
 import colorsys
+import copy
 import time
 import json
 from pathlib import Path
+from random import random
 
 import numpy as np
 import rich
@@ -14,6 +16,57 @@ from rich.table import Table
 from rich.tree import Tree
 
 console = Console()
+
+
+def my_var_and(population, toolbox, cxpb, mutpb):
+    r"""Part of an evolutionary algorithm applying only the variation part
+    (crossover **and** mutation). The modified individuals have their
+    fitness invalidated. The individuals are cloned so returned population is
+    independent of the input population.
+
+    :param population: A list of individuals to vary.
+    :param toolbox: A :class:`~deap.base.Toolbox` that contains the evolution
+                    operators.
+    :param cxpb: The probability of mating two individuals.
+    :param mutpb: The probability of mutating an individual.
+    :returns: A list of varied individuals that are independent of their
+              parents.
+
+    The variation goes as follow. First, the parental population
+    :math:`P_\mathrm{p}` is duplicated using the :meth:`toolbox.clone` method
+    and the result is put into the offspring population :math:`P_\mathrm{o}`.  A
+    first loop over :math:`P_\mathrm{o}` is executed to mate pairs of
+    consecutive individuals. According to the crossover probability *cxpb*, the
+    individuals :math:`\mathbf{x}_i` and :math:`\mathbf{x}_{i+1}` are mated
+    using the :meth:`toolbox.mate` method. The resulting children
+    :math:`\mathbf{y}_i` and :math:`\mathbf{y}_{i+1}` replace their respective
+    parents in :math:`P_\mathrm{o}`. A second loop over the resulting
+    :math:`P_\mathrm{o}` is executed to mutate every individual with a
+    probability *mutpb*. When an individual is mutated it replaces its not
+    mutated version in :math:`P_\mathrm{o}`. The resulting :math:`P_\mathrm{o}`
+    is returned.
+
+    This variation is named *And* because of its propensity to apply both
+    crossover and mutation on the individuals. Note that both operators are
+    not applied systematically, the resulting individuals can be generated from
+    crossover only, mutation only, crossover and mutation, and reproduction
+    according to the given probabilities. Both probabilities should be in
+    :math:`[0, 1]`.
+    """
+    offspring = [toolbox.clone(ind) for ind in population]
+
+    # Apply crossover and mutation on the offspring
+    for i in range(1, len(offspring), 2):
+        if random.random() < cxpb:
+            offspring[i - 1], offspring[i] = toolbox.mate(offspring[i - 1], offspring[i])
+            del offspring[i - 1].fitness.values, offspring[i].fitness.values
+
+    for i in range(len(offspring)):
+        if random.random() < mutpb:
+            offspring[i], = toolbox.mutate(offspring[i])
+            del offspring[i].fitness.values
+
+    return offspring
 
 
 def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=None, verbose=__debug__):
@@ -80,8 +133,6 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=
         logbook = tools.Logbook()
         logbook.header = ['gen', 'nevals'] + (stats.fields if stats else [])
 
-        all_fitness_values = {}
-
         # Care about
         # Parents
         # Mutations
@@ -89,6 +140,11 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in population if not ind.fitness.valid]
+        for count, ind in enumerate(population):
+            ind[0]['Mutations'] = []
+            ind[0]['Parent'] = f'Origin'
+            ind[0]['Name'] = f'G{0}I{count}'
+            ind[0]['Crosses'] = []
         all_individuals = toolbox.map(toolbox.evaluate, invalid_ind)  # TODO: Logs efficiency, parts, etc.
         gen_console.rule(f"Generation {0}")
         PrintGeneration(0, all_individuals, gen_console)
@@ -107,34 +163,41 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=
         # Begin the generational process
         for gen in range(1, ngen + 1):
             # Select the next generation individuals
-            offspring = toolbox.select(population, len(population))
+            offspring = []
+            for count, ind in enumerate(toolbox.select(population, len(population))):
+                new_offspring = copy.deepcopy(ind)
+                new_offspring[0]['Mutations'] = []
+                new_offspring[0]['Parent'] = ind[0]['Name']
+                new_offspring[0]['Name'] = f'G{gen}I{count}'
+                ind[0]['Crosses'] = []
+                offspring.append(new_offspring)
 
             # Vary the pool of individuals
             offspring = varAnd(offspring, toolbox, cxpb, mutpb)  # TODO: Logs crosses and mutations
 
-            # Evaluate the individuals with an invalid fitness
-            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            # # Evaluate the individuals with an invalid fitness
+            # invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
             gen_console.print(f"[magenta]Starting Generation {gen} Simulations :brain:")
-            all_individuals = toolbox.map(toolbox.evaluate, invalid_ind)  # Make evaluate return a much more detailed summary object
+            all_individuals = toolbox.map(toolbox.evaluate, offspring)  # Make evaluate return a much more detailed summary object
             # f.write(json.dumps(all_individuals))
             gen_console.rule(f"Generation {gen}")
             gen_console.print(f"[bold green]Finished Simulating Generation {gen} :white_check_mark:")
             PrintGeneration(gen, all_individuals, gen_console)
 
             fitnesses = [[fit[0]["AdjustedEfficiency"], ] for fit in all_individuals]
-            for ind, fit in zip(invalid_ind, fitnesses):  # Then just use what is needed in this part
+            for ind, fit in zip(all_individuals, fitnesses):  # Then just use what is needed in this part
                 ind.fitness.values = fit
 
-            # Update the hall of fame with the generated individuals
-            if halloffame is not None:
-                halloffame.update(offspring)
+            # # Update the hall of fame with the generated individuals
+            # if halloffame is not None:
+            #     halloffame.update(offspring)
 
             # Replace the current population by the offspring
             population[:] = offspring
 
-            # Append the current generation statistics to the logbook
-            record = stats.compile(population) if stats else {}
-            logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+            # # Append the current generation statistics to the logbook
+            # record = stats.compile(population) if stats else {}
+            # logbook.record(gen=gen, nevals=len(all_individuals), **record)
             if verbose:
                 print(logbook.stream)
 
@@ -143,11 +206,13 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=
     return population, logbook
 
 
-def hsv2rgb(h,s,v):
-    return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h,s,v))
+def hsv2rgb(h, s, v):
+    return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h, s, v))
+
 
 def rgb_to_hex(r, g, b):
     return '#{:02x}{:02x}{:02x}'.format(r, g, b).upper()
+
 
 def PrintGeneration(gen: int, ind_data: dict, cons: rich.console):
     data = [i[0] for i in ind_data]
@@ -159,7 +224,6 @@ def PrintGeneration(gen: int, ind_data: dict, cons: rich.console):
     stats.add(f"Average: {np.average([i['AdjustedEfficiency'] for i in data]):05.2f}%")
     stats.add(f"Standard Deviation: {np.std([i['AdjustedEfficiency'] for i in data]):05.2f}")
     summary = tree.add("Summary")
-
 
     for count, ind in enumerate(data):
         eff_color = min(max(ind["AdjustedEfficiency"] * 100 * 0.88 / 255, 0), 1)
@@ -178,7 +242,11 @@ def PrintGeneration(gen: int, ind_data: dict, cons: rich.console):
         r, g, b = hsv2rgb(eff_color, 0.8, 0.8)
         ind_color = rgb_to_hex(r, g, b)
 
-        ind_brk_dict[f"ind_{count}"] = ind_brk.add(f"Individual {count}:")
+        ind_brk_dict[f"ind_{count}"] = ind_brk.add(f"Individual {ind['Name']}:")
+        try:
+            ind_brk_dict[f"ind_{count}"] = ind_brk.add(f"Parent {ind['Parent']}:")
+        except:
+            ind_brk_dict[f"ind_{count}"] = ind_brk.add(f"Parent None")
         ind_brk_dict[f"ind_{count}"].add(f"File Name: {Path(ind['RawFilename']).stem}")
         ind_brk_dict[f"ind_{count}_param"] = ind_brk_dict[f"ind_{count}"].add(f"Parameters")
         ind_brk_dict[f"ind_{count}_table"] = Table(show_footer=False, box=SIMPLE_HEAD)
