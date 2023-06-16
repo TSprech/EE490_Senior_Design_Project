@@ -82,12 +82,17 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=
 
         all_fitness_values = {}
 
+        # Care about
+        # Parents
+        # Mutations
+        # Crosses
+
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in population if not ind.fitness.valid]
-        all_fitness_values = toolbox.map(toolbox.evaluate, invalid_ind)
+        all_individuals = toolbox.map(toolbox.evaluate, invalid_ind)  # TODO: Logs efficiency, parts, etc.
         gen_console.rule(f"Generation {0}")
-        PrintGeneration(0, all_fitness_values, gen_console)
-        fitnesses = [[fit["AdjustedEfficiency"], ] for fit in all_fitness_values]
+        PrintGeneration(0, all_individuals, gen_console)
+        fitnesses = [[fit[0]["AdjustedEfficiency"], ] for fit in all_individuals]
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
@@ -105,19 +110,18 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=
             offspring = toolbox.select(population, len(population))
 
             # Vary the pool of individuals
-            offspring = varAnd(offspring, toolbox, cxpb, mutpb)
+            offspring = varAnd(offspring, toolbox, cxpb, mutpb)  # TODO: Logs crosses and mutations
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-            with gen_console.status(f"[blue]Starting Generation {gen} Simulations", spinner="dots12", spinner_style='bold blue'):
-                time.sleep(1)
-                all_fitness_values = toolbox.map(toolbox.evaluate, invalid_ind)  # Make evaluate return a much more detailed summary object
-                f.write(json.dumps(all_fitness_values))
-                gen_console.rule(f"Generation {gen}")
-                gen_console.print(f"[bold green]Finished Simulating Generation {gen} :white_check_mark:")
-            PrintGeneration(gen, all_fitness_values, gen_console)
+            gen_console.print(f"[magenta]Starting Generation {gen} Simulations :brain:")
+            all_individuals = toolbox.map(toolbox.evaluate, invalid_ind)  # Make evaluate return a much more detailed summary object
+            # f.write(json.dumps(all_individuals))
+            gen_console.rule(f"Generation {gen}")
+            gen_console.print(f"[bold green]Finished Simulating Generation {gen} :white_check_mark:")
+            PrintGeneration(gen, all_individuals, gen_console)
 
-            fitnesses = [[fit["AdjustedEfficiency"], ] for fit in all_fitness_values]
+            fitnesses = [[fit[0]["AdjustedEfficiency"], ] for fit in all_individuals]
             for ind, fit in zip(invalid_ind, fitnesses):  # Then just use what is needed in this part
                 ind.fitness.values = fit
 
@@ -145,7 +149,8 @@ def hsv2rgb(h,s,v):
 def rgb_to_hex(r, g, b):
     return '#{:02x}{:02x}{:02x}'.format(r, g, b).upper()
 
-def PrintGeneration(gen: int, data: dict, cons: rich.console):
+def PrintGeneration(gen: int, ind_data: dict, cons: rich.console):
+    data = [i[0] for i in ind_data]
     tree = Tree(f"Generation {gen}")
     stats = tree.add("Statistics")
     stats.add(f"Population: {len(data)}")

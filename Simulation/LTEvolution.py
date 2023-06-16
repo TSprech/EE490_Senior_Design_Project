@@ -104,8 +104,8 @@ def evaluate_individual(individual):
     if v_out_min < 4 or v_out_max > 7:
         reward_efficiency = 0
 
-    data = {"SimOK": raw is not None, "RawFilename": Path(raw).name, "LogFilename": Path(log).name, "RawEfficiency": raw_efficiency, "AdjustedEfficiency": reward_efficiency, "VOutPtP": Quantity(v_out_ptp, 'V'),
-            "VOutMin": Quantity(v_out_min, 'V'), "VOutMax": Quantity(v_out_max, 'V'), "PWM": {
+    individual[0] = {"SimOK": raw is not None, "RawFilename": Path(raw).name, "LogFilename": Path(log).name, "RawEfficiency": raw_efficiency, "AdjustedEfficiency": reward_efficiency, "VOutPtP": Quantity(v_out_ptp, 'V'),
+                     "VOutMin": Quantity(v_out_min, 'V'), "VOutMax": Quantity(v_out_max, 'V'), "PWM": {
             "Frequency": Quantity(individual[Genes.FREQUENCY.value], 'Hz'),
             "Period": Quantity(periods["Period"], 's'),
             "PeriodLS": Quantity(periods["LS"], 's'),
@@ -120,9 +120,9 @@ def evaluate_individual(individual):
             "Index": individual[i],
             "Value": Quantity(mrs.indexed_murata_capacitor("", individual[i])["Capacitance"], "F"),
             "PartNumber": mrs.indexed_murata_capacitor("", individual[i])["PartNumber"]
-        } for i in range(Genes.C1.value, Genes.C4.value+1)]}
+        } for i in range(Genes.C1.value, Genes.C4.value + 1)]}
 
-    return data
+    return individual
 
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))  # Positive weight means the goal is to achieve a maximum, negative would be if the evaluate function returned an error and the GA would work to minimize error
@@ -131,7 +131,7 @@ creator.create("Individual", list, fitness=creator.FitnessMax)  # Create the ind
 toolbox = base.Toolbox()  # Create a toolbox which manages the specific parameters for evolution
 
 # Attribute Generators (Genes)
-toolbox.register("attr_history", str, "")  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
+toolbox.register("attr_history", dict, {})  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
 toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
 # toolbox.register("attr_frequency", random.randint, 100, 300)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
 toolbox.register("attr_inductance", random.randint, 0, crs.number_of_models())  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
@@ -139,6 +139,7 @@ toolbox.register("attr_capacitance_1", random.randint, 0, mrs.number_of_models()
 toolbox.register("attr_capacitance_2", random.randint, 0, mrs.number_of_models())  # Same as inductance
 toolbox.register("attr_capacitance_3", random.randint, 0, mrs.number_of_models())  # Same as inductance
 toolbox.register("attr_capacitance_4", random.randint, 0, mrs.number_of_models())  # Same as inductance
+
 
 class Genes(Enum):
     HISTORY = 0
@@ -148,6 +149,7 @@ class Genes(Enum):
     C2 = 4
     C3 = 5
     C4 = 6
+
 
 # Individual Structure Initializer
 toolbox.register("individual", tools.initCycle, creator.Individual, (
@@ -164,7 +166,7 @@ toolbox.register("evaluate",
 
 
 def cxSpice(ind1, ind2, indpb=0.2):
-    for i in range(len(ind1) - 1):
+    for i in range(1, len(ind1) - 1):  # Offset by 1 to avoid crossing history
         if random.random() < indpb:
             ind1[i], ind2[i] = ind2[i], ind1[i]
 
