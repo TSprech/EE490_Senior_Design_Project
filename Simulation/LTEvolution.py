@@ -83,20 +83,26 @@ def simulate_circuit(fsw: int, ind_index: int, cap1_index: int, cap2_index: int,
 
 
 def evaluate_individual(individual):
-    try:
-        print(f"Got individual {individual[0]['Name']}")
-    except:
-        pass
+    # try:
+        # print(f"Got individual {individual[0]['Name']}")
+    # except:
+    #     pass
     periods = pulse_period(individual[Genes.FREQUENCY.value])
 
     raw, log = simulate_circuit(individual[Genes.FREQUENCY.value], individual[Genes.L1.value], individual[Genes.C1.value], individual[Genes.C2.value], individual[Genes.C3.value], individual[Genes.C4.value])
 
     log_data = LTSpiceLogReader(log_filename=log)
 
-    reward_efficiency = raw_efficiency = log_data.get_measure_value('eff')
-    v_out_ptp = log_data.get_measure_value('v_out_ptp')
-    v_out_min = log_data.get_measure_value('v_out_min')
-    v_out_max = log_data.get_measure_value('v_out_max')
+    try:
+        reward_efficiency = raw_efficiency = log_data.get_measure_value('eff')
+        v_out_ptp = log_data.get_measure_value('v_out_ptp')
+        v_out_min = log_data.get_measure_value('v_out_min')
+        v_out_max = log_data.get_measure_value('v_out_max')
+    except:
+        reward_efficiency = raw_efficiency = -1
+        v_out_ptp = -1
+        v_out_min = -1
+        v_out_max = -1
 
     if raw is None:
         reward_efficiency = 0
@@ -136,8 +142,8 @@ toolbox = base.Toolbox()  # Create a toolbox which manages the specific paramete
 
 # Attribute Generators (Genes)
 toolbox.register("attr_history", dict, {})  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
-toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
-# toolbox.register("attr_frequency", random.randint, 100, 300)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
+# toolbox.register("attr_frequency", random.randint, 100000, 3000000)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
+toolbox.register("attr_frequency", random.randint, 10, 30)  # Attribute to describe frequency, it will be generated using randint between 100kHz and 3MHz
 toolbox.register("attr_inductance", random.randint, 0, crs.number_of_models())  # Attribute to describe inductance, same as above but it uses uniform to generate an inductance
 toolbox.register("attr_capacitance_1", random.randint, 0, mrs.number_of_models())  # Same as inductance
 toolbox.register("attr_capacitance_2", random.randint, 0, mrs.number_of_models())  # Same as inductance
@@ -311,7 +317,7 @@ def main():
     stats.register("min", np.min)
     stats.register("max", np.max)
 
-    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=2)
+    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=8)
     best_ind = tools.selBest(pop, 1)[0]
     logging.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
