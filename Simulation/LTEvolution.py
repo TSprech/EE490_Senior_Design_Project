@@ -172,10 +172,10 @@ toolbox.register("evaluate",
 def cxSpice(ind1, ind2, indpb=0.2):
     for i in range(Genes.FREQUENCY.value, Genes.C4.value):  # Offset by 1 to avoid crossing history
         if random.random() < indpb:
-            ind1[0]['Cross'] = ind2[0]['Parent']
-            ind2[0]['Cross'] = ind1[0]['Parent']
-            ind1[0]['Crosses'].append(Genes(i).name)
-            ind2[0]['Crosses'].append(Genes(i).name)
+            ind1[Genes.HISTORY.value]['Cross'] = ind2[Genes.HISTORY.value]['Parent']
+            ind2[Genes.HISTORY.value]['Cross'] = ind1[Genes.HISTORY.value]['Parent']
+            ind1[Genes.HISTORY.value]['Crosses'].append(Genes(i).name)
+            ind2[Genes.HISTORY.value]['Crosses'].append(Genes(i).name)
             ind1[i], ind2[i] = ind2[i], ind1[i]
 
     return ind1, ind2
@@ -305,14 +305,13 @@ def main():
     toolbox.register("map", pool.map)
 
     pop = toolbox.population(n=cpu_count - 1)
-    hof = myHOF(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", np.mean)
     stats.register("std", np.std)
     stats.register("min", np.min)
     stats.register("max", np.max)
 
-    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=4, stats=stats, halloffame=hof)
+    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=4)
     best_ind = tools.selBest(pop, 1)[0]
     logging.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
