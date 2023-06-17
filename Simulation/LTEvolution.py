@@ -298,8 +298,8 @@ class myHOF(tools.HallOfFame):
 def main():
     top_netlist = SpiceEditor('LTFiles/EPC23102_Mine.asc')
 
-    # cpu_count = multiprocessing.cpu_count()
-    cpu_count = 5  # TODO: Doesn't work for # of individuals = 2
+    cpu_count = multiprocessing.cpu_count()
+    # cpu_count = 5  # TODO: Doesn't work for # of individuals = 2
     logging.info(f"CPU count: {cpu_count}")
     pool = multiprocessing.Pool(cpu_count - 1, initializer=init, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
     toolbox.register("map", pool.map)
@@ -311,7 +311,7 @@ def main():
     stats.register("min", np.min)
     stats.register("max", np.max)
 
-    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=4)
+    my_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=2)
     best_ind = tools.selBest(pop, 1)[0]
     logging.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
