@@ -89,6 +89,7 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen):
             ind[0]['Parent'] = f'Origin'
             ind[0]['Name'] = f'G{0}I{count}'
             ind[0]['Crosses'] = []
+            ind[0]['Cross'] = ''
         all_individuals = toolbox.map(toolbox.evaluate, invalid_ind)  # TODO: Logs efficiency, parts, etc.
         gen_console.rule(f"Generation {0}")
         PrintGeneration(0, all_individuals, gen_console)
@@ -109,6 +110,8 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen):
                 new_offspring[0]['Parent'] = ind[0]['Name']
                 new_offspring[0]['Name'] = f'G{gen}I{count}'
                 ind[0]['Crosses'] = []
+                new_offspring[0]['Crosses'] = []
+                new_offspring[0]['Cross'] = ''
                 offspring.append(new_offspring)
 
             # Vary the pool of individuals
