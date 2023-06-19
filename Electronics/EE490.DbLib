@@ -1,0 +1,58 @@
+[OutputDatabaseLinkFile]
+Version=1.1
+[DatabaseLinks]
+ConnectionString=Provider=MICROSOFT.ACE.OLEDB.12.0;Data Source=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\EE490DB.xlsx;Extended Properties="Excel 8.0;HDR=Yes;IMEX=1"
+AddMode=3
+RemoveMode=1
+UpdateMode=2
+ViewMode=0
+LeftQuote=[
+RightQuote=]
+QuoteTableNames=1
+UseTableSchemaName=0
+DefaultColumnType=VARCHAR(255)
+LibraryDatabaseType=Microsoft Excel
+LibraryDatabasePath=EE490DB.xlsx
+DatabasePathRelative=1
+TopPanelCollapsed=0
+LibrarySearchPath=
+OrcadMultiValueDelimiter=,
+SearchSubDirectories=0
+SchemaName=
+LastFocusedTable=Capacitors$
+[Table1]
+SchemaName=
+TableName=Capacitors$
+Enabled=True
+UserWhere=0
+UserWhereText=
+BrowserOrder_Sorting=
+BrowserOrder_Grouping=
+BrowserOrder_Visible=Item0=79|Value0=83|Voltage - Rated0=160|Package/Case Imperial0=213|Package/Case Metric0=199|Temperature Coefficient0=224|Tolerance0=114|Mounting Type0=156|Full Item0=150|Name0=343|Description0=466|Library Path0=131|Footprint Path0=150|Library Ref0=237|Footprint Ref0=266|Manufacturer 10=157|Manufacturer Part Number 10=261|Manufacturer Lifecycle 10=225|Manufacturer 20=157|Manufacturer Part Number 20=261|Manufacturer Lifecycle 20=225|Manufacturer 30=157|Manufacturer Part Number 30=261|Manufacturer Lifecycle 30=225
+[Table2]
+SchemaName=
+TableName=CaseCodes$
+Enabled=False
+UserWhere=0
+UserWhereText=
+BrowserOrder_Sorting=
+BrowserOrder_Grouping=
+BrowserOrder_Visible=Case Imperial0=143|Case Metric0=129|Capacitor Footprint0=266
+[FieldMap1]
+Options=FieldName=Capacitors$.Value|TableNameOnly=Capacitors$|FieldNameOnly=Value|FieldType=1|ParameterName=Value|VisibleOnAdd=True|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap2]
+Options=FieldName=Capacitors$.Voltage - Rated|TableNameOnly=Capacitors$|FieldNameOnly=Voltage - Rated|FieldType=1|ParameterName=Voltage - Rated|VisibleOnAdd=True|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap3]
+Options=FieldName=Capacitors$.Package/Case Imperial|TableNameOnly=Capacitors$|FieldNameOnly=Package/Case Imperial|FieldType=1|ParameterName=Package/Case Imperial|VisibleOnAdd=True|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap4]
+Options=FieldName=Capacitors$.Name|TableNameOnly=Capacitors$|FieldNameOnly=Name|FieldType=0|ParameterName=Name|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap5]
+Options=FieldName=Capacitors$.Description|TableNameOnly=Capacitors$|FieldNameOnly=Description|FieldType=1|ParameterName=[Description]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap6]
+Options=FieldName=Capacitors$.Library Path|TableNameOnly=Capacitors$|FieldNameOnly=Library Path|FieldType=1|ParameterName=[Library Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap7]
+Options=FieldName=Capacitors$.Footprint Path|TableNameOnly=Capacitors$|FieldNameOnly=Footprint Path|FieldType=1|ParameterName=[Footprint Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap8]
+Options=FieldName=Capacitors$.Library Ref|TableNameOnly=Capacitors$|FieldNameOnly=Library Ref|FieldType=1|ParameterName=[Library Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap9]
+Options=FieldName=Capacitors$.Footprint Ref|TableNameOnly=Capacitors$|FieldNameOnly=Footprint Ref|FieldType=1|ParameterName=[Footprint Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
