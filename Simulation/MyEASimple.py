@@ -1,13 +1,11 @@
 import colorsys
 import copy
-import time
 import json
+from enum import Enum
 from pathlib import Path
-from random import random
 
 import numpy as np
 import rich
-from deap import tools
 from deap.algorithms import varAnd
 from rich.box import *
 from rich.console import Console
@@ -18,7 +16,17 @@ from rich.tree import Tree
 console = Console()
 
 
-def my_ea_simple(population, toolbox, cxpb, mutpb, ngen):
+class Genes(Enum):
+    HISTORY = 0
+    FREQUENCY = 1
+    L1 = 2
+    C1 = 3
+    C2 = 4
+    C3 = 5
+    C4 = 6
+
+
+def logging_ea_simple(population, toolbox, cxpb, mutpb, ngen):
     """This algorithm reproduce the simplest evolutionary algorithm as
     presented in chapter 7 of [Back2000]_.
 
@@ -28,11 +36,7 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen):
     :param cxpb: The probability of mating two individuals.
     :param mutpb: The probability of mutating an individual.
     :param ngen: The number of generation.
-    :param stats: A :class:`~deap.tools.Statistics` object that is updated
-                  inplace, optional.
-    :param halloffame: A :class:`~deap.tools.HallOfFame` object that will
-                       contain the best individuals, optional.
-    :param verbose: Whether or not to log the statistics.
+
     :returns: The final population
     :returns: A class:`~deap.tools.Logbook` with the statistics of the
               evolution
@@ -85,18 +89,18 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen):
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in population if not ind.fitness.valid]
         for count, ind in enumerate(population):
-            ind[0]['Mutations'] = []
-            ind[0]['Parent'] = f'Origin'
-            ind[0]['Name'] = f'G{0}I{count}'
-            ind[0]['Crosses'] = []
-            ind[0]['Cross'] = ''
-        all_individuals = toolbox.map(toolbox.evaluate, invalid_ind)  # TODO: Logs efficiency, parts, etc.
+            ind[Genes.HISTORY.value]['Mutations'] = []
+            ind[Genes.HISTORY.value]['Parent'] = f'Origin'
+            ind[Genes.HISTORY.value]['Name'] = f'G{0}I{count}'
+            ind[Genes.HISTORY.value]['Crosses'] = []
+            ind[Genes.HISTORY.value]['Cross'] = ''
+        all_individuals = toolbox.map(toolbox.evaluate, invalid_ind)
         gen_console.rule(f"Generation {0}")
         PrintGeneration(0, all_individuals, gen_console)
         for ind in all_individuals:
-            generation_data.append(ind[0])
+            generation_data.append(ind[Genes.HISTORY.value])
 
-        fitnesses = [[fit[0]["AdjustedEfficiency"], ] for fit in all_individuals]
+        fitnesses = [[fit[Genes.HISTORY.value]["AdjustedEfficiency"], ] for fit in all_individuals]
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
@@ -106,35 +110,31 @@ def my_ea_simple(population, toolbox, cxpb, mutpb, ngen):
             offspring = []
             for count, ind in enumerate(toolbox.select(population, len(population))):
                 new_offspring = copy.deepcopy(ind)
-                new_offspring[0]['Mutations'] = []
-                new_offspring[0]['Parent'] = ind[0]['Name']
-                new_offspring[0]['Name'] = f'G{gen}I{count}'
-                ind[0]['Crosses'] = []
-                new_offspring[0]['Crosses'] = []
-                new_offspring[0]['Cross'] = ''
+                new_offspring[Genes.HISTORY.value]['Mutations'] = []
+                new_offspring[Genes.HISTORY.value]['Parent'] = ind[Genes.HISTORY.value]['Name']
+                new_offspring[Genes.HISTORY.value]['Name'] = f'G{gen}I{count}'
+                ind[Genes.HISTORY.value]['Crosses'] = []
+                new_offspring[Genes.HISTORY.value]['Crosses'] = []
+                new_offspring[Genes.HISTORY.value]['Cross'] = ''
                 offspring.append(new_offspring)
 
-            # Vary the pool of individuals
-            offspring = varAnd(offspring, toolbox, cxpb, mutpb)  # TODO: Logs crosses and mutations
+            offspring = varAnd(offspring, toolbox, cxpb, mutpb)  # Apply mutations and crosses to vary the pool
 
-            # # Evaluate the individuals with an invalid fitness
-            # invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
             gen_console.print(f"[magenta]Starting Generation {gen} Simulations :brain:")
-            all_individuals = toolbox.map(toolbox.evaluate, offspring)  # Make evaluate return a much more detailed summary object
-            gen_console.rule(f"Generation {gen}")
+            all_individuals = toolbox.map(toolbox.evaluate, offspring)  # Start simulating and generating the new fitness values
             gen_console.print(f"[bold green]Finished Simulating Generation {gen} :white_check_mark:")
+            gen_console.rule(f"Generation {gen} Summary")
             PrintGeneration(gen, all_individuals, gen_console)
             for ind in all_individuals:
-                generation_data.append(ind[0])
+                generation_data.append(ind[Genes.HISTORY.value])
 
-            fitnesses = [[fit[0]["AdjustedEfficiency"], ] for fit in all_individuals]
-            for ind, fit in zip(all_individuals, fitnesses):  # Then just use what is needed in this part
+            fitnesses = [[fit[Genes.HISTORY.value]["AdjustedEfficiency"], ] for fit in all_individuals]  # Extract the fitness value for each individual
+            for ind, fit in zip(all_individuals, fitnesses):  # Then just use the extracted fitness value to score each individual
                 ind.fitness.values = fit
 
-            # Replace the current population by the offspring
-            population[:] = offspring
+            population[:] = offspring  # Replace the current population by the offspring
 
-        # gen_console.save_html('HTMLOUT.html')
+        gen_console.save_html('HTMLOUT.html')
         f.write(json.dumps(generation_data))
 
     return population
@@ -166,7 +166,7 @@ def PrintGeneration(gen: int, ind_data: dict, cons: rich.console):
 
         bar = ProgressBar(total=100, completed=ind["AdjustedEfficiency"] * 100, complete_style=f'{ind_color}')
         table = Table(show_header=False, pad_edge=False, show_edge=False, show_lines=False, show_footer=False, box=None)
-        table.add_row(f"Individual {count}:", bar, f"{ind['AdjustedEfficiency']:05.2f} %")
+        table.add_row(f"Individual {count:2}:", bar, f"{ind['AdjustedEfficiency']*100:05.2f} %")
         summary.add(table)
 
     ind_brk = tree.add("Individual Breakdown")
@@ -194,6 +194,7 @@ def PrintGeneration(gen: int, ind_data: dict, cons: rich.console):
 
         ind_brk_dict[f"ind_{count}_comp"] = ind_brk_dict[f"ind_{count}"].add(f"Components")
         ind_brk_dict[f"ind_{count}_comp_table"] = Table(show_footer=False, box=SIMPLE_HEAD)
+
         ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Component')
         ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Index')
         ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Value')
