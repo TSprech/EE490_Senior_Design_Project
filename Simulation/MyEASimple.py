@@ -199,11 +199,10 @@ def PrintGeneration(gen: int, ind_data: dict, cons: rich.console):
         ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Index')
         ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Value')
         ind_brk_dict[f"ind_{count}_comp_table"].add_column(f'[{ind_color}]Part #')
-        ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Inductor ", f"{ind['Inductors'][0]['Index']}", f"{ind['Inductors'][0]['Value']}", f"{ind['Inductors'][0]['PartNumber']}")
-        ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Capacitor 1 ", f"{ind['Capacitors'][0]['Index']}", f"{ind['Capacitors'][0]['Value']}", f"{ind['Capacitors'][0]['PartNumber']}")
-        ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Capacitor 2 ", f"{ind['Capacitors'][1]['Index']}", f"{ind['Capacitors'][1]['Value']}", f"{ind['Capacitors'][1]['PartNumber']}")
-        ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Capacitor 3 ", f"{ind['Capacitors'][2]['Index']}", f"{ind['Capacitors'][2]['Value']}", f"{ind['Capacitors'][2]['PartNumber']}")
-        ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Capacitor 4 ", f"{ind['Capacitors'][3]['Index']}", f"{ind['Capacitors'][3]['Value']}", f"{ind['Capacitors'][3]['PartNumber']}")
+        for index, inductor in enumerate(ind['Inductors']):
+            ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Inductor ", f"{inductor['Index']}", f"{inductor['Value']}", f"{inductor['PartNumber']}")
+        for index, capacitor in enumerate(ind['Capacitors']):
+            ind_brk_dict[f"ind_{count}_comp_table"].add_row(f"Capacitor {index} ", f"{capacitor['Index']}", f"{capacitor['Value']}", f"{capacitor['PartNumber']}")
         ind_brk_dict[f"ind_{count}_comp"].add(ind_brk_dict[f"ind_{count}_comp_table"])
 
         ind_brk_dict[f"ind_{count}_perf"] = ind_brk_dict[f"ind_{count}"].add(f"Performance")
