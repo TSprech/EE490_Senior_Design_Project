@@ -105,7 +105,7 @@ def evaluate_individual(individual):
     if raw is None:  # If for some reason the raw fails, penalize the individual
         reward_efficiency = 0
 
-    acceptable_ripple_ptp = Quantity(0.1, 'V')  # Volts
+    acceptable_ripple_ptp = Quantity(0.05, 'V')  # Volts
     if v_out_ptp > float(acceptable_ripple_ptp):
         reward_efficiency = reward_efficiency / (1 * (float(acceptable_ripple_ptp) - v_out_ptp))
 
@@ -269,12 +269,12 @@ def main():
     cpu_count = multiprocessing.cpu_count()  # Get a count of how many CPUs the current computer has
     # cpu_count = 5  # TODO: Doesn't work for # of individuals = 2
     logging.info(f"CPU count: {cpu_count}")
-    pool = multiprocessing.Pool(cpu_count - 1, initializer=init_core_netlist, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
+    pool = multiprocessing.Pool(cpu_count, initializer=init_core_netlist, initargs=(top_netlist,))  # Huge thanks to: https://gist.github.com/AvalZ/f019c9adbc15c505578b99041fb803d7
     toolbox.register("map", pool.map)  # Tell DEAP to use the multiprocessing cores
 
-    pop = toolbox.population(n=cpu_count - 1)  # Give the evolutionary algorithm all the cores to run simulations on
+    pop = toolbox.population(n=cpu_count * 2)  # Give the evolutionary algorithm all the cores to run simulations on
 
-    logging_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=0)  # Run the modified EA simple function which will log all the evolution changes
+    logging_ea_simple(pop, toolbox, cxpb=0.5, mutpb=0.8, ngen=40)  # Run the modified EA simple function which will log all the evolution changes
     best_ind = tools.selBest(pop, 1)[0]  # Pick the best individual
     logging.info(f"Best individual is {best_ind}, {best_ind.fitness.values}")
 
