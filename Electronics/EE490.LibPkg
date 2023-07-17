@@ -378,6 +378,11 @@ OutputName20=Mixed Sim Netlist
 OutputDocumentPath20=
 OutputVariantName20=
 OutputDefault20=0
+OutputType21=PADSNetlist
+OutputName21=PADS ASCII Netlist
+OutputDocumentPath21=
+OutputVariantName21=
+OutputDefault21=0
 
 [OutputGroup2]
 Name=Simulator Outputs
@@ -841,6 +846,11 @@ OutputName11=Web Review Data
 OutputDocumentPath11=
 OutputVariantName11=
 OutputDefault11=0
+OutputType12=ExportIDF
+OutputName12=Export IDF
+OutputDocumentPath12=
+OutputVariantName12=
+OutputDefault12=0
 
 [OutputGroup10]
 Name=PostProcess Outputs
