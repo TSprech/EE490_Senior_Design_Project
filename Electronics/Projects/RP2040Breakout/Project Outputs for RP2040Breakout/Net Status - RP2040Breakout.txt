@@ -1,0 +1,94 @@
+Net Status Report
+Filename     : C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc
+Date         : 7/17/2023
+Time         : 9:06:26 AM
+Time Elapsed : 00:00:01
+
+Nets, Layer, Length
+    1V1, Signal Layers Only, 22.7992mm
+    2V048, Signal Layers Only, 10.2889mm
+    3V3, Signal Layers Only, 353.0346mm
+    5V, Signal Layers Only, 238.4072mm
+    BOOT, Signal Layers Only, 44.9133mm
+    C0UART.RX, Signal Layers Only, 24.4005mm
+    C0UART.TX, Signal Layers Only, 25.2278mm
+    C0UART_LED, Signal Layers Only, 36.0197mm
+    C1UART.RX, Signal Layers Only, 26.5576mm
+    C1UART.TX, Signal Layers Only, 25.0855mm
+    C1UART_LED, Signal Layers Only, 18.9905mm
+    CC1_PRG, Signal Layers Only, 48.1737mm
+    CC1_PWR, Signal Layers Only, 91.004mm
+    CC2_PRG, Signal Layers Only, 62.6169mm
+    CC2_PWR, Signal Layers Only, 91.927mm
+    CKI, Signal Layers Only, 3.6mm
+    CKO, Signal Layers Only, 2.8124mm
+    CLK_3V3, Signal Layers Only, 4.1393mm
+    CLK_5V, Signal Layers Only, 42.7261mm
+    GND, Signal Layers Only, 155.8467mm
+    MISC1, Signal Layers Only, 46.9146mm
+    MISC2, Signal Layers Only, 44.7543mm
+    NetC18_2, Signal Layers Only, 1.4375mm
+    NetC20_1, Signal Layers Only, 5.3592mm
+    NetD12_1, Signal Layers Only, 2.2338mm
+    NetD13_1, Signal Layers Only, 1.6915mm
+    NetD14_1, Signal Layers Only, 1.4674mm
+    NetD15_1, Signal Layers Only, 4.3337mm
+    NetD16_1, Signal Layers Only, 1.4674mm
+    NetD17_1, Signal Layers Only, 1.426mm
+    NetD1_1, Signal Layers Only, 2.8032mm
+    NetD1_2, Signal Layers Only, 1.5846mm
+    NetD2_5, Signal Layers Only, 8.7456mm
+    NetD2_6, Signal Layers Only, 12.2165mm
+    NetD3_5, Signal Layers Only, 8.7456mm
+    NetD3_6, Signal Layers Only, 12.2165mm
+    NetD4_5, Signal Layers Only, 3.6mm
+    NetD4_6, Signal Layers Only, 3.6mm
+    NetD5_5, Signal Layers Only, 13.2842mm
+    NetD5_6, Signal Layers Only, 9.67mm
+    NetD6_5, Signal Layers Only, 3.6mm
+    NetD6_6, Signal Layers Only, 3.6mm
+    NetD7_5, Signal Layers Only, 8.7232mm
+    NetD7_6, Signal Layers Only, 12.1941mm
+    NetD8_5, Signal Layers Only, 17.0358mm
+    NetD8_6, Signal Layers Only, 15.3148mm
+    NetD9_5, Signal Layers Only, 8.7456mm
+    NetD9_6, Signal Layers Only, 4.8mm
+    NetL1_1, Signal Layers Only, 1.6mm
+    NetR8_2, Signal Layers Only, 4.3451mm
+    OVP1, Signal Layers Only, 56.8426mm
+    OVP2, Signal Layers Only, 54.3814mm
+    PMUX_ST, Signal Layers Only, 71.3843mm
+    PWM/DAP_RUN_LED, Signal Layers Only, 19.6428mm
+    PWM0A/SWCLK, Signal Layers Only, 16.1131mm
+    PWM0B/SWDIO, Signal Layers Only, 16.983mm
+    QSPI.C\S\, Signal Layers Only, 13.4349mm
+    QSPI.SCLK, Signal Layers Only, 11.7256mm
+    QSPI.SD0, Signal Layers Only, 11.7137mm
+    QSPI.SD1, Signal Layers Only, 11.6325mm
+    QSPI.SD2, Signal Layers Only, 11.8275mm
+    QSPI.SD3, Signal Layers Only, 11.7516mm
+    REF_EN, Signal Layers Only, 18.3963mm
+    RPD_N, Signal Layers Only, 5.4474mm
+    RPD_P, Signal Layers Only, 4.4964mm
+    RUN, Signal Layers Only, 30.0257mm
+    SDI, Signal Layers Only, 3.6mm
+    SDO, Signal Layers Only, 2.6566mm
+    SD_3V3, Signal Layers Only, 8.5205mm
+    SD_5V, Signal Layers Only, 37.6895mm
+    SPI0.CIPO, Signal Layers Only, 25.0305mm
+    SPI0.C\S\, Signal Layers Only, 24.9983mm
+    SPI0.SCLK, Signal Layers Only, 25.0707mm
+    SPI1.CIPO, Signal Layers Only, 31.7049mm
+    SPI1.C\S\, Signal Layers Only, 31.7418mm
+    SPI1.SCLK, Signal Layers Only, 31.9585mm
+    SWCLK, Signal Layers Only, 22.3589mm
+    SWD, Signal Layers Only, 26.6855mm
+    UART_LED/FET_EN, Signal Layers Only, 31.3105mm
+    USB1_LED, Signal Layers Only, 77.4624mm
+    USB2_LED, Signal Layers Only, 74.601mm
+    USBD_N, Signal Layers Only, 26.3941mm
+    USBD_P, Signal Layers Only, 26.3941mm
+    VUSB_PRG, Signal Layers Only, 19.8947mm
+    VUSB_PWR, Signal Layers Only, 21.7039mm
+    XIN, Signal Layers Only, 7.0006mm
+count : 86

@@ -1,0 +1,728 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html">
+<style type="text/css">
+		h1, h2, h3, h4, h5, h6 { 
+			font-family : segoe ui;
+			color : black;
+			background-color : #EDE7D9;
+			padding: 0.3em;
+		}
+
+		h1 {
+			font-size: 1.2em;
+		}		
+
+		h2 {
+			font-size: 1.2em;
+		}
+
+		body { 
+			font-family : segoe ui;
+		}
+
+		td, th {  
+			padding: 0.5em;
+			text-align : left;
+		}
+		th { 
+			background-color : #EEEEEE;
+		
+		}
+		th.column1, td.column1 { 
+			width : 50%; 
+		}
+
+        th.column2, td.column2 {
+            width : 25%;
+        }
+
+		table { 
+			width : 100%; 
+            font-size: 0.9em;
+		}
+		.front_matter, .front_matter_column1, .front_matter_column2, .front_matter_column3
+		{
+			left : 0;
+			top : 0;
+			padding: 0em;
+			padding-top : 0.1em;
+			border : 0px solid black;
+			width : 100%;
+			vertical-align: top;
+			text-align: left;
+		}
+
+		.front_matter_column1 {
+			width : 5em;
+			font-weight: bold;
+		}
+
+		.front_matter_column2 {
+			width: 0.1em;
+		}
+
+		.front_matter_column3 {
+			width : auto;
+		}
+
+		.total_column1, .total_column {
+			font-weight : bold;
+		}
+		.total_column1 {
+			text-align : left;
+		}
+		.warning, .error { 
+			color : red;
+			font-weight : bold;
+		}	
+		tr.onmouseout_odd { 
+			background-color : #white;
+		}
+		tr.onmouseout_even { 
+			background-color : #FAFAFA;
+		}
+		tr.onmouseover_odd, tr.onmouseover_even { 
+			background-color : #EEEEEE;
+		} 
+		a:link, a:visited, .q a:link,.q a:active,.q {
+			color: #21489e; 
+		}
+		a:link.callback, a:visited.callback { 
+			color: #21489e;
+		}
+		a:link.customize, a:visited.customize {
+			color: #C0C0C0;
+			position: absolute; 
+			right: 10px;
+		}	
+		p.contents_level1 {
+			font-weight : bold;
+			font-size : 110%;
+			margin : 0.5em;
+		}
+		p.contents_level2 {
+			position : relative;
+			left : 20px;
+			margin : 0.5em;
+		}
+	</style><script type="text/javascript">
+		function coordToMils(coord) {
+			var number = coord / 10000;
+			
+			if (number != number.toFixed(3))
+				number = number.toFixed(3);
+			
+			return number + 'mil'
+		}
+
+		function coordToMM(coord) {
+			var number = 0.0254 * coord / 10000;
+			
+			if (number != number.toFixed(4))
+				number = number.toFixed(4);
+			
+			return number + 'mm'
+		}
+	
+		function convertCoord(coordNode, units) {
+			for (var i = 0; i < coordNode.childNodes.length; i++) {
+				coordNode.removeChild(coordNode.childNodes[i]);		
+			}
+
+			var coord = coordNode.getAttribute('value');
+			if (coord != null) {
+				if (units == 'mm') {	
+					textNode = document.createTextNode(coordToMM(coord));
+					coordNode.appendChild(textNode);
+				} else if (units == 'mil') {
+					textNode = document.createTextNode(coordToMils(coord));		
+					coordNode.appendChild(textNode);	
+				}
+			}
+		}
+	
+		function convertUnits(unitNode, units) {
+			for (var i = 0; i < unitNode.childNodes.length; i++) {
+				unitNode.removeChild(unitNode.childNodes[i]);		
+			}
+		
+			textNode = document.createTextNode(units); 
+			unitNode.appendChild(textNode);
+		}
+	
+		function changeUnits(radio_input, units) {
+			if (radio_input.checked) {
+			
+				var elements = document.getElementsByName('coordinate');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertCoord(elements[i], units);
+					}
+				}
+	
+				var elements = document.getElementsByName('units');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertUnits(elements[i], units);
+					}
+				}
+			}
+		}	
+	</script><title>Net Status Report</title>
+</head>
+<body onload="document.getElementById('radio_mm').click()"><img ALT="Altium" src="
+			file://C:\Users\Public\Documents\Altium\AD20\Templates\AD_logo.png
+		"><a href="dxpprocess://Client:SetupPreferences?Server=PCB|PageName=Reports" class="customize"><acronym title="dxpprocess://Client:SetupPreferences?Server=PCB|PageName=Reports">customize</acronym></a><h1>Net Status Report</h1>
+<table class="front_matter">
+<tr class="front_matter">
+<td class="front_matter_column1">Date:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">7/17/2023</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Time:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">9:06:26 AM</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Elapsed Time:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">00:00:01</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Filename:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3"><a href="file:///C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc" class="file"><acronym title="C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc">C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc</acronym></a></td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Units:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">
+<form><input type="radio" name="radio_units" id="radio_mm" onclick="changeUnits(this, 'mm')">mm<input type="radio" name="radio_units" id="radio_mil" onclick="changeUnits(this, 'mil')">mils</form>
+</td>
+</tr>
+</table><a name="IDTQJSL440JGOAIKWWXOVLWZVYZKVAJ4EG1WQQNVNKM5JL523FGMWG"><table>
+<tr>
+<th class="column1">Nets</th>
+<th class="column2">Layer</th>
+<th class="column3">Length</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2229.331mil|Location2.X=2469.488mil|Location1.Y=1841.535mil|Location2.Y=2443.898mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2229.331mil|Location2.X=2469.488mil|Location1.Y=1841.535mil|Location2.Y=2443.898mil|Absolute=True">1V1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="8976057">22.7992mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2460.63mil|Location2.X=2791.287mil|Location1.Y=2169.193mil|Location2.Y=2366.301mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2460.63mil|Location2.X=2791.287mil|Location1.Y=2169.193mil|Location2.Y=2366.301mil|Absolute=True">2V048</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4050760">10.2889mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1248.032mil|Location2.X=3413.386mil|Location1.Y=1287.402mil|Location2.Y=3408.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1248.032mil|Location2.X=3413.386mil|Location1.Y=1287.402mil|Location2.Y=3408.169mil|Absolute=True">3V3</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="138990009">353.0346mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1314.961mil|Location2.X=3394.685mil|Location1.Y=1325.787mil|Location2.Y=3227.362mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1314.961mil|Location2.X=3394.685mil|Location1.Y=1325.787mil|Location2.Y=3227.362mil|Absolute=True">5V</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="93861101">238.4072mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1811.399mil|Location2.X=3112.008mil|Location1.Y=2257.516mil|Location2.Y=3087.598mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1811.399mil|Location2.X=3112.008mil|Location1.Y=2257.516mil|Location2.Y=3087.598mil|Absolute=True">BOOT</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="17682383">44.9133mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1762.795mil|Location2.X=2279.528mil|Location1.Y=1329.725mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1762.795mil|Location2.X=2279.528mil|Location1.Y=1329.725mil|Location2.Y=1933.169mil|Absolute=True">C0UART.RX</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="9606484">24.4005mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1664.37mil|Location2.X=2263.78mil|Location1.Y=1329.725mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1664.37mil|Location2.X=2263.78mil|Location1.Y=1329.725mil|Location2.Y=1933.169mil|Absolute=True">C0UART.TX</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="9932224">25.2278mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1615.158mil|Location2.X=2295.276mil|Location1.Y=1314.961mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1615.158mil|Location2.X=2295.276mil|Location1.Y=1314.961mil|Location2.Y=1933.169mil|Absolute=True">C0UART_LED</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="14180989">36.0197mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=3060.039mil|Location1.Y=1329.725mil|Location2.Y=2000mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=3060.039mil|Location1.Y=1329.725mil|Location2.Y=2000mil|Absolute=True">C1UART.RX</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="10455736">26.5576mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=2961.614mil|Location1.Y=1329.725mil|Location2.Y=1984.252mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=2961.614mil|Location1.Y=1329.725mil|Location2.Y=1984.252mil|Absolute=True">C1UART.TX</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="9876164">25.0855mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=2834.646mil|Location1.Y=1500.984mil|Location2.Y=1968.504mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=2834.646mil|Location1.Y=1500.984mil|Location2.Y=1968.504mil|Absolute=True">C1UART_LED</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="7476568">18.9905mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=3142.717mil|Location1.Y=2133.858mil|Location2.Y=3231.693mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=3142.717mil|Location1.Y=2133.858mil|Location2.Y=3231.693mil|Absolute=True">CC1_PRG</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="18966025">48.1737mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1926.181mil|Location2.X=3190.039mil|Location1.Y=2102.362mil|Location2.Y=3494.095mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1926.181mil|Location2.X=3190.039mil|Location1.Y=2102.362mil|Location2.Y=3494.095mil|Absolute=True">CC1_PWR</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="35828330">91.004mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=3180.118mil|Location1.Y=2118.11mil|Location2.Y=3474.409mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=3180.118mil|Location1.Y=2118.11mil|Location2.Y=3474.409mil|Absolute=True">CC2_PRG</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="24652306">62.6169mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1825.787mil|Location2.X=3223.425mil|Location1.Y=2086.614mil|Location2.Y=3513.78mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1825.787mil|Location2.X=3223.425mil|Location1.Y=2086.614mil|Location2.Y=3513.78mil|Absolute=True">CC2_PWR</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="36191733">91.927mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1790.354mil|Location1.Y=1705.709mil|Location2.Y=1758.858mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1790.354mil|Location1.Y=1705.709mil|Location2.Y=1758.858mil|Absolute=True">CKI</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1417323">3.6mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1325.787mil|Location2.X=1475.394mil|Location1.Y=2938.976mil|Location2.Y=3018.701mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1325.787mil|Location2.X=1475.394mil|Location1.Y=2938.976mil|Location2.Y=3018.701mil|Absolute=True">CKO</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1107259">2.8124mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2060.992mil|Location2.X=2244.193mil|Location1.Y=1935.008mil|Location2.Y=1970.504mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2060.992mil|Location2.X=2244.193mil|Location1.Y=1935.008mil|Location2.Y=1970.504mil|Absolute=True">CLK_3V3</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1629632">4.1393mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1984.252mil|Location2.X=3128.937mil|Location1.Y=1749.842mil|Location2.Y=2073.819mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1984.252mil|Location2.X=3128.937mil|Location1.Y=1749.842mil|Location2.Y=2073.819mil|Absolute=True">CLK_5V</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="16821302">42.7261mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1216.685mil|Location2.X=3503.787mil|Location1.Y=1216.685mil|Location2.Y=3284.843mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1216.685mil|Location2.X=3503.787mil|Location1.Y=1216.685mil|Location2.Y=3284.843mil|Absolute=True">GND</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="61356952">155.8467mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2143.701mil|Location2.X=3419.291mil|Location1.Y=1814.961mil|Location2.Y=2225.394mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2143.701mil|Location2.X=3419.291mil|Location1.Y=1814.961mil|Location2.Y=2225.394mil|Absolute=True">MISC1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="18470313">46.9146mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2171.26mil|Location2.X=3419.291mil|Location1.Y=1802.087mil|Location2.Y=2126.968mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2171.26mil|Location2.X=3419.291mil|Location1.Y=1802.087mil|Location2.Y=2126.968mil|Absolute=True">MISC2</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="17619793">44.7543mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True">NetC18_2</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="565964">1.4375mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1977.362mil|Location2.X=2346.85mil|Location1.Y=2824.803mil|Location2.Y=3033.465mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1977.362mil|Location2.X=2346.85mil|Location1.Y=2824.803mil|Location2.Y=3033.465mil|Absolute=True">NetC20_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="2109916">5.3592mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2477.362mil|Location2.X=2584.055mil|Location1.Y=3289.37mil|Location2.Y=3385.827mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2477.362mil|Location2.X=2584.055mil|Location1.Y=3289.37mil|Location2.Y=3385.827mil|Absolute=True">NetD12_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="879459">2.2338mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2205.709mil|Location2.X=2269.094mil|Location1.Y=3289.37mil|Location2.Y=3408.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2205.709mil|Location2.X=2269.094mil|Location1.Y=3289.37mil|Location2.Y=3408.169mil|Absolute=True">NetD13_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="665961">1.6915mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2250mil|Location2.X=2345.768mil|Location1.Y=1420.079mil|Location2.Y=1471.457mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2250mil|Location2.X=2345.768mil|Location1.Y=1420.079mil|Location2.Y=1471.457mil|Absolute=True">NetD14_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="577720">1.4674mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1540.571mil|Location2.X=1589.862mil|Location1.Y=1424.016mil|Location2.Y=1612.205mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1540.571mil|Location2.X=1589.862mil|Location1.Y=1424.016mil|Location2.Y=1612.205mil|Absolute=True">NetD15_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1706187">4.3337mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2765.748mil|Location2.X=2861.516mil|Location1.Y=1424.016mil|Location2.Y=1475.394mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2765.748mil|Location2.X=2861.516mil|Location1.Y=1424.016mil|Location2.Y=1475.394mil|Absolute=True">NetD16_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="577720">1.4674mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1868.11mil|Location2.X=1963.878mil|Location1.Y=1420.079mil|Location2.Y=1469.291mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1868.11mil|Location2.X=1963.878mil|Location1.Y=1420.079mil|Location2.Y=1469.291mil|Absolute=True">NetD17_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="561413">1.426mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True">NetD1_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1103611">2.8032mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True">NetD1_2</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="623846">1.5846mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3249.016mil|Location2.X=3314.961mil|Location1.Y=1705.709mil|Location2.Y=2073.819mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3249.016mil|Location2.X=3314.961mil|Location1.Y=1705.709mil|Location2.Y=2073.819mil|Absolute=True">NetD2_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="3443143">8.7456mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3249.016mil|Location2.X=3327.835mil|Location1.Y=1642.716mil|Location2.Y=2136.811mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3249.016mil|Location2.X=3327.835mil|Location1.Y=1642.716mil|Location2.Y=2136.811mil|Absolute=True">NetD2_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4809637">12.2165mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1409.449mil|Location2.X=1475.394mil|Location1.Y=1705.709mil|Location2.Y=2073.819mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1409.449mil|Location2.X=1475.394mil|Location1.Y=1705.709mil|Location2.Y=2073.819mil|Absolute=True">NetD3_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="3443143">8.7456mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1396.575mil|Location2.X=1475.394mil|Location1.Y=1642.716mil|Location2.Y=2136.811mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1396.575mil|Location2.X=1475.394mil|Location1.Y=1642.716mil|Location2.Y=2136.811mil|Absolute=True">NetD3_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4809637">12.2165mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2934.055mil|Location2.X=3128.937mil|Location1.Y=1705.709mil|Location2.Y=1758.858mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2934.055mil|Location2.X=3128.937mil|Location1.Y=1705.709mil|Location2.Y=1758.858mil|Absolute=True">NetD4_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1417323">3.6mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2934.055mil|Location2.X=3128.937mil|Location1.Y=1642.716mil|Location2.Y=1695.866mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2934.055mil|Location2.X=3128.937mil|Location1.Y=1642.716mil|Location2.Y=1695.866mil|Absolute=True">NetD4_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1417323">3.6mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1562.992mil|Location2.X=1648.622mil|Location1.Y=2020.669mil|Location2.Y=2388.78mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1562.992mil|Location2.X=1648.622mil|Location1.Y=2020.669mil|Location2.Y=2388.78mil|Absolute=True">NetD5_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="5230006">13.2842mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1576.772mil|Location2.X=1648.622mil|Location1.Y=2083.661mil|Location2.Y=2325.787mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1576.772mil|Location2.X=1648.622mil|Location1.Y=2083.661mil|Location2.Y=2325.787mil|Absolute=True">NetD5_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="3807088">9.67mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2619.095mil|Location2.X=2813.976mil|Location1.Y=1705.709mil|Location2.Y=1758.858mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2619.095mil|Location2.X=2813.976mil|Location1.Y=1705.709mil|Location2.Y=1758.858mil|Absolute=True">NetD6_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1417322">3.6mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2619.095mil|Location2.X=2813.976mil|Location1.Y=1642.716mil|Location2.Y=1695.866mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2619.095mil|Location2.X=2813.976mil|Location1.Y=1642.716mil|Location2.Y=1695.866mil|Absolute=True">NetD6_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1417322">3.6mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1410.512mil|Location2.X=1475.394mil|Location1.Y=2335.63mil|Location2.Y=2703.74mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1410.512mil|Location2.X=1475.394mil|Location1.Y=2335.63mil|Location2.Y=2703.74mil|Absolute=True">NetD7_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="3434336">8.7232mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1397.638mil|Location2.X=1475.394mil|Location1.Y=2272.638mil|Location2.Y=2766.732mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1397.638mil|Location2.X=1475.394mil|Location1.Y=2272.638mil|Location2.Y=2766.732mil|Absolute=True">NetD7_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4800830">12.1941mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1910.433mil|Location2.X=2499.016mil|Location1.Y=1609.606mil|Location2.Y=1758.858mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1910.433mil|Location2.X=2499.016mil|Location1.Y=1609.606mil|Location2.Y=1758.858mil|Absolute=True">NetD8_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="6707003">17.0358mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1910.433mil|Location2.X=2499.016mil|Location1.Y=1596.732mil|Location2.Y=1695.866mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1910.433mil|Location2.X=2499.016mil|Location1.Y=1596.732mil|Location2.Y=1695.866mil|Absolute=True">NetD8_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="6029464">15.3148mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1661.417mil|Location1.Y=2650.59mil|Location2.Y=3018.701mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1661.417mil|Location1.Y=2650.59mil|Location2.Y=3018.701mil|Absolute=True">NetD9_5</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="3443145">8.7456mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1648.622mil|Location1.Y=2713.583mil|Location2.Y=2955.709mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1648.622mil|Location1.Y=2713.583mil|Location2.Y=2955.709mil|Absolute=True">NetD9_6</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1889765">4.8mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True">NetL1_1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="629921">1.6mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True">NetR8_2</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1710682">4.3451mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2035.725mil|Location2.X=3419.291mil|Location1.Y=1775.591mil|Location2.Y=2108.11mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2035.725mil|Location2.X=3419.291mil|Location1.Y=1775.591mil|Location2.Y=2108.11mil|Absolute=True">OVP1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="22378979">56.8426mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2061.024mil|Location2.X=3419.291mil|Location1.Y=1789.213mil|Location2.Y=2120.984mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2061.024mil|Location2.X=3419.291mil|Location1.Y=1789.213mil|Location2.Y=2120.984mil|Absolute=True">OVP2</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="21410004">54.3814mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2375.59mil|Location2.X=3242.126mil|Location1.Y=2052.165mil|Location2.Y=3490.157mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2375.59mil|Location2.X=3242.126mil|Location1.Y=2052.165mil|Location2.Y=3490.157mil|Absolute=True">PMUX_ST</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="28104059">71.3843mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1868.11mil|Location2.X=2311.024mil|Location1.Y=1493.11mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1868.11mil|Location2.X=2311.024mil|Location1.Y=1493.11mil|Location2.Y=1933.169mil|Absolute=True">PWM/DAP_RUN_LED</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="7733368">19.6428mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2444.882mil|Location2.X=2590.551mil|Location1.Y=1325.787mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2444.882mil|Location2.X=2590.551mil|Location1.Y=1325.787mil|Location2.Y=1933.169mil|Absolute=True">PWM0A/SWCLK</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="6343740">16.1131mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2460.63mil|Location2.X=2688.976mil|Location1.Y=1325.787mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2460.63mil|Location2.X=2688.976mil|Location1.Y=1325.787mil|Location2.Y=1933.169mil|Absolute=True">PWM0B/SWDIO</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="6686201">16.983mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1855.941mil|Location2.X=2263.78mil|Location1.Y=2135.827mil|Location2.Y=2361.091mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1855.941mil|Location2.X=2263.78mil|Location1.Y=2135.827mil|Location2.Y=2361.091mil|Absolute=True">QSPI.C\S\</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="5289324">13.4349mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2095.446mil|Location2.X=2326.772mil|Location1.Y=2169.193mil|Location2.Y=2448.784mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2095.446mil|Location2.X=2326.772mil|Location1.Y=2169.193mil|Location2.Y=2448.784mil|Absolute=True">QSPI.SCLK</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4616380">11.7256mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2076.272mil|Location2.X=2311.024mil|Location1.Y=2169.193mil|Location2.Y=2413.428mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2076.272mil|Location2.X=2311.024mil|Location1.Y=2169.193mil|Location2.Y=2413.428mil|Absolute=True">QSPI.SD0</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4611711">11.7137mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1901.688mil|Location2.X=2279.528mil|Location1.Y=2169.193mil|Location2.Y=2325.736mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1901.688mil|Location2.X=2279.528mil|Location1.Y=2169.193mil|Location2.Y=2325.736mil|Absolute=True">QSPI.SD1</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4579718">11.6325mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1937.043mil|Location2.X=2295.276mil|Location1.Y=2169.193mil|Location2.Y=2290.381mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1937.043mil|Location2.X=2295.276mil|Location1.Y=2169.193mil|Location2.Y=2290.381mil|Absolute=True">QSPI.SD2</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4656490">11.8275mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2060.091mil|Location2.X=2342.52mil|Location1.Y=2169.193mil|Location2.Y=2484.139mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2060.091mil|Location2.X=2342.52mil|Location1.Y=2169.193mil|Location2.Y=2484.139mil|Absolute=True">QSPI.SD3</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="4626596">11.7516mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=2898.567mil|Location1.Y=2068.898mil|Location2.Y=2441.101mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2480.216mil|Location2.X=2898.567mil|Location1.Y=2068.898mil|Location2.Y=2441.101mil|Absolute=True">REF_EN</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="7242647">18.3963mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2413.386mil|Location2.X=2517.717mil|Location1.Y=2169.193mil|Location2.Y=2369.094mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2413.386mil|Location2.X=2517.717mil|Location1.Y=2169.193mil|Location2.Y=2369.094mil|Absolute=True">RPD_N</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="2144649">5.4474mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2397.638mil|Location2.X=2454.724mil|Location1.Y=2169.193mil|Location2.Y=2369.094mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2397.638mil|Location2.X=2454.724mil|Location1.Y=2169.193mil|Location2.Y=2369.094mil|Absolute=True">RPD_P</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1770223">4.4964mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2429.134mil|Location2.X=3112.008mil|Location1.Y=1898.721mil|Location2.Y=2670.276mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2429.134mil|Location2.X=3112.008mil|Location1.Y=1898.721mil|Location2.Y=2670.276mil|Absolute=True">RUN</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="11821140">30.0257mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1790.354mil|Location1.Y=1642.716mil|Location2.Y=1695.866mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1595.472mil|Location2.X=1790.354mil|Location1.Y=1642.716mil|Location2.Y=1695.866mil|Absolute=True">SDI</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1417323">3.6mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1325.787mil|Location2.X=1475.394mil|Location1.Y=2889.764mil|Location2.Y=2955.709mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1325.787mil|Location2.X=1475.394mil|Location1.Y=2889.764mil|Location2.Y=2955.709mil|Absolute=True">SDO</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="1045920">2.6566mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2060.992mil|Location2.X=2244.193mil|Location1.Y=1816.898mil|Location2.Y=1952.756mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2060.992mil|Location2.X=2244.193mil|Location1.Y=1816.898mil|Location2.Y=1952.756mil|Absolute=True">SD_3V3</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="3354543">8.5205mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1998.032mil|Location2.X=3151.575mil|Location1.Y=1762.716mil|Location2.Y=2136.811mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1998.032mil|Location2.X=3151.575mil|Location1.Y=1762.716mil|Location2.Y=2136.811mil|Absolute=True">SD_5V</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="14838400">37.6895mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=2119.921mil|Location2.Y=2372.047mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=2119.921mil|Location2.Y=2372.047mil|Absolute=True">SPI0.CIPO</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="9854527">25.0305mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=2103.11mil|Location2.Y=2322.835mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=2103.11mil|Location2.Y=2322.835mil|Absolute=True">SPI0.C\S\</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="9841839">24.9983mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=2090.236mil|Location2.Y=2273.622mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=2090.236mil|Location2.Y=2273.622mil|Absolute=True">SPI0.SCLK</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="9870365">25.0707mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1287.402mil|Location2.X=2244.193mil|Location1.Y=1799.213mil|Location2.Y=2146.732mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1287.402mil|Location2.X=2244.193mil|Location1.Y=1799.213mil|Location2.Y=2146.732mil|Absolute=True">SPI1.CIPO</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="12482261">31.7049mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=1627.047mil|Location2.Y=2078.74mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=1627.047mil|Location2.Y=2078.74mil|Absolute=True">SPI1.C\S\</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="12496788">31.7418mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=1614.173mil|Location2.Y=2062.992mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1333.661mil|Location2.X=2244.193mil|Location1.Y=1614.173mil|Location2.Y=2062.992mil|Absolute=True">SPI1.SCLK</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="12582075">31.9585mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2136.811mil|Location2.X=2508.937mil|Location1.Y=1329.725mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2136.811mil|Location2.X=2508.937mil|Location1.Y=1329.725mil|Location2.Y=1933.169mil|Absolute=True">SWCLK</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="8802700">22.3589mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2038.386mil|Location2.X=2529.464mil|Location1.Y=1314.961mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2038.386mil|Location2.X=2529.464mil|Location1.Y=1314.961mil|Location2.Y=1933.169mil|Absolute=True">SWD</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="10506109">26.6855mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2250mil|Location2.X=2704.724mil|Location1.Y=1311.024mil|Location2.Y=1952.756mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2250mil|Location2.X=2704.724mil|Location1.Y=1311.024mil|Location2.Y=1952.756mil|Absolute=True">UART_LED/FET_EN</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="12326963">31.3105mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2268.701mil|Location2.X=3342.52mil|Location1.Y=2023.622mil|Location2.Y=3523.622mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2268.701mil|Location2.X=3342.52mil|Location1.Y=2023.622mil|Location2.Y=3523.622mil|Absolute=True">USB1_LED</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="30496997">77.4624mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2405.512mil|Location2.X=3322.835mil|Location1.Y=2039.37mil|Location2.Y=3503.031mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2405.512mil|Location2.X=3322.835mil|Location1.Y=2039.37mil|Location2.Y=3503.031mil|Absolute=True">USB2_LED</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="29370467">74.601mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2411.417mil|Location2.X=2865.157mil|Location1.Y=2394.685mil|Location2.Y=3284.843mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2411.417mil|Location2.X=2865.157mil|Location1.Y=2394.685mil|Location2.Y=3284.843mil|Absolute=True">USBD_N</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="10391364">26.3941mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2467.067mil|Location2.X=2865.157mil|Location1.Y=2394.685mil|Location2.Y=3284.843mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2467.067mil|Location2.X=2865.157mil|Location1.Y=2394.685mil|Location2.Y=3284.843mil|Absolute=True">USBD_P</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="10391364">26.3941mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2375.59mil|Location2.X=2932.087mil|Location1.Y=3170.276mil|Location2.Y=3333.149mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2375.59mil|Location2.X=2932.087mil|Location1.Y=3170.276mil|Location2.Y=3333.149mil|Absolute=True">VUSB_PRG</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="7832556">19.8947mm
+			</a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=0mil|Location2.X=0mil|Location1.Y=0mil|Location2.Y=0mil|Absolute=True">VUSB_PWR</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="8544834">21.7039mm
+			</a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2250.827mil|Location2.X=2363.071mil|Location1.Y=1674.213mil|Location2.Y=1933.169mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2250.827mil|Location2.X=2363.071mil|Location1.Y=1674.213mil|Location2.Y=1933.169mil|Absolute=True">XIN</acronym></a></td>
+<td class="column2">Signal Layers Only</td>
+<td class="column3"><a name="coordinate" value="2756134">7.0006mm
+			</a></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br></body>
+</html>
