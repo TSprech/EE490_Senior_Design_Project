@@ -1,24 +1,10 @@
 Protel Design System Design Rule Check
 PCB File : C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\RP2040Breakout\RP2040Breakout.PcbDoc
-Date     : 7/17/2023
-Time     : 9:15:32 AM
+Date     : 7/22/2023
+Time     : 10:12:08 PM
 
 Processing Rule : Clearance Constraint (Gap=0.127mm) (All),(All)
-   Violation between Clearance Constraint: (0.1mm < 0.127mm) Between Track (0.4mm,-2.7mm)(0.4mm,-2.1mm) on Top Layer And Via (1mm,-2.3mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.1mm < 0.127mm) Between Track (-2.436mm,-10.5mm)(0mm,-10.5mm) on Top Layer And Via (-0.9mm,-9.9mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.1mm < 0.127mm) Between Track (-20.427mm,18.7mm)(-3.688mm,18.7mm) on Bottom Layer And Via (-5.2mm,17.8mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.1mm < 0.127mm) Between Track (26.1mm,-12.907mm)(26.1mm,-11.6mm) on Bottom Layer And Via (26.6mm,-12.7mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.1mm < 0.127mm) Between Track (26.1mm,-12.907mm)(26.393mm,-13.2mm) on Bottom Layer And Via (26.6mm,-12.7mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.114mm < 0.127mm) Between Track (26.393mm,-13.2mm)(26.483mm,-13.2mm) on Bottom Layer And Via (26.6mm,-12.7mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.114mm < 0.127mm) Between Track (26.483mm,-13.2mm)(26.6mm,-13.317mm) on Bottom Layer And Via (26.6mm,-12.7mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.101mm < 0.127mm) Between Track (3.435mm,-8.5mm)(4.166mm,-8.5mm) on Top Layer And Via (4.5mm,-8.873mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.101mm < 0.127mm) Between Track (4.166mm,-8.5mm)(4.293mm,-8.373mm) on Top Layer And Via (4.5mm,-8.873mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.104mm < 0.127mm) Between Track (-4.193mm,-8.5mm)(-3.435mm,-8.5mm) on Top Layer And Via (-4.5mm,-8.9mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.1mm < 0.127mm) Between Track (4.293mm,-8.373mm)(9.522mm,-8.373mm) on Top Layer And Via (4.5mm,-8.873mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.104mm < 0.127mm) Between Track (-4.32mm,-8.373mm)(-4.193mm,-8.5mm) on Top Layer And Via (-4.5mm,-8.9mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.1mm < 0.127mm) Between Track (-4.905mm,-9.4mm)(-3.938mm,-9.4mm) on Bottom Layer And Via (-4.5mm,-8.9mm) from Top Layer to Bottom Layer 
-   Violation between Clearance Constraint: (0.121mm < 0.127mm) Between Via (0.4mm,-2.7mm) from Top Layer to Bottom Layer And Via (1mm,-2.3mm) from Top Layer to Bottom Layer 
-Rule Violations :14
+Rule Violations :0
 
 Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
 Rule Violations :0
@@ -55,9 +41,7 @@ Processing Rule : Minimum Solder Mask Sliver (Gap=0mm) (All),(All)
 Rule Violations :0
 
 Processing Rule : Silk To Solder Mask (Clearance=0.127mm) (IsPad),(All)
-   Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.127mm) Between Pad R21-2(-7.7mm,-5.2mm) on Top Layer And Text "C1" (-7.842mm,-5.6mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]
-   Violation between Silk To Solder Mask Clearance Constraint: (0.106mm < 0.127mm) Between Pad TP6-1(19.25mm,3.5mm) on Multi-Layer And Track (18.26mm,5.06mm)(18.693mm,3.934mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.106mm]
-Rule Violations :2
+Rule Violations :0
 
 Processing Rule : Silk to Silk (Clearance=0mm) (All),(All)
 Rule Violations :0
@@ -66,14 +50,13 @@ Processing Rule : Net Antennae (Tolerance=0mm) (All)
 Rule Violations :0
 
 Processing Rule : Board Clearance Constraint (Gap=0mm) (All)
-   Violation between Board Outline Clearance(Outline Edge): (0.174mm < 0.2mm) Between Board Edge And Text "J8" (-29.666mm,8.9mm) on Top Overlay 
    Violation between Board Outline Clearance(Outline Edge): (0.05mm < 0.2mm) Between Board Edge And Text "USB" (-3.332mm,26.95mm) on Top Overlay 
-Rule Violations :2
+Rule Violations :1
 
 Processing Rule : Height Constraint (Min=0mm) (Max=1816.048mm) (Prefered=12.7mm) (All)
 Rule Violations :0
 
 
-Violations Detected : 22
+Violations Detected : 5
 Waived Violations : 0
-Time Elapsed        : 00:00:02
+Time Elapsed        : 00:00:01

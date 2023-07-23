@@ -122,8 +122,38 @@ UniqueID=A14751D1-4B9A-4FE3-B8DC-EA96EF95EBAE
 Description=DNP
 AllowFabrication=0
 ParameterCount=0
-VariationCount=1
+VariationCount=31
 Variation1=Designator=R?|UniqueId=\CZJINVDR|Kind=1|AlternatePart= 
+Variation2=Designator=R51|UniqueId=\HUKGDMTL|Kind=1|AlternatePart= 
+Variation3=Designator=R50|UniqueId=\AAQKNQZB|Kind=1|AlternatePart= 
+Variation4=Designator=R49|UniqueId=\VURCUVJP|Kind=1|AlternatePart= 
+Variation5=Designator=R48|UniqueId=\UTCPATQQ|Kind=1|AlternatePart= 
+Variation6=Designator=R47|UniqueId=\SLIGJXKI|Kind=1|AlternatePart= 
+Variation7=Designator=R46|UniqueId=\HUNBDMYS|Kind=1|AlternatePart= 
+Variation8=Designator=R44|UniqueId=\UQLDHPHH|Kind=1|AlternatePart= 
+Variation9=Designator=R45|UniqueId=\UXESKRRP|Kind=1|AlternatePart= 
+Variation10=Designator=R43|UniqueId=\SZNGZZDT|Kind=1|AlternatePart= 
+Variation11=Designator=R42|UniqueId=\PAEYOSCK|Kind=1|AlternatePart= 
+Variation12=Designator=R40|UniqueId=\PQJUZNPT|Kind=1|AlternatePart= 
+Variation13=Designator=R38|UniqueId=\HZSTNECP|Kind=1|AlternatePart= 
+Variation14=Designator=R36|UniqueId=\GGEVIODL|Kind=1|AlternatePart= 
+Variation15=Designator=R34|UniqueId=\CHEPREBO|Kind=1|AlternatePart= 
+Variation16=Designator=R35|UniqueId=\TPHTVXAR|Kind=1|AlternatePart= 
+Variation17=Designator=R37|UniqueId=\QYCTLLUG|Kind=1|AlternatePart= 
+Variation18=Designator=R39|UniqueId=\BAPQEMOS|Kind=1|AlternatePart= 
+Variation19=Designator=R41|UniqueId=\QWSSSLKU|Kind=1|AlternatePart= 
+Variation20=Designator=R33|UniqueId=\DOCXOEFD|Kind=1|AlternatePart= 
+Variation21=Designator=R32|UniqueId=\PNPZAUHK|Kind=1|AlternatePart= 
+Variation22=Designator=R31|UniqueId=\BMEMTZLY|Kind=1|AlternatePart= 
+Variation23=Designator=R30|UniqueId=\JFODQKII|Kind=1|AlternatePart= 
+Variation24=Designator=R29|UniqueId=\UAEXQKBO|Kind=1|AlternatePart= 
+Variation25=Designator=R28|UniqueId=\KVYPEDMB|Kind=1|AlternatePart= 
+Variation26=Designator=R27|UniqueId=\BQLOQREB|Kind=1|AlternatePart= 
+Variation27=Designator=R26|UniqueId=\ZKOFWTKI|Kind=1|AlternatePart= 
+Variation28=Designator=R25|UniqueId=\GAQIRYEP|Kind=1|AlternatePart= 
+Variation29=Designator=R24|UniqueId=\XBIELAPC|Kind=1|AlternatePart= 
+Variation30=Designator=R23|UniqueId=\XYFQOCCJ|Kind=1|AlternatePart= 
+Variation31=Designator=R22|UniqueId=\QZFCTPMF|Kind=1|AlternatePart= 
 ParamVariationCount=0
 
 [GeneratedDocument1]
@@ -326,42 +356,48 @@ OutputDocumentPath8=
 OutputVariantName8=[No Variations]
 OutputDefault8=0
 PageOptions8=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
-OutputType9=PCBLIB Print
-OutputName9=PCBLIB Prints
+OutputType9=PCBDrawing
+OutputName9=Draftsman
 OutputDocumentPath9=
 OutputVariantName9=[No Variations]
 OutputDefault9=0
 PageOptions9=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
-OutputType10=PDF3D
-OutputName10=PDF3D
+OutputType10=PCBLIB Print
+OutputName10=PCBLIB Prints
 OutputDocumentPath10=
 OutputVariantName10=[No Variations]
 OutputDefault10=0
 PageOptions10=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
-OutputType11=PDF3D MBA
-OutputName11=PDF3D MBA
+OutputType11=PDF3D
+OutputName11=PDF3D
 OutputDocumentPath11=
-OutputVariantName11=
+OutputVariantName11=[No Variations]
 OutputDefault11=0
 PageOptions11=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
-OutputType12=Report Print
-OutputName12=Report Prints
+OutputType12=PDF3D MBA
+OutputName12=PDF3D MBA
 OutputDocumentPath12=
 OutputVariantName12=
 OutputDefault12=0
 PageOptions12=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
-OutputType13=Schematic Print
-OutputName13=Schematic Prints
+OutputType13=Report Print
+OutputName13=Report Prints
 OutputDocumentPath13=
 OutputVariantName13=
 OutputDefault13=0
 PageOptions13=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
-OutputType14=SimView Print
-OutputName14=SimView Prints
+OutputType14=Schematic Print
+OutputName14=Schematic Prints
 OutputDocumentPath14=
 OutputVariantName14=
 OutputDefault14=0
 PageOptions14=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
+OutputType15=SimView Print
+OutputName15=SimView Prints
+OutputDocumentPath15=
+OutputVariantName15=
+OutputDefault15=0
+PageOptions15=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 
 [OutputGroup4]
 Name=Assembly Outputs
