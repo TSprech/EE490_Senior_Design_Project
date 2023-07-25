@@ -4,3 +4,6 @@
 [submodule "Firmware/Lib/units"]
 	path = Firmware/Lib/units
 	url = https://github.com/nholthaus/units
+[submodule "Firmware/Lib/fmt"]
+	path = Firmware/Lib/fmt
+	url = https://github.com/fmtlib/fmt

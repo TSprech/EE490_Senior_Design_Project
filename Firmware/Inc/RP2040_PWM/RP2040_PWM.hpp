@@ -3,6 +3,8 @@
 #ifndef RP2040_PWM_H
 #define RP2040_PWM_H
 
+#include <cstdint>
+
 namespace pwm {
   /**
  * @brief Manages a single PWM slice to control the A and B channel for SMPS operation.
@@ -74,7 +76,7 @@ namespace pwm {
    * @param gpio The GPIO pin for which the slice is unknown.
    * @returns The slice number that corresponds to the GPIO pin.
    */
-    static constexpr auto PWMGPIOToSliceNum(uint gpio);
+    static constexpr auto PWMGPIOToSliceNum(uint32_t gpio);
 
     /**
    * @returns The value of top for the current PWM slice

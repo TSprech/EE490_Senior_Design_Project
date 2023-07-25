@@ -102,7 +102,7 @@ auto pwm::PWMManager<a_pin, b_pin>::Enabled() -> bool {
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-constexpr auto pwm::PWMManager<a_pin, b_pin>::PWMGPIOToSliceNum(uint gpio) {
+constexpr auto pwm::PWMManager<a_pin, b_pin>::PWMGPIOToSliceNum(uint32_t gpio) {
   return (gpio >> 1u) & 7u;
 }
 

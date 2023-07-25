@@ -14,7 +14,7 @@ IF ("${PLATFORM}" STREQUAL "arm")
         message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
     endif ()
 
-#    if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
+    if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
         #    add_compile_options(-mfloat-abi=soft)
         add_compile_options(-mcpu=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
 
@@ -22,8 +22,8 @@ IF ("${PLATFORM}" STREQUAL "arm")
         add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 
         # These must come after add_executable as the target needs to be created first
-#        pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
-#        pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
+        pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
+        pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
         set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma) # These are the libs from the Pico SDK which will be used
         target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
@@ -50,9 +50,9 @@ IF ("${PLATFORM}" STREQUAL "arm")
 
         add_subdirectory(Inc/PicoCpp/DMA)
         target_link_libraries(EE490_Firmware PRIVATE DMA)
-#    elseif (PICO_ON_DEVICE)
-#        message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
-#    endif ()
+    elseif (PICO_ON_DEVICE)
+        message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
+    endif ()
 ELSE ()
     include(FetchContent)
     FetchContent_Declare(
@@ -83,3 +83,6 @@ target_link_libraries(EE490_Firmware PUBLIC FastPID)
 
 add_subdirectory(Inc/ModuloScheduler)
 target_link_libraries(EE490_Firmware PUBLIC ModuloScheduler)
+
+add_subdirectory(Lib/fmt)
+target_link_libraries(EE490_Firmware PUBLIC fmt)
