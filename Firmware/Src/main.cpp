@@ -145,7 +145,6 @@
 #include "RP2040_PWM.hpp"
 #include "fmt/core.h"
 #include "fmt/format.h"
-#include "hardware/uart.h"
 #include "pico/stdlib.h"
 
 auto pwm_manager = pwm::PWMManager<0, 1>(true);
@@ -166,34 +165,21 @@ inline auto FMTDebug(fmt::format_string<T...> fmt, T&&... args) -> void {
   UARTVPrint(fmt, vargs);
 }
 
+auto random_float = [] { return static_cast<float>(rand()) / static_cast<float>(rand()); };
+
 auto PrintData(repeating_timer_t* rt) -> bool {
-  FMTDebug("VPV={:.2}, IPV={:.2}, PPV={:.2}, VBAT={:.2}, IBAT={:.2}, PBAT={:.2}, QBAT={:.2}, SOC={:.2}, RS={}\n", static_cast<float>(rand()) / static_cast<float>(rand()), static_cast<float>(rand()) / static_cast<float>(rand()), static_cast<float>(rand()) / static_cast<float>(rand()), static_cast<float>(rand()) / static_cast<float>(rand()), static_cast<float>(rand()) / static_cast<float>(rand()), static_cast<float>(rand()) / static_cast<float>(rand()), static_cast<float>(rand()) / static_cast<float>(rand()), static_cast<float>(rand()) / static_cast<float>(rand()), rand());
+  FMTDebug("VPV={:.2}, IPV={:.2}, PPV={:.2}, VBAT={:.2}, IBAT={:.2}, PBAT={:.2}, QBAT={:.2}, SOC={:.2}, RS={}\n", random_float(), random_float(), random_float(), random_float(), random_float(), random_float(), random_float(), random_float(), rand());
   return true;
 }
 
 auto main() -> int {
   stdio_init_all();
-  repeating_timer_t timer;                                         // Timer used to manage the feedback loop callback
 
-  if (!add_repeating_timer_ms(100, PrintData, nullptr, &timer)) {  // Create a timer which calls the print function at the specified rate
+  repeating_timer_t timer;                                       // Timer used to manage the feedback loop callback
+  if (!add_repeating_timer_ms(100, PrintData, nullptr, &timer))  // Create a timer which calls the print function at the specified rate
     FMTDebug("Failed to create feedback loop timer\n");
-  }
 
   srand(64);
-
-  pwm_manager.Initialize();
-  pwm_manager.DeadBand(1);
-
-  pwm_manager.Enable();
-  pwm_manager.Frequency(100);
-
-  const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-  gpio_init(LED_PIN);
-  gpio_set_dir(LED_PIN, GPIO_OUT);
-  while (true) {
-    gpio_put(LED_PIN, 1);
-    sleep_ms(5000);
-    gpio_put(LED_PIN, 0);
-    sleep_ms(5000);
-  }
+  pwm_manager.Initialize().Frequency(10'000).Divider(100).Enable().DutyCycle(500'000);
+  while (true) {}
 }

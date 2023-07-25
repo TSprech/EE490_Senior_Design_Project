@@ -22,7 +22,7 @@ namespace pwm {
     /**
    * @brief Configures the PWM pins and enables phase correct for the PWM slice.
    */
-    auto Initialize() -> void;
+    auto Initialize() -> PWMManager&;
 
     /**
    * @returns The integer value which represents 100% duty cycle for the @ref DutyCycle method.
@@ -33,37 +33,44 @@ namespace pwm {
    * @brief Changes the duty cycle of the A and B channels of the PWM channel.
    * @param duty_cycle The duty cycle represented as a values between 0 and 1,000,000 representing 0 to 1 range.
    */
-    auto DutyCycle(uint32_t dutycycle) -> void;
+    auto DutyCycle(uint32_t dutycycle) -> PWMManager&;
 
     /**
    * @brief Changes the deadband between A and B channels.
    * @param count The number of PWM cycles to delay.
    * @note Count is in PWM cycles, not any time unit, due to the fine resolution required for it. For example, a system running at 125MHz, each cycle is 1/125MHz = 8ns.
    */
-    auto DeadBand(uint16_t count) -> void;
+    auto DeadBand(uint16_t count) -> PWMManager&;
 
     /**
    * @brief Changes the frequency
    * @param frequency
    * @return
    */
-    auto Frequency(uint32_t frequency);
+    auto Frequency(uint32_t frequency) -> PWMManager&;
+
+    /**
+   * @brief Changes the divider
+   * @param divider The integer divider to use.
+   * @return
+   */
+    auto Divider(uint8_t divider) -> PWMManager&;
 
     /**
    * @brief Enables both channel's PWM output.
    */
-    auto Enable() -> void;
+    auto Enable() -> PWMManager&;
 
     /**
    * @brief Disables both channel's PWM output.
    */
-    auto Disable() -> void;
+    auto Disable() -> PWMManager&;
 
     /**
    * @brief Changes whether the B channel is inverted.
    * @param invert_b True to invert the channel, false to return it to non-inverted state.
    */
-    auto InvertB(bool invert_b) -> void;
+    auto InvertB(bool invert_b) -> PWMManager&;
 
     /**
    * @returns Whether the PWM slice is enabled.
