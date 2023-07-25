@@ -7,3 +7,11 @@ Simulation/LTFiles/*
 Application/yarn-error.log
 
 Simulation/SpiceBatch.log
+
+*.Zip
+
+docs/.idea/
+
+Electronics/Projects/RP2040Breakout/Project Logs for RP2040Breakout/
+
+Electronics/Projects/RP2040Breakout/__Previews/

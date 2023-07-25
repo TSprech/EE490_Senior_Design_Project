@@ -1,20 +1,20 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
 
+include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
+pico_sdk_init() # Initialize the SDK
 
 IF ("${PLATFORM}" STREQUAL "arm")
-    include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
     #set(PICO_BOARD adafruit_feather_rp2040)
-    pico_sdk_init() # Initialize the SDK
 
     if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
         message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
     endif ()
 
-    if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
+#    if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
         #    add_compile_options(-mfloat-abi=soft)
         add_compile_options(-mcpu=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
 
@@ -22,8 +22,8 @@ IF ("${PLATFORM}" STREQUAL "arm")
         add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 
         # These must come after add_executable as the target needs to be created first
-        pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
-        pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
+#        pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
+#        pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
         set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma) # These are the libs from the Pico SDK which will be used
         target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
@@ -50,9 +50,9 @@ IF ("${PLATFORM}" STREQUAL "arm")
 
         add_subdirectory(Inc/PicoCpp/DMA)
         target_link_libraries(EE490_Firmware PRIVATE DMA)
-    elseif (PICO_ON_DEVICE)
-        message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
-    endif ()
+#    elseif (PICO_ON_DEVICE)
+#        message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
+#    endif ()
 ELSE ()
     include(FetchContent)
     FetchContent_Declare(
@@ -69,9 +69,9 @@ ELSE ()
 
 ENDIF ()
 
-set(DISABLE_IOSTREAM ON)
-set(DISABLE_PREDEFINED_UNITS ON)
-set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
+#set(DISABLE_IOSTREAM ON)
+#set(DISABLE_PREDEFINED_UNITS ON)
+#set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
 add_subdirectory(Lib/units)
 target_link_libraries(EE490_Firmware PUBLIC units)
 
