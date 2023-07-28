@@ -1,0 +1,12 @@
+Board Information Report
+Filename     : C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\SMPSBreakout\SMPSBreakout\SMPSBreakout.PcbDoc
+Date         : 7/27/2023
+Time         : 6:59:16 PM
+Time Elapsed : 00:00:00
+
+Routing Information
+    Routing completion, 100.00%
+    Connections, 111
+    Connections routed, 111
+    Connections remaining, 0
+count : 4
