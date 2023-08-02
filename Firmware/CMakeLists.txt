@@ -1,7 +1,15 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
 
-include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
+# initialize pico-sdk from GIT
+# (note this can come from environment, CMake cache etc)
+set(PICO_SDK_FETCH_FROM_GIT on)
+
+# pico_sdk_import.cmake is a single file copied from this SDK
+# note: this must happen before project()
+include(pico_sdk_import.cmake)
+
+#include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23

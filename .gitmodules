@@ -1,6 +1,3 @@
-[submodule "Firmware/Lib/pico-sdk"]
-	path = Firmware/Lib/pico-sdk
-	url = https://github.com/raspberrypi/pico-sdk
 [submodule "Firmware/Lib/units"]
 	path = Firmware/Lib/units
 	url = https://github.com/nholthaus/units
