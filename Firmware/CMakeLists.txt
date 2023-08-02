@@ -50,6 +50,9 @@ IF ("${PLATFORM}" STREQUAL "arm")
 
         add_subdirectory(Inc/PicoCpp/DMA)
         target_link_libraries(EE490_Firmware PRIVATE DMA)
+
+        add_subdirectory(Inc/PicoCpp/ADC)
+        target_link_libraries(EE490_Firmware PRIVATE ADC)
     elseif (PICO_ON_DEVICE)
         message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
     endif ()
