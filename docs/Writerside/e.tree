@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="e"
+                 name="EE490"
+                 start-page="Electronics.md">
+
+    <toc-element topic="starter-topic.md"/>
+    <toc-element topic="Electronics.md">
+        <toc-element topic="RP2040-Breakout.md"/>
+        <toc-element topic="SMPS-Breakdown.md"/>
+        <toc-element topic="Current-Voltage-Sensors.md"/>
+        <toc-element topic="Over-Voltage-Protection.md"/>
+        <toc-element topic="Solar-Pannels.md"/>
+        <toc-element topic="USB-Charger-Interface.md"/>
+    </toc-element>
+    <toc-element topic="Simulation.md">
+        <toc-element topic="Over-Voltage-Protection-1-2.md"/>
+        <toc-element topic="Voltage-Sensor.md"/>
+        <toc-element topic="Current-Sensors.md"/>
+        <toc-element topic="SMPS-Breakdown-1-2.md"/>
+    </toc-element>
+    <toc-element topic="Mechanical.md">
+        <toc-element topic="Housing.md"/>
+    </toc-element>
+    <toc-element topic="Firmware.md"/>
+</instance-profile>
