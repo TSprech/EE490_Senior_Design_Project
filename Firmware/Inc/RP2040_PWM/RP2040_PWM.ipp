@@ -16,7 +16,7 @@ constexpr pwm::PWMManager<a_pin, b_pin>::PWMManager(bool invert_b)
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::Initialize() -> void {
+auto pwm::PWMManager<a_pin, b_pin>::Initialize() -> PWMManager& {
   gpio_set_function(a_pin_, GPIO_FUNC_PWM); // Set the pins to PWM
   gpio_set_function(b_pin_, GPIO_FUNC_PWM);
 
@@ -31,6 +31,7 @@ auto pwm::PWMManager<a_pin, b_pin>::Initialize() -> void {
 
   pwm_set_phase_correct(slice_number_, true); // Centers the PWM and allows symmetric waveforms and deadbands
   pwm_set_output_polarity(slice_number_, false, invert_b_); // Invert the B channel accordingly
+  return *this;
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
@@ -39,7 +40,7 @@ constexpr auto pwm::PWMManager<a_pin, b_pin>::MaxDuty() {
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::DutyCycle(uint32_t dutycycle) -> void {
+auto pwm::PWMManager<a_pin, b_pin>::DutyCycle(uint32_t dutycycle) -> PWMManager& {
   if (dutycycle > max_duty_) [[unlikely]] // If a value like 2,000,000 is given
     dutycycle = max_duty_; // Saturate to max duty
   uint16_t level = Map<uint32_t>(dutycycle, 0, max_duty_, 0, Top()); // Map the number range from 0-1,000,000 to 0-top, where top is the
@@ -59,41 +60,53 @@ auto pwm::PWMManager<a_pin, b_pin>::DutyCycle(uint32_t dutycycle) -> void {
   }
 
   pwm_set_both_levels(slice_number_, a_level, b_level); // Set the wrap value of both A and B channel
+  return *this;
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::DeadBand(uint16_t count) -> void {
+auto pwm::PWMManager<a_pin, b_pin>::DeadBand(uint16_t count) -> PWMManager& {
   deadband_ = count;
+  return *this;
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::Frequency(uint32_t frequency) {
+auto pwm::PWMManager<a_pin, b_pin>::Frequency(uint32_t frequency)  -> PWMManager& {
   auto top = (CPUFrequency() / frequency / 2) - 1; // This only works for a clock divider of 1
   pwm_set_wrap(slice_number_, top); // Wrap number to set the frequency in terms of clock cycles
+  return *this;
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::Enable() -> void {
+auto pwm::PWMManager<a_pin, b_pin>::Divider(uint8_t divider) -> PWMManager& {
+  pwm_set_clkdiv_int_frac(slice_number_, divider, 0);
+  return *this;
+}
+
+template <uint8_t a_pin, uint8_t b_pin>
+auto pwm::PWMManager<a_pin, b_pin>::Enable() -> PWMManager& {
   pwm_set_both_levels(slice_number_, 0, invert_b_ ? UINT16_MAX : 0);
   pwm_set_enabled(slice_number_, true);
   gpio_set_outover(a_pin_, GPIO_OVERRIDE_NORMAL);
   gpio_set_outover(b_pin_, GPIO_OVERRIDE_NORMAL);
   enabled_ = true;
+  return *this;
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::Disable() -> void {
+auto pwm::PWMManager<a_pin, b_pin>::Disable() -> PWMManager& {
   gpio_set_outover(a_pin_, GPIO_OVERRIDE_LOW);
   gpio_set_outover(b_pin_, invert_b_ ? GPIO_OVERRIDE_LOW : GPIO_OVERRIDE_HIGH);
   pwm_set_both_levels(slice_number_, 0, invert_b_ ? UINT16_MAX : 0);
   pwm_set_enabled(slice_number_, false);
   enabled_ = false;
+  return *this;
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-auto pwm::PWMManager<a_pin, b_pin>::InvertB(bool invert_b) -> void {
+auto pwm::PWMManager<a_pin, b_pin>::InvertB(bool invert_b) -> PWMManager& {
   invert_b_ = invert_b;
   pwm_set_output_polarity(slice_number_, false, invert_b_);
+  return *this;
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
@@ -102,7 +115,7 @@ auto pwm::PWMManager<a_pin, b_pin>::Enabled() -> bool {
 }
 
 template <uint8_t a_pin, uint8_t b_pin>
-constexpr auto pwm::PWMManager<a_pin, b_pin>::PWMGPIOToSliceNum(uint gpio) {
+constexpr auto pwm::PWMManager<a_pin, b_pin>::PWMGPIOToSliceNum(uint32_t gpio) {
   return (gpio >> 1u) & 7u;
 }
 

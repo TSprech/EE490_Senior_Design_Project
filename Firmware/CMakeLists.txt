@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
 
+include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
+pico_sdk_init() # Initialize the SDK
 
 IF ("${PLATFORM}" STREQUAL "arm")
-    include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
     #set(PICO_BOARD adafruit_feather_rp2040)
-    pico_sdk_init() # Initialize the SDK
 
     if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
         message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
@@ -25,7 +25,7 @@ IF ("${PLATFORM}" STREQUAL "arm")
         pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
         pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
-        set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc) # These are the libs from the Pico SDK which will be used
+        set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma) # These are the libs from the Pico SDK which will be used
         target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
 
         pico_add_extra_outputs(EE490_Firmware) # Create map/bin/hex file etc.
@@ -44,6 +44,12 @@ IF ("${PLATFORM}" STREQUAL "arm")
 
         add_subdirectory(Inc/RP2040_PWM)
         target_link_libraries(EE490_Firmware PRIVATE RP2040_PWM)
+
+        add_subdirectory(Inc/PicoCpp/GPIO)
+        target_link_libraries(EE490_Firmware PRIVATE GPIO)
+
+        add_subdirectory(Inc/PicoCpp/DMA)
+        target_link_libraries(EE490_Firmware PRIVATE DMA)
     elseif (PICO_ON_DEVICE)
         message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
     endif ()
@@ -63,9 +69,9 @@ ELSE ()
 
 ENDIF ()
 
-set(DISABLE_IOSTREAM ON)
-set(DISABLE_PREDEFINED_UNITS ON)
-set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
+#set(DISABLE_IOSTREAM ON)
+#set(DISABLE_PREDEFINED_UNITS ON)
+#set(ENABLE_PREDEFINED_CONSTANTS_UNITS ON)
 add_subdirectory(Lib/units)
 target_link_libraries(EE490_Firmware PUBLIC units)
 
@@ -77,3 +83,6 @@ target_link_libraries(EE490_Firmware PUBLIC FastPID)
 
 add_subdirectory(Inc/ModuloScheduler)
 target_link_libraries(EE490_Firmware PUBLIC ModuloScheduler)
+
+add_subdirectory(Lib/fmt)
+target_link_libraries(EE490_Firmware PUBLIC fmt)
