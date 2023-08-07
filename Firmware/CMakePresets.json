@@ -18,7 +18,7 @@
       "inherits": "default",
       "displayName": "arm-only configuration",
       "description": "This build is only available on ARM",
-      "cacheVariables": {
+      "environment": {
         "CMAKE_SYSTEM_NAME": "Generic",
         "CMAKE_SYSTEM_VERSION": "1",
         "CMAKE_C_COMPILER": "C:/Users/treys/OneDrive/Downloads/Compilers/ARM-GCC-12.2-REL1/bin/arm-none-eabi-gcc.exe",
@@ -43,9 +43,17 @@
       "inherits": "default",
       "displayName": "Windows-only configuration",
       "description": "This build is only available on Windows",
-      "cacheVariables": {
-        "PLATFORM": "win",
-        "UNIT_TESTING": true
+      "environment": {
+        "CMAKE_SYSTEM_NAME": "Windows",
+        "CMAKE_SYSTEM_VERSION": "",
+        "CMAKE_C_COMPILER": "C:/Users/treys/OneDrive/Downloads/Compilers/MINGW_13.1/winlibs-x86_64-mcf-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r1/mingw64/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "C:/Users/treys/OneDrive/Downloads/Compilers/MINGW_13.1/winlibs-x86_64-mcf-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r1/mingw64/bin/g++.exe",
+        "CMAKE_ASM_COMPILER": "C:/Users/treys/OneDrive/Downloads/Compilers/MINGW_13.1/winlibs-x86_64-mcf-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r1/mingw64/bin/gcc.exe",
+        "CMAKE_AR": "C:/Users/treys/OneDrive/Downloads/Compilers/MINGW_13.1/winlibs-x86_64-mcf-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r1/mingw64/bin/ar.exe",
+        "CMAKE_OBJCOPY": "C:/Users/treys/OneDrive/Downloads/Compilers/MINGW_13.1/winlibs-x86_64-mcf-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r1/mingw64/bin/objcopy.exe",
+        "CMAKE_OBJDUMP": "C:/Users/treys/OneDrive/Downloads/Compilers/MINGW_13.1/winlibs-x86_64-mcf-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r1/mingw64/bin/objdump.exe",
+        "SIZE": "C:/Users/treys/OneDrive/Downloads/Compilers/MINGW_13.1/winlibs-x86_64-mcf-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r1/mingw64/bin/size.exe",
+        "PLATFORM": "win"
       },
       "binaryDir": "${sourceDir}/Build/WIN",
       "vendor": {
