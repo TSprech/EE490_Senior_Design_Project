@@ -1,7 +1,7 @@
 Protel Design System Design Rule Check
 PCB File : C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\SMPSBreakout\SMPSBreakout\SMPSBreakout.PcbDoc
-Date     : 7/27/2023
-Time     : 7:01:32 PM
+Date     : 8/6/2023
+Time     : 7:54:52 PM
 
 Processing Rule : Clearance Constraint (Gap=0.127mm) (All),(All)
 Rule Violations :0
@@ -10,12 +10,7 @@ Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
 Rule Violations :0
 
 Processing Rule : Un-Routed Net Constraint ( (All) )
-   Violation between Un-Routed Net Constraint: Track (-6.75mm,14.072mm)(-5.85mm,14.972mm) on Top Layer Dead Copper - Net Not Assigned.
-   Violation between Un-Routed Net Constraint: Track (-6.75mm,14.972mm)(-5.85mm,14.972mm) on Top Layer Dead Copper - Net Not Assigned.
-   Violation between Un-Routed Net Constraint: Track (-6.75mm,14.972mm)(-6.75mm,16.172mm) on Top Layer Dead Copper - Net Not Assigned.
-   Violation between Un-Routed Net Constraint: Track (-7.65mm,14.972mm)(-6.75mm,14.072mm) on Top Layer Dead Copper - Net Not Assigned.
-   Violation between Un-Routed Net Constraint: Track (-7.65mm,14.972mm)(-6.75mm,14.972mm) on Top Layer Dead Copper - Net Not Assigned.
-Rule Violations :5
+Rule Violations :0
 
 Processing Rule : Modified Polygon (Allow modified: No), (Allow shelved: No)
 Rule Violations :0
@@ -56,7 +51,8 @@ Processing Rule : Minimum Solder Mask Sliver (Gap=0mm) (All),(All)
 Rule Violations :0
 
 Processing Rule : Silk To Solder Mask (Clearance=0.127mm) (IsPad),(All)
-Rule Violations :0
+   Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.127mm) Between Pad TP11-1(1.4mm,-18.6mm) on Multi-Layer And Text "Trey Sprecher, Angela Doncic, Justin Carter" (24.992mm,-19.4mm) on Bottom Overlay [Bottom Overlay] to [Bottom Solder] clearance [0mm]
+Rule Violations :1
 
 Processing Rule : Silk to Silk (Clearance=0mm) (All),(All)
 Rule Violations :0
@@ -75,6 +71,6 @@ Processing Rule : Height Constraint (Min=0mm) (Max=1816.048mm) (Prefered=12.7mm)
 Rule Violations :0
 
 
-Violations Detected : 23
+Violations Detected : 19
 Waived Violations : 0
-Time Elapsed        : 00:00:02
+Time Elapsed        : 00:00:01
