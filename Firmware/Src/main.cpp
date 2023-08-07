@@ -214,9 +214,9 @@ auto main() -> int {
 //  for (int i = 0; i < 10; ++i) {
   while (true) {
     gpio_put(led_pin, true);
-    sleep_ms(250);
+    sleep_ms(1000);
     gpio_put(led_pin, false);
-    sleep_ms(250);
+    sleep_ms(1000);
   }
 
   rpp::adc::adc_26.Init().ReferenceVoltage(3300);  // Configure all the ADC pins
