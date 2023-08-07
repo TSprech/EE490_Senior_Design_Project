@@ -13,17 +13,17 @@ include(pico_sdk_import.cmake)
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
 set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
-pico_sdk_init() # Initialize the SDK
 
 IF ("${PLATFORM}" STREQUAL "arm")
     #set(PICO_BOARD adafruit_feather_rp2040)
 
+    pico_sdk_init() # Initialize the SDK
     if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
         message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
     endif ()
 
     if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a serial device, build directives should be inside this if
-        #    add_compile_options(-mfloat-abi=soft)
+#        add_compile_options(-mfloat-abi=soft)
         add_compile_options(-mcpu=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
 
         set(SOURCES Src/main.cpp) # Put all source files to build here
