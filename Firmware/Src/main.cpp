@@ -172,12 +172,12 @@ inline auto FMTDebug(fmt::format_string<T...> fmt, T&&... args) -> void {
 
 auto random_float = [] { return static_cast<float>(rand()) / static_cast<float>(rand()); };
 
-uint32_t in_mV = 0;
-uint32_t in_mA = 0;
-uint32_t out_mV = 0;
-uint32_t out_mA = 0;
-uint32_t in_mW = 0;
-uint32_t out_mW = 0;
+int32_t in_mV = 0;
+int32_t in_mA = 0;
+int32_t out_mV = 0;
+int32_t out_mA = 0;
+int32_t in_mW = 0;
+int32_t out_mW = 0;
 uint8_t run_state = 0;
 uint8_t duty = 1;
 
@@ -187,24 +187,38 @@ auto PrintData(repeating_timer_t* rt) -> bool {
 }
 
 auto UpdateADC(repeating_timer_t* rt) -> bool {
-  constexpr uint32_t voltage_gain = 13; // Voltage divider ratio
-  constexpr uint32_t current_gain = 200; // Current amp gain
-  constexpr uint32_t shunt_mOhm = 6; // Shunt resistance
-  auto adc_26_mV = rpp::adc::adc_26.ReadmV(); // Read all the ADC channels
-  auto adc_27_mV = rpp::adc::adc_27.ReadmV();
-  auto adc_28_mV = rpp::adc::adc_28.ReadmV();
-  auto adc_29_mV = rpp::adc::adc_29.ReadmV();
+  constexpr int32_t voltage_gain = 13; // Voltage divider ratio
+//  constexpr int32_t current_gain = 200; // Current amp gain
+//  constexpr int32_t shunt_mOhm = 6; // Shunt resistance
+  constexpr int32_t current_offset = 1'024; // mV
+  auto adc_26_mV = static_cast<int32_t>(rpp::adc::adc_26.ReadmV()); // Read all the ADC channels
+  auto adc_27_mV = static_cast<int32_t>(rpp::adc::adc_27.ReadmV());
+  auto adc_28_mV = static_cast<int32_t>(rpp::adc::adc_28.ReadmV());
+  auto adc_29_mV = static_cast<int32_t>(rpp::adc::adc_29.ReadmV());
   in_mV = adc_26_mV * voltage_gain; // Do integer math to calculate the values
-  in_mA = adc_27_mV * 1000 / current_gain / shunt_mOhm;
+  in_mA = (adc_27_mV - current_offset) * 5 / 3; // This nice ratio is the result of simplifying the following:
   out_mV = adc_28_mV * voltage_gain;
-  out_mA = adc_29_mV * 1000 / current_gain / shunt_mOhm;
-  in_mW = in_mV * in_mA / 1000; // Then calculate power
-  out_mW = out_mV * out_mA / 1000;
+  out_mA = (adc_29_mV - current_offset) * 5 / 3; // Gain 200 V/V * 1 / 6mΩ shunt * 0.5 divider ratio
+  in_mW = in_mV * in_mA / 1'000; // Then calculate power, dividing by 1,000 to remove the scaling ratio, keeping it in milliwatts
+  out_mW = out_mV * out_mA / 1'000;
   return true;
 }
 
 auto main() -> int {
   stdio_init_all();
+
+  constexpr auto led_pin = PICO_DEFAULT_LED_PIN;
+  gpio_init(led_pin);
+  gpio_set_dir(led_pin, GPIO_OUT);
+
+  for (int i = 0; i < 10; ++i) {
+//  while (true) {
+    gpio_put(led_pin, true);
+    sleep_ms(250);
+    gpio_put(led_pin, false);
+    sleep_ms(250);
+  }
+
   rpp::adc::adc_26.Init().ReferenceVoltage(3300);  // Configure all the ADC pins
   rpp::adc::adc_27.Init().ReferenceVoltage(3300);
   rpp::adc::adc_28.Init().ReferenceVoltage(3300);
