@@ -152,7 +152,7 @@
 #include "fmt/format.h"
 #include "pico/stdlib.h"
 
-auto pwm_manager = pwm::PWMManager<0, 1>(true);
+auto pwm_01 = pwm::PWMManager<0, 1>(true);
 
 inline auto UARTPrint(std::string_view str) -> void {
   for (auto letter : str) putc(letter, stdout);
@@ -188,8 +188,6 @@ auto PrintData(repeating_timer_t* rt) -> bool {
 
 auto UpdateADC(repeating_timer_t* rt) -> bool {
   constexpr int32_t voltage_gain = 13; // Voltage divider ratio
-//  constexpr int32_t current_gain = 200; // Current amp gain
-//  constexpr int32_t shunt_mOhm = 6; // Shunt resistance
   constexpr int32_t current_offset = 1'024; // mV
   auto adc_26_mV = static_cast<int32_t>(rpp::adc::adc_26.ReadmV()); // Read all the ADC channels
   auto adc_27_mV = static_cast<int32_t>(rpp::adc::adc_27.ReadmV());
@@ -212,12 +210,12 @@ auto main() -> int {
   gpio_set_dir(led_pin, GPIO_OUT);
 
 //  for (int i = 0; i < 10; ++i) {
-  while (true) {
+//  while (true) {
     gpio_put(led_pin, true);
     sleep_ms(1000);
     gpio_put(led_pin, false);
     sleep_ms(1000);
-  }
+//  }
 
   rpp::adc::adc_26.Init().ReferenceVoltage(3300);  // Configure all the ADC pins
   rpp::adc::adc_27.Init().ReferenceVoltage(3300);
@@ -233,7 +231,7 @@ auto main() -> int {
     FMTDebug("Failed to create feedback loop timer\n");
 
   srand(64);
-  pwm_manager.Initialize().Frequency(10'000).Divider(100).Enable().DutyCycle(500'000);
+  pwm_01.Initialize().Frequency(100'000).Enable().DutyCycle(500'000);
   std::array<char, 512> buf{};  // String buffer
 
   while (true) {
@@ -252,10 +250,13 @@ auto main() -> int {
       switch (buf[0]) {                                                                 // Decided what to do with the number based on the first character given
         case ('S'): {                                                                   // Change run state
           run_state = (argument == std::clamp(argument, 0, 3)) ? argument : run_state;  // If the argument is within the valid range, change the run state to the argument, otherwise do nothing
+          if (run_state >= 1) pwm_01.Enable();
+          else pwm_01.Disable();
           break;
         }
         case ('D'): {                                                          // Change duty cycle
           duty = (argument == std::clamp(argument, 1, 99)) ? argument : duty;  // If the argument is within the valid range, change the duty to the argument, otherwise do nothing
+          pwm_01.DutyCycle(duty * 10'000);
           break;
         }
       }
