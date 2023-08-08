@@ -1,0 +1,76 @@
+Protel Design System Design Rule Check
+PCB File : C:\Users\treys\Code\EE490_Senior_Design_Project\Electronics\Projects\SMPSBreakout\SMPSBreakout\SMPSBreakout.PcbDoc
+Date     : 8/6/2023
+Time     : 7:54:52 PM
+
+Processing Rule : Clearance Constraint (Gap=0.127mm) (All),(All)
+Rule Violations :0
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+Rule Violations :0
+
+Processing Rule : Un-Routed Net Constraint ( (All) )
+Rule Violations :0
+
+Processing Rule : Modified Polygon (Allow modified: No), (Allow shelved: No)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=0.127mm) (Max=25.4mm) (Preferred=0.127mm) (All)
+Rule Violations :0
+
+Processing Rule : Power Plane Connect Rule(Direct Connect )(Expansion=0.508mm) (Conductor Width=0.254mm) (Air Gap=0.254mm) (Entries=4) (InPadClass('PowerPads'))
+Rule Violations :0
+
+Processing Rule : Power Plane Connect Rule(Relief Connect )(Expansion=0.3mm) (Conductor Width=0.127mm) (Air Gap=0.127mm) (Entries=4) (All)
+Rule Violations :0
+
+Processing Rule : Minimum Annular Ring (Minimum=0.15mm) (All)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (-0.087mm,-20.32mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (0.479mm,-19.471mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (1.57mm,-21.977mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (10.146mm,24.546mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (10.566mm,25.527mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (13.193mm,-21mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (13.55mm,-21.977mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (19.496mm,-14.696mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (19.496mm,15.196mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (2.007mm,-21mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (20.454mm,15.639mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (20.46mm,-15.097mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (4.225mm,24.5mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+   Violation between Minimum Annular Ring: (0.1mm < 0.15mm) Via (4.2mm,25.54mm) from Top Layer to Bottom Layer (Annular Ring=0.1mm) On (Top Layer)
+Rule Violations :14
+
+Processing Rule : Hole Size Constraint (Min=0.3mm) (Max=6.3mm) (All)
+Rule Violations :0
+
+Processing Rule : Hole To Hole Clearance (Gap=0.25mm) (All),(All)
+Rule Violations :0
+
+Processing Rule : Minimum Solder Mask Sliver (Gap=0mm) (All),(All)
+Rule Violations :0
+
+Processing Rule : Silk To Solder Mask (Clearance=0.127mm) (IsPad),(All)
+   Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.127mm) Between Pad TP11-1(1.4mm,-18.6mm) on Multi-Layer And Text "Trey Sprecher, Angela Doncic, Justin Carter" (24.992mm,-19.4mm) on Bottom Overlay [Bottom Overlay] to [Bottom Solder] clearance [0mm]
+Rule Violations :1
+
+Processing Rule : Silk to Silk (Clearance=0mm) (All),(All)
+Rule Violations :0
+
+Processing Rule : Net Antennae (Tolerance=0mm) (All)
+Rule Violations :0
+
+Processing Rule : Board Clearance Constraint (Gap=0mm) (All)
+   Violation between Board Outline Clearance(Outline Edge): (0.174mm < 0.2mm) Between Board Edge And Text "J4" (28.334mm,-1.8mm) on Top Overlay 
+   Violation between Board Outline Clearance(Outline Edge): (0.074mm < 0.2mm) Between Board Edge And Text "J5" (28.434mm,-19.4mm) on Top Overlay 
+   Violation between Board Outline Clearance(Outline Edge): (0.074mm < 0.2mm) Between Board Edge And Text "J6" (-29.766mm,-1.6mm) on Top Overlay 
+   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.2mm) Between Board Edge And Text "J7" (-29.866mm,-19.2mm) on Top Overlay 
+Rule Violations :4
+
+Processing Rule : Height Constraint (Min=0mm) (Max=1816.048mm) (Prefered=12.7mm) (All)
+Rule Violations :0
+
+
+Violations Detected : 19
+Waived Violations : 0
+Time Elapsed        : 00:00:01
