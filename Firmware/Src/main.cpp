@@ -231,7 +231,7 @@ auto main() -> int {
     FMTDebug("Failed to create feedback loop timer\n");
 
   srand(64);
-  pwm_01.Initialize().Frequency(100'000).Enable().DutyCycle(500'000);
+  pwm_01.Initialize().Frequency(425'000).DutyCycle(duty * 10'000).DeadBand(1).Disable();
   std::array<char, 512> buf{};  // String buffer
 
   while (true) {
@@ -250,7 +250,10 @@ auto main() -> int {
       switch (buf[0]) {                                                                 // Decided what to do with the number based on the first character given
         case ('S'): {                                                                   // Change run state
           run_state = (argument == std::clamp(argument, 0, 3)) ? argument : run_state;  // If the argument is within the valid range, change the run state to the argument, otherwise do nothing
-          if (run_state >= 1) pwm_01.Enable();
+          if (run_state >= 1) {
+            pwm_01.Enable();
+            pwm_01.DutyCycle(duty * 10'000);
+          }
           else pwm_01.Disable();
           break;
         }
