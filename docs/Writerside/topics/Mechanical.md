@@ -39,18 +39,6 @@ The 5V USB charger board was incorporated into the existing platform model. The 
 
 To secure the charger PCB, retaining features like slots, pillars, and clips were added to the design. Simple solutions like tape, hot glue, or drilled-holes with screws were deemed insufficient.
 
-### Importing the MPPT Converter Board Model
-
-The 3D STEP model of the completed MPPT converter board was imported into the assembly. The CAD model represents the board with all components populated and signal traces connected.
-
-### MPPT Converter Board Placement
-
-The MPPT converter board was incorporated into the existing platform model. The CAD model illustrates the board's position, ensuring proper securement and accessibility for connection to the solar panels.
-
-#### Retaining Features
-
-Retaining features were added to secure the MPPT converter board on the platform. As with the charger board, tape, hot glue, or drilled-holes with screws were not considered sufficient.
-
 ## Solar Panel Connection
 
 A detailed description of how the solar panels will connect to the MPPT converter board was prepared, including a description of the connectors, wires, and routes used for the connections.
