@@ -71,6 +71,39 @@ auto MPPTIC(units::voltage::millivolt_u32_t v_panel, units::current::milliampere
   return 0; // Case when no change is required
 }
 
+//class CoulombCounter {
+//public:
+//  explicit CoulombCounter(units::time::microsecond_i32_t period) : period_(period) {}
+//
+//  auto operator+(units::current::milliampere_u32_t current) -> CoulombCounter {
+//    this->charge_ += current * period_;
+//    return *this;
+//  }
+//
+//private:
+//  const units::time::microsecond_i32_t period_;
+//  units::charge::millicoulomb_i32_t charge_ = 0_mC_i32;
+//};
+
+class BatteryManager {
+public:
+  constexpr explicit BatteryManager(units::charge::milliampere_hour_i32_t battery_rating, units::charge::millicoulomb_i32_t current_charge = 0_mC_i32) : battery_rating_(battery_rating), full_charge_(battery_rating), current_charge_(current_charge) {}
+
+  [[nodiscard]]
+  auto ChargeState() const -> uint8_t {
+    return current_charge_ * 100 / full_charge_;
+  }
+
+  auto Current(units::current::milliampere_u32_t current, units::time::nanosecond_i32_t period) {
+    this->current_charge_ += current * period;
+  }
+
+private:
+  const units::charge::milliampere_hour_i32_t battery_rating_;
+  const units::charge::millicoulomb_i32_t full_charge_;
+  units::charge::millicoulomb_i32_t current_charge_;
+};
+
 auto pwm_01 = pwm::PWMManager<0, 1>(true);
 
 inline auto UARTPrint(std::string_view str) -> void {
@@ -192,6 +225,10 @@ auto main() -> int {
                                                            : duty;  // If the argument is within the valid range, change the duty to the argument, otherwise do nothing
           pwm_01.DutyCycle(duty * 10'000);
           break;
+        }
+        case ('T'): {
+          run_state = 0;
+          pwm_01.Disable();
         }
       }
     }
