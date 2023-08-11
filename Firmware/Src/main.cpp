@@ -9,6 +9,94 @@
 #include "pico/stdlib.h"
 
 #include "TypedUnits.hpp"
+#include "tinyfsm.hpp"
+
+constexpr auto led_pin = PICO_DEFAULT_LED_PIN;
+
+inline auto UARTPrint(std::string_view str) -> void {
+  for (auto letter: str) putc(letter, stdout);
+}
+
+inline auto UARTVPrint(fmt::string_view format_str, fmt::format_args args) -> void {
+  fmt::memory_buffer buffer;
+  fmt::detail::vformat_to(buffer, format_str, args);
+  UARTPrint({buffer.data(), buffer.size()});
+}
+
+template<typename... T>
+inline auto FMTDebug(fmt::format_string<T...> fmt, T &&... args) -> void {
+  const auto &vargs = fmt::make_format_args(args...);
+  UARTVPrint(fmt, vargs);
+}
+
+struct RS0 : tinyfsm::Event {
+};
+struct RS1 : tinyfsm::Event {
+};
+struct RS2 : tinyfsm::Event {
+};
+struct RS3 : tinyfsm::Event {
+};
+
+/* Finite State Machine base class */
+class RunStateFSM : public tinyfsm::Fsm<RunStateFSM> {
+public:
+  /* react on all events and do nothing by default */
+  virtual void react(RS0 const &) {}
+
+  virtual void react(RS1 const &) {}
+
+  virtual void react(RS2 const &) {}
+
+  virtual void react(RS3 const &) {}
+
+  virtual void react(tinyfsm::Event const &) {}
+
+  virtual void entry() {};
+
+  virtual void exit() {};
+
+  static void reset() {};
+};
+
+class RunState0;
+
+class RunState1;
+
+class RunState0 : public RunStateFSM {
+  void entry() override {
+    gpio_put(led_pin, false);
+    FMTDebug("ENTER: Run State 0\n");
+  }
+
+  void exit() override {
+    FMTDebug("EXIT: Run State 0\n");
+  }
+
+  void react(RS1 const &) override {
+    FMTDebug("REACT: RS1\n");
+    transit<RunState1>();
+  }
+};
+
+class RunState1 : public RunStateFSM {
+  void entry() override {
+    gpio_put(led_pin, true);
+    FMTDebug("ENTER: Run State 1\n");
+  }
+
+  void exit() override {
+    FMTDebug("EXIT: Run State 1\n");
+  }
+
+  void react(RS0 const &) override {
+    FMTDebug("REACT: RS0\n");
+    transit<RunState0>();
+  }
+};
+
+FSM_INITIAL_STATE(RunStateFSM, RunState0)
+
 
 template<typename T>
 class DeltaVariable {
@@ -52,9 +140,12 @@ using namespace units::literals;
  */
 auto MPPTIC(units::voltage::millivolt_u32_t v_panel, units::current::milliampere_u32_t i_panel) -> int32_t {
   constexpr int32_t duty_step_size = 20; // How much to change the duty cycle per function call, range 0 - 1,000,000
-  static DeltaVariable<units::voltage::millivolt_u32_t> panel_voltage{v_panel}; // Keeps track of the change in panel voltage per function call
-  static DeltaVariable<units::current::milliampere_u32_t> panel_current{i_panel}; // Keeps track of the change in panel current per function call
-  static DeltaVariable<units::power::milliwatt_u32_t> panel_power{v_panel * i_panel}; // Keeps track of the change in panel power per function call
+  static DeltaVariable<units::voltage::millivolt_u32_t> panel_voltage{
+        v_panel}; // Keeps track of the change in panel voltage per function call
+  static DeltaVariable<units::current::milliampere_u32_t> panel_current{
+        i_panel}; // Keeps track of the change in panel current per function call
+  static DeltaVariable<units::power::milliwatt_u32_t> panel_power{
+        v_panel * i_panel}; // Keeps track of the change in panel power per function call
 
   panel_voltage = v_panel; // Update the panel values
   panel_current = i_panel;
@@ -71,23 +162,11 @@ auto MPPTIC(units::voltage::millivolt_u32_t v_panel, units::current::milliampere
   return 0; // Case when no change is required
 }
 
-//class CoulombCounter {
-//public:
-//  explicit CoulombCounter(units::time::microsecond_i32_t period) : period_(period) {}
-//
-//  auto operator+(units::current::milliampere_u32_t current) -> CoulombCounter {
-//    this->charge_ += current * period_;
-//    return *this;
-//  }
-//
-//private:
-//  const units::time::microsecond_i32_t period_;
-//  units::charge::millicoulomb_i32_t charge_ = 0_mC_i32;
-//};
-
 class BatteryManager {
 public:
-  constexpr explicit BatteryManager(units::charge::milliampere_hour_i32_t battery_rating, units::charge::millicoulomb_i32_t current_charge = 0_mC_i32) : battery_rating_(battery_rating), full_charge_(battery_rating), current_charge_(current_charge) {}
+  constexpr explicit BatteryManager(units::charge::milliampere_hour_i32_t battery_rating,
+                                    units::charge::millicoulomb_i32_t current_charge = 0_mC_i32) : battery_rating_(
+        battery_rating), full_charge_(battery_rating), current_charge_(current_charge) {}
 
   [[nodiscard]]
   auto ChargeState() const -> uint8_t {
@@ -105,22 +184,6 @@ private:
 };
 
 auto pwm_01 = pwm::PWMManager<0, 1>(true);
-
-inline auto UARTPrint(std::string_view str) -> void {
-  for (auto letter: str) putc(letter, stdout);
-}
-
-inline auto UARTVPrint(fmt::string_view format_str, fmt::format_args args) -> void {
-  fmt::memory_buffer buffer;
-  fmt::detail::vformat_to(buffer, format_str, args);
-  UARTPrint({buffer.data(), buffer.size()});
-}
-
-template<typename... T>
-inline auto FMTDebug(fmt::format_string<T...> fmt, T &&... args) -> void {
-  const auto &vargs = fmt::make_format_args(args...);
-  UARTVPrint(fmt, vargs);
-}
 
 auto random_float = [] { return static_cast<float>(rand()) / static_cast<float>(rand()); };
 
@@ -161,18 +224,17 @@ auto UpdateADC(repeating_timer_t *rt) -> bool {
 
 auto main() -> int {
   stdio_init_all();
-
-  constexpr auto led_pin = PICO_DEFAULT_LED_PIN;
   gpio_init(led_pin);
   gpio_set_dir(led_pin, GPIO_OUT);
 
 //  for (int i = 0; i < 10; ++i) {
-//  while (true) {
-  gpio_put(led_pin, true);
-  sleep_ms(1000);
-  gpio_put(led_pin, false);
-  sleep_ms(1000);
-//  }
+  RunStateFSM::start();
+  while (true) {
+    RunStateFSM::dispatch(RS1());
+    sleep_ms(1000);
+    RunStateFSM::dispatch(RS0());
+    sleep_ms(1000);
+  }
 
   rpp::adc::adc_26.Init().ReferenceVoltage(3300);  // Configure all the ADC pins
   rpp::adc::adc_27.Init().ReferenceVoltage(3300);
