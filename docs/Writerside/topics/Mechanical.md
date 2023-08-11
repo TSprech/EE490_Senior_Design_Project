@@ -6,11 +6,10 @@ A Computer-Aided Design (CAD) model was developed to create a structured platfor
 
 ## Platform Size
 
-The platform size was decided considering the dimensions of the five identically sized PCBs and the battery pcb. Adequate space has been provided for all components, allowing ease of assembly and necessary heat dissipation to prevent overheating of electronic components.
-
+*******
 ## Platform Material
 
-(Unknown)
+*******
 
 ## Mounting Provisions
 
