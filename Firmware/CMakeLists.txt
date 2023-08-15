@@ -38,7 +38,10 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
 #        add_compile_options(-mfloat-abi=soft)
 #        add_compile_options(-march=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
 
-    set(SOURCES Src/main.cpp) # Put all source files to build here
+    set(SOURCES Src/main.cpp
+            Src/main1.cpp
+            Src/main1.cpp
+            Src/main1.hpp) # Put all source files to build here
     add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 
     # These must come after add_executable as the target needs to be created first
@@ -84,6 +87,7 @@ add_subdirectory(Inc/TypedUnits)
 add_subdirectory(Inc/FastPID)
 add_subdirectory(Inc/ModuloScheduler)
 add_subdirectory(Lib/fmt)
+add_subdirectory(Inc/MPPT)
 
 target_link_libraries(EE490_Firmware PUBLIC
         units
@@ -91,6 +95,7 @@ target_link_libraries(EE490_Firmware PUBLIC
         FastPID
         ModuloScheduler
         fmt
+        MPPT
 )
 
 FetchContent_Declare(
