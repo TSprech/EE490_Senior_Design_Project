@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
 
+set(UNIT_TESTING 0)
+
+IF(NOT UNIT_TESTING)
 set(CMAKE_SYSTEM_NAME Generic) # No OS
 set(CMAKE_SYSTEM_VERSION 1)
 
@@ -22,6 +25,7 @@ set(PICO_SDK_FETCH_FROM_GIT on)
 # pico_sdk_import.cmake is a single file copied from this SDK
 # note: this must happen before project()
 include(pico_sdk_import.cmake)
+ENDIF()
 
 #include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
@@ -29,6 +33,7 @@ set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
 
 
+IF(NOT UNIT_TESTING)
 pico_sdk_init() # Initialize the SDK
 if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
     message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
@@ -78,6 +83,23 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
 elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()
+ELSE()
+    enable_testing()
+    set(SOURCES Src/test_main.cpp) # Put all source files to build here
+    add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
+
+    FetchContent_Declare(
+            googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG        release-1.11.0
+    )
+
+    FetchContent_MakeAvailable(googletest)
+
+    include(GoogleTest)
+
+    target_link_libraries(EE490_Firmware PUBLIC gtest_main)
+ENDIF()
 
 ##set(DISABLE_IOSTREAM ON)
 ##set(DISABLE_PREDEFINED_UNITS ON)
@@ -88,6 +110,7 @@ add_subdirectory(Inc/FastPID)
 add_subdirectory(Inc/ModuloScheduler)
 add_subdirectory(Lib/fmt)
 add_subdirectory(Inc/MPPT)
+add_subdirectory(Inc/ConditionalFunction)
 
 target_link_libraries(EE490_Firmware PUBLIC
         units
@@ -96,6 +119,7 @@ target_link_libraries(EE490_Firmware PUBLIC
         ModuloScheduler
         fmt
         MPPT
+        ConditionalFunction
 )
 
 FetchContent_Declare(

@@ -13,6 +13,8 @@
 #include "tinyfsm.hpp"
 #include <concepts>
 
+#include "ConditionalFunction.hpp"
+
 int32_t in_mV = 0;
 int32_t in_mA = 0;
 int32_t out_mV = 0;
