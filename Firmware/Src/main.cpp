@@ -12,8 +12,42 @@
 #include "pico/stdlib.h"
 #include "tinyfsm.hpp"
 #include <concepts>
+#include <functional>
 
 #include "ConditionalFunction.hpp"
+
+using namespace units::literals;
+
+class BatteryManager {
+ public:
+  constexpr explicit BatteryManager(units::charge::milliampere_hour_i32_t battery_rating, units::charge::millicoulomb_i32_t current_charge = 0_mC_i32)
+      : battery_rating_(battery_rating), full_charge_(battery_rating), current_charge_(current_charge) {}
+
+  [[nodiscard]] auto ChargeState() const -> float {
+    //    return current_charge_ * 100 / full_charge_;
+    //    return units::charge::coulomb_i32_t{current_charge_} * 100 / units::charge::coulomb_i32_t{full_charge_};
+    return units::charge::coulomb_f_t{current_charge_} * 100.0F / units::charge::coulomb_f_t{full_charge_};
+  }
+
+  [[nodiscard]] auto Charge() const -> units::charge::millicoulomb_i32_t {
+    return current_charge_;
+  }
+
+  [[nodiscard]] auto Capacity() const -> units::charge::millicoulomb_i32_t {
+    return full_charge_;
+  }
+
+  auto Current(units::current::milliampere_u32_t current, units::time::millisecond_i32_t period) {
+    //    FMTDebug("Period: {}\n", period.value());
+    //    FMTDebug("New Charge: {}\n", (current * period).value());
+    this->current_charge_ += current * period;
+  }
+
+ private:
+  const units::charge::milliampere_hour_i32_t battery_rating_;
+  const units::charge::millicoulomb_i32_t full_charge_;
+  units::charge::millicoulomb_i32_t current_charge_;
+};
 
 int32_t in_mV = 0;
 int32_t in_mA = 0;
@@ -21,7 +55,6 @@ int32_t out_mV = 0;
 int32_t out_mA = 0;
 int32_t in_mW = 0;
 int32_t out_mW = 0;
-uint8_t run_state = 0;
 uint32_t duty = 1 * 10'000;
 
 constexpr auto led_pin = PICO_DEFAULT_LED_PIN;
@@ -42,6 +75,11 @@ inline auto FMTDebug(fmt::format_string<T...> fmt, T &&...args) -> void {
   const auto &vargs = fmt::make_format_args(args...);
   UARTVPrint(fmt, vargs);
 }
+
+BatteryManager bm(3_Ah_i32, 300_C_i32);
+
+auto mppt_call = cfunc::FunctionManager(mppt::IncrementalConductance);
+auto coulomb_counter_call = cfunc::FunctionManager([manager = &bm](auto current, auto period) -> void { manager->Current(current,period); });
 
 struct RS0 : tinyfsm::Event {};
 struct RS1 : tinyfsm::Event {};
@@ -67,92 +105,148 @@ class RunStateFSM : public tinyfsm::Fsm<RunStateFSM> {
   virtual void exit(){};
 
   static void reset(){};
+
+  static auto current_state() -> uint8_t {
+    return state;
+  }
+
+  static auto current_state(uint8_t new_state) -> void {
+    state = new_state;
+  }
+
+  inline static uint8_t state = 0;
 };
 
 class RunState0;
-
 class RunState1;
+class RunState2;
+class RunState3;
 
 class RunState0 : public RunStateFSM {
   void entry() override {
+    FMTDebug("ENTER: Run State 0\n");
+    RunStateFSM::current_state(0);
     pwm_01.Disable();
     // TODO: Disable MOSFETs
-    FMTDebug("ENTER: Run State 0\n");
   }
 
   void exit() override {
     FMTDebug("EXIT: Run State 0\n");
   }
 
+  void react(RS0 const &) override {}
+
   void react(RS1 const &) override {
-    FMTDebug("REACT: RS1\n");
     transit<RunState1>();
+  }
+
+  void react(RS2 const &) override {
+    transit<RunState2>();
+  }
+
+  void react(RS3 const &) override {
+    transit<RunState3>();
   }
 };
 
 class RunState1 : public RunStateFSM {
   void entry() override {
-    gpio_put(led_pin, true);
     FMTDebug("ENTER: Run State 1\n");
+    RunStateFSM::current_state(1);
   }
 
   void exit() override {
     FMTDebug("EXIT: Run State 1\n");
   }
 
+
   void react(RS0 const &) override {
-    FMTDebug("REACT: RS0\n");
     transit<RunState0>();
   }
+
+  void react(RS1 const &) override {}
+
+  void react(RS2 const &) override {
+    transit<RunState2>();
+  }
+
+  void react(RS3 const &) override {
+    transit<RunState3>();
+  }
+};
+
+class RunState2 : public RunStateFSM {
+  void entry() override {
+    FMTDebug("ENTER: Run State 1\n");
+    RunStateFSM::current_state(2);
+    pwm_01.Enable();
+    pwm_01.DutyCycle(duty * 10'000);
+    coulomb_counter_call.Enable();
+  }
+
+  void exit() override {
+    FMTDebug("EXIT: Run State 1\n");
+    coulomb_counter_call.Disable();
+  }
+
+  void react(RS0 const &) override {
+    transit<RunState0>();
+  }
+
+  void react(RS1 const &) override {
+    transit<RunState1>();
+  }
+
+  void react(RS2 const &) override {}
+
+  void react(RS3 const &) override {
+    transit<RunState3>();
+  }
+};
+
+class RunState3 : public RunStateFSM {
+  void entry() override {
+    FMTDebug("ENTER: Run State 1\n");
+    RunStateFSM::current_state(3);
+    pwm_01.Enable();
+    pwm_01.DutyCycle(duty * 10'000);
+    coulomb_counter_call.Enable();
+    mppt_call.Enable();
+  }
+
+  void exit() override {
+    FMTDebug("EXIT: Run State 1\n");
+    mppt_call.Disable();
+    coulomb_counter_call.Disable();
+  }
+
+  void react(RS0 const &) override {
+    transit<RunState0>();
+  }
+
+  void react(RS1 const &) override {
+    transit<RunState1>();
+  }
+
+  void react(RS2 const &) override {
+    transit<RunState2>();
+  }
+
+  void react(RS3 const &) override {}
 };
 
 FSM_INITIAL_STATE(RunStateFSM, RunState0)
 
-using namespace units::literals;
-
-class BatteryManager {
- public:
-  constexpr explicit BatteryManager(units::charge::milliampere_hour_i32_t battery_rating, units::charge::millicoulomb_i32_t current_charge = 0_mC_i32)
-      : battery_rating_(battery_rating), full_charge_(battery_rating), current_charge_(current_charge) {}
-
-  [[nodiscard]] auto ChargeState() const -> float {
-//    return current_charge_ * 100 / full_charge_;
-//    return units::charge::coulomb_i32_t{current_charge_} * 100 / units::charge::coulomb_i32_t{full_charge_};
-    return units::charge::coulomb_f_t{current_charge_} * 100.0F / units::charge::coulomb_f_t{full_charge_};
-  }
-
-  [[nodiscard]] auto Charge() const -> units::charge::millicoulomb_i32_t {
-    return current_charge_;
-  }
-
-  [[nodiscard]] auto Capacity() const -> units::charge::millicoulomb_i32_t {
-    return full_charge_;
-  }
-
-  auto Current(units::current::milliampere_u32_t current, units::time::millisecond_i32_t period) {
-//    FMTDebug("Period: {}\n", period.value());
-//    FMTDebug("New Charge: {}\n", (current * period).value());
-    this->current_charge_ += current * period;
-  }
-
- private:
-  const units::charge::milliampere_hour_i32_t battery_rating_;
-  const units::charge::millicoulomb_i32_t full_charge_;
-  units::charge::millicoulomb_i32_t current_charge_;
-};
-
 //static_assert(units::charge::millicoulomb_i32_t{units::charge::milliampere_hour_i32_t{3000}}.value() == 1);
 
 auto random_float = [] { return static_cast<float>(rand()) / static_cast<float>(rand()); };
-
-BatteryManager bm(3_Ah_i32, 300_C_i32);
 
 auto PrintData(repeating_timer_t *rt) -> bool {
   FMTDebug("VPV={}, IPV={}, PPV={}, VBAT={}, IBAT={}, PBAT={}, QBAT={}, SOC={}, RS={}, D={}\n",
            static_cast<float>(in_mV) / 1000.0F, static_cast<float>(in_mA) / 1000.0F,
            static_cast<float>(in_mW) / 1000.0F, static_cast<float>(out_mV) / 1000.0F,
            static_cast<float>(out_mA) / 1000.0F, static_cast<float>(out_mW) / 1000.0F, bm.Charge().value(), static_cast<float>(bm.ChargeState()),
-           run_state, static_cast<float>(duty) / 10'000.0F);
+           RunStateFSM::current_state(), static_cast<float>(duty) / 10'000.0F);
   return true;
 }
 
@@ -197,16 +291,32 @@ auto UpdateADC(repeating_timer_t *rt) -> bool {
   out_mA = (adc_29_mV - current_offset) * 5 / 3;  // Gain 200 V/V * 1 / 6mΩ shunt * 0.5 divider ratio
   in_mW = in_mV * in_mA / 1'000;                  // Then calculate power, dividing by 1,000 to remove the scaling ratio, keeping it in milliwatts
   out_mW = out_mV * out_mA / 1'000;
-  if (run_state >= 2) {
-//    bm.Current(units::current::milliampere_i32_t{out_mA}, 10_ms_i32);
-    bm.Current(units::current::milliampere_i32_t{1'000}, 10_ms_i32);
-  }
+  coulomb_counter_call(units::current::milliampere_i32_t{1'000}, 10_ms_i32);
   if (run_state == 3) {
     auto change = mppt::IncrementalConductance(units::voltage::millivolt_i32_t{in_mV}, units::current::milliampere_i32_t{in_mA});
     duty += change * 20;
   }
   rpp::gpio::gpio_2.Write(rpp::gpio::Levels::low);
   return true;
+}
+
+auto DispatchRunState(uint8_t state) -> void {
+  switch (state) {
+    case 0:
+      RunStateFSM::dispatch(RS0());
+      break;
+    case 1:
+      RunStateFSM::dispatch(RS1());
+      break;
+    case 2:
+      RunStateFSM::dispatch(RS2());
+      break;
+    case 3:
+      RunStateFSM::dispatch(RS3());
+      break;
+    default:
+      break;
+  }
 }
 
 auto main() -> int {
@@ -257,11 +367,7 @@ auto main() -> int {
       switch (buf[0]) {                                                                 // Decided what to do with the number based on the first character given
         case ('S'): {                                                                   // Change run state
           run_state = (argument == std::clamp(argument, 0, 3)) ? argument : run_state;  // If the argument is within the valid range, change the run state to the argument, otherwise do nothing
-          if (run_state >= 1) {
-            pwm_01.Enable();
-            pwm_01.DutyCycle(duty * 10'000);
-          } else
-            pwm_01.Disable();
+          DispatchRunState(run_state);
           break;
         }
         case ('D'): {                                                          // Change duty cycle

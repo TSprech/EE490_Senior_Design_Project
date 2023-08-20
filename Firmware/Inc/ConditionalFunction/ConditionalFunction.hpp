@@ -23,10 +23,10 @@ namespace cfunc {
     Callable function_;
 
    public:
-
     // Using explicit keyword to avoid unintentional implicit conversion
     // Ensuring the callable target is perfectly forwarded with std::forward
-    constexpr explicit FunctionManager(Callable f) : function_(std::move(f)) {}
+    constexpr explicit FunctionManager(Callable f) noexcept
+        : function_(std::move(f)) {}
 
     void Enable() {
       is_enabled_ = true;
@@ -36,22 +36,47 @@ namespace cfunc {
       is_enabled_ = false;
     }
 
-    // Result type for non-void callables
-//    using ResultType = std::conditional_t<IsVoidCallable<Callable>, void, std::optional<std::invoke_result_t<Callable>>>;
+    //    // Operator() now takes arbitrary parameters, passed to the Callable
+    //    template <typename... Args>
+    //    auto operator()(Args&&... args) {
+    //      if constexpr (IsVoidCallable<Callable>) {
+    //        // If return type is void
+    //        if (is_enabled_) {
+    //          function_(std::forward<Args>(args)...);
+    //        }
+    //      } else {
+    //        // If return type is non-void, returning an std::optional
+    //        if (is_enabled_) {
+    //          return std::make_optional(function_(std::forward<Args>(args)...));
+    //        } else {
+    //          // Creates an optional with value, not initialized
+    //          return std::optional<std::invoke_result_t<Callable, Args...>>{};
+    //        }
+    //      }
+    //    }
 
-//    ResultType operator()() {
-    auto operator()() {
-      if constexpr (IsVoidCallable<Callable>) {
-        // If return type is void
-        if (is_enabled_) {
-          function_();
-        }
-      } else {
-        // If return type is non-void, returning an std::optional
-        return is_enabled_ ? std::make_optional(function_()) : std::optional<decltype(function_())>{};
-      }
+    // Operator() now takes arbitrary parameters, passed to the Callable
+    template <typename... Args> requires std::is_void_v<std::invoke_result_t<Callable>>
+    auto operator()(Args&&... args) {
+        function_(std::forward<Args>(args)...);
+      // If return type is non-void, returning an std::optional
+//      if (is_enabled_) {
+//        return std::make_optional(function_(std::forward<Args>(args)...));
+//      } else {
+//        // Creates an optional with value, not initialized
+//        return std::optional<std::invoke_result_t<Callable, Args...>>{};
+//      }
     }
+
+//    template <typename... Args> requires (!std::is_void_v<std::invoke_result_t<Callable>>)
+//auto operator()(Args&&... args) -> std::optional<std::invoke_result_t<Callable>> {
+//        if (is_enabled_) {
+//          return function_(std::forward<Args>(args)...);
+//        } else{
+//          return std::nullopt;
+//        }
+//    }
   };
-}  // namespace cfunction_
+}  // namespace cfunc
 
 #endif  // CONDITIONALFUNCTION_HPP
