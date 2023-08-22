@@ -13,7 +13,6 @@
         <toc-element topic="Current-Voltage-Sensors.md"/>
         <toc-element topic="Over-Voltage-Protection.md"/>
         <toc-element topic="Solar-Pannels.md"/>
-        <toc-element topic="USB-Charger-Interface.md"/>
     </toc-element>
     <toc-element topic="Simulation.md">
         <toc-element topic="Over-Voltage-Protection-1-2.md"/>

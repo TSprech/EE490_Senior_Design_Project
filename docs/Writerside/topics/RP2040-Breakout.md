@@ -22,4 +22,19 @@ It's key features include:
 
 ![RPSystemOverview.png](../../RPSystemOverview.png)
 
-There are two
+We are using 2 RP2040 microcontrollers. One Microcontroller is an in-circuit programmer while the other one is for the application.  
+# USB ports
+- Data and power
+- Power 
+
+We have implemented two USB ports to prevent the board from drawing power from the computer, and to draw power from a power supply. The other USB port will be used for communication with the computer.
+
+**Power MUX**: allows for the switching between USB ports. Feeds into a 3.3 volt SMPS regulator.
+
+# LEDs 
+- APA102C - programmable LEDs used for status indication
+
+
+
+
+
