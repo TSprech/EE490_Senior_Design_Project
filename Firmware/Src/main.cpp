@@ -1,7 +1,9 @@
-#include "pico/stdlib.h"
-#include "hardware/gpio.h"
 #include <cstdio>
 #include <tuple>
+
+#include "RP2040_PWM.hpp"
+#include "hardware/gpio.h"
+#include "pico/stdlib.h"
 
 #define DOUT_PIN 0
 #define SCLK_PIN 2
@@ -13,10 +15,12 @@ void spi_init() {
     gpio_init(DOUT_PIN);
   gpio_init(SCLK_PIN);
   gpio_init(CS_PIN);
+  gpio_init(18);
 
     gpio_set_dir(DOUT_PIN, GPIO_IN);
   gpio_set_dir(SCLK_PIN, GPIO_OUT);
   gpio_set_dir(CS_PIN, GPIO_OUT);
+  gpio_set_dir(18, GPIO_OUT);
 }
 
 auto spi_read() -> std::tuple<uint16_t, uint16_t> {
@@ -60,12 +64,21 @@ auto spi_read() -> std::tuple<uint16_t, uint16_t> {
   return {data1, data2};
 }
 
+auto pwm_01 = pwm::PWMManager<16, 17>(true);
+
 int main() {
   stdio_init_all();
 
   spi_init();
   gpio_put(CS_PIN, 1);
   sleep_us(1);
+
+  pwm_01.Initialize().Frequency(425'000).DutyCycle(50*10'000).DeadBand(1).Disable();
+
+  pwm_01.Enable();
+  pwm_01.DutyCycle(50*10'000);
+
+  gpio_put(18, false);
 
   while (true) {
     auto [data1, data2] = spi_read();
