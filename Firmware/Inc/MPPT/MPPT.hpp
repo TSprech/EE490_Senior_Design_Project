@@ -48,7 +48,7 @@ namespace mppt {
  * @param i_panel The current panel current.
  * @returns An offset to be applied to the current duty cycle.
  */
-  auto IncrementalConductance(units::voltage::millivolt_u32_t v_panel, units::current::milliampere_u32_t i_panel) -> int32_t {
+  inline auto IncrementalConductance(units::voltage::millivolt_u32_t v_panel, units::current::milliampere_u32_t i_panel) -> int32_t {
     constexpr int32_t duty_step_size = 1;                                               // How much to change the duty cycle per function call, range 0 - 1,000,000
     static internal::DeltaVariable<units::voltage::millivolt_u32_t> panel_voltage{v_panel};        // Keeps track of the change in panel voltage per function call
     static internal::DeltaVariable<units::current::milliampere_u32_t> panel_current{i_panel};      // Keeps track of the change in panel current per function call

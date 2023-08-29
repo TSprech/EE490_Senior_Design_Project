@@ -5,6 +5,6 @@
 #ifndef MAIN1_HPP
 #define MAIN1_HPP
 
-auto main1() -> int;
+auto main1() -> void;
 
 #endif  // MAIN1_HPP

@@ -53,7 +53,7 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
     pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
     pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
-    set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma) # These are the libs from the Pico SDK which will be used
+    set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma pico_multicore) # These are the libs from the Pico SDK which will be used
     target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
 
     pico_add_extra_outputs(EE490_Firmware) # Create map/bin/hex file etc.
@@ -133,3 +133,12 @@ if(NOT tinyfsm_POPULATED)
     FetchContent_Populate(tinyfsm)
     target_include_directories(EE490_Firmware PUBLIC ${tinyfsm_SOURCE_DIR}/include)
 endif()
+
+FetchContent_Declare(
+        RP2040_Pseudo_Atomic
+        GIT_REPOSITORY https://github.com/TSprech/RP2040_Pseudo_Atomic.git
+        GIT_TAG main
+)
+
+FetchContent_MakeAvailable(RP2040_Pseudo_Atomic)
+target_link_libraries(EE490_Firmware PUBLIC RP2040Atomic)
