@@ -1,3 +1,18 @@
+//#include "pico/stdlib.h"
+//
+//int main() {
+//  stdio_init_all();
+//
+//  gpio_init(16);
+//  gpio_init(17);
+//  gpio_set_dir(16, GPIO_OUT);
+//  gpio_set_dir(17, GPIO_OUT);
+//  gpio_put(16, true);
+//  gpio_put(17, true);
+//  while(true);
+//}
+
+
 #include <algorithm>
 #include <charconv>
 #include <functional>
@@ -11,12 +26,12 @@
 #include "main1.hpp"
 
 auto PrintData(repeating_timer_t *rt) -> bool {
-  FMTDebug("VPV={}, IPV={}, PPV={}, VBAT={}, IBAT={}, PBAT={}, QBAT={}, SOC={}, RS={}, D={}\n",
-           static_cast<float>(sys123::panel_voltage.Value().value()) / 1000.0F, static_cast<float>(sys123::panel_current.Value().value()) / 1000.0F,
-           static_cast<float>(sys123::panel_power.Value().value()) / 1000.0F, static_cast<float>(sys123::battery_voltage.Value().value()) / 1000.0F,
-           static_cast<float>(sys123::battery_current.Value().value()) / 1000.0F, static_cast<float>(sys123::battery_power.Value().value()) / 1000.0F,
-           sys123::bm.Charge().value(), static_cast<float>(sys123::bm.ChargeState()),
-           RunStateFSM::current_state(), static_cast<float>(static_cast<int32_t>(sys123::duty)) / 10'000.0F);
+  FMTDebug("VPV={:.2f}, IPV={:.2f}, PPV={:.2f}, VBAT={:.2f}, IBAT={:.2f}, PBAT={:.2f}, QBAT={}, SOC={:.2f}, RS={}, D={:.2f}\n",
+           static_cast<float>(sys::panel_voltage.Value().value()) / 1000.0F, static_cast<float>(sys::panel_current.Value().value()) / 1000.0F,
+           static_cast<float>(sys::panel_power.Value().value()) / 1000.0F, static_cast<float>(sys::battery_voltage.Value().value()) / 1000.0F,
+           static_cast<float>(sys::battery_current.Value().value()) / 1000.0F, static_cast<float>(sys::battery_power.Value().value()) / 1000.0F,
+           sys::bm.Charge().value(), static_cast<float>(sys::bm.ChargeState()),
+           RunStateFSM::current_state(), static_cast<float>(sys::duty.Load()) / 10'000.0F);
   return true;
 }
 
@@ -43,7 +58,10 @@ auto main() -> int {
   patom::PseudoAtomicInit();
   stdio_init_all();
 
-  sys123::Initialize();
+  sys::Initialize();
+
+//  sys::pwm_a.Write(rpp::gpio::Levels::high);
+//  sys::pwm_b.Write(rpp::gpio::Levels::high);
 
   multicore_launch_core1(main1);
 
@@ -80,13 +98,14 @@ auto main() -> int {
           break;
         }
         case ('D'): {  // Change duty cycle
-          static uint8_t duty;
-          duty = (argument == std::clamp(argument, 1, 99)) ? argument : duty;  // If the argument is within the valid range, change the duty to the argument, otherwise do nothing
-          sys123::pwm_smps.DutyCycle(duty *= 10'000);
+          sys::duty = (argument == std::clamp(argument, 1, 99)) ? argument * 10'000 : sys::duty.Load();  // If the argument is within the valid range, change the duty to the argument, otherwise do nothing
+          FMTDebug("DUTY VAR: {}", sys::duty.Load());
+          sys::pwm_smps.DutyCycle(sys::duty.Load());
           break;
         }
         case ('T'): {
           DispatchRunState(0);
+          break;
         }
       }
     }

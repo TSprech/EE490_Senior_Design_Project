@@ -33,7 +33,7 @@ inline auto FMTDebug(fmt::format_string<T...> fmt, T &&...args) -> void {
   UARTVPrint(fmt, vargs);
 }
 
-namespace sys123 {
+namespace sys {
   using namespace units::literals;
 
   namespace internal {
@@ -80,7 +80,7 @@ namespace sys123 {
     template <typename T> requires std::integral<T>
     class AtomicLimitedInt {
      public:
-      constexpr AtomicLimitedInt(T min, T max, T initial = 0, bool wrap = false)
+      constexpr AtomicLimitedInt(T min, T max, bool wrap = false)
           : min_(min), max_(max), wrap_(wrap) {}
 
       auto operator+(T value) -> void {
@@ -92,6 +92,16 @@ namespace sys123 {
       auto operator+=(T value) -> void {
         if (this->number_.Load() + value > this->max_) {
           this->number_ = (this->wrap_) ? this->min_ : this->max_;
+        }
+      }
+
+      auto operator=(T value) -> void {
+        if (value > this->max_) {
+          this->number_ = (this->wrap_) ? this->min_ : this->max_;
+        } else if (value < this->min_) {
+          this->number_ = (this->wrap_) ? this->max_ : this->min_;
+        } else {
+          this->number_ = value;
         }
       }
 
@@ -128,6 +138,12 @@ namespace sys123 {
   inline auto& pwm_enable_led_pin = rpp::gpio::gpio_15;
   inline auto& debug_led_pin = rpp::gpio::gpio_18;
 
+  inline auto& core_0_utilization = rpp::gpio::gpio_13;
+  inline auto& core_1_utilization = rpp::gpio::gpio_21;
+
+//  inline auto& pwm_a = rpp::gpio::gpio_16;
+//  inline auto& pwm_b = rpp::gpio::gpio_17;
+
   inline auto& adc_0_cipo = rpp::gpio::gpio_0;
   inline auto& adc_0_cs = rpp::gpio::gpio_1;
   inline auto& adc_0_sclk = rpp::gpio::gpio_2;
@@ -137,23 +153,24 @@ namespace sys123 {
   inline auto& adc_1_sclk = rpp::gpio::gpio_5;
 
   inline auto Initialize() -> void {
-    sys123::usb_right_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys123::usb_left_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys123::core_0_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys123::core_1_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys123::pwm_enable_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
-    sys123::debug_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::usb_right_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::usb_left_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::core_0_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::core_1_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::pwm_enable_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
+    sys::debug_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
 
-    sys123::adc_0_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
-    sys123::adc_0_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
-    sys123::adc_0_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys123::adc_1_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
-    sys123::adc_1_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
-    sys123::adc_1_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::adc_0_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
+    sys::adc_0_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
+    sys::adc_0_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::adc_1_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
+    sys::adc_1_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
+    sys::adc_1_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
 
-    sys123::pwm_smps.Initialize().Frequency(425'000).DutyCycle(0).DeadBand(1).Disable();
+    sys::pwm_smps.Initialize().Frequency(425'000).DutyCycle(0).DeadBand(1).Disable();
   }
 
+  [[gnu::always_inline]]
   inline auto ADCDelay() -> void { // The goal is to take the clock rate for the ADC to 1/10 sys clock, who knows if this actually does it
     asm("nop");
     asm("nop");
@@ -169,38 +186,38 @@ namespace sys123 {
   inline auto ReadADC0() -> std::tuple<uint16_t, uint16_t> { // Yes, I know there are better ways to do this, just give me a break
     uint16_t voltage_raw = 0;
 
-    sys123::adc_0_cs.Write(rpp::gpio::Levels::high);
+    sys::adc_0_cs.Write(rpp::gpio::Levels::high);
     ADCDelay();
-    sys123::adc_0_sclk.Write(rpp::gpio::Levels::low);
+    sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
     ADCDelay();
-    sys123::adc_0_cs.Write(rpp::gpio::Levels::low);
+    sys::adc_0_cs.Write(rpp::gpio::Levels::low);
     ADCDelay();
 
     for (int i = 0; i < 14; i++) {
-      sys123::adc_0_sclk.Write(rpp::gpio::Levels::high);
+      sys::adc_0_sclk.Write(rpp::gpio::Levels::high);
       ADCDelay();
-      voltage_raw = (voltage_raw << 1) | std::to_underlying(sys123::adc_0_cipo.Read());
+      voltage_raw = (voltage_raw << 1) | std::to_underlying(sys::adc_0_cipo.Read());
       ADCDelay();
-      sys123::adc_0_sclk.Write(rpp::gpio::Levels::low);
+      sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
       ADCDelay();
     }
 
     uint16_t current_raw = 0;
 
-    sys123::adc_0_cs.Write(rpp::gpio::Levels::low);
+    sys::adc_0_cs.Write(rpp::gpio::Levels::low);
     ADCDelay();
-    sys123::adc_0_sclk.Write(rpp::gpio::Levels::low);
+    sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
     ADCDelay();
-    sys123::adc_0_cs.Write(rpp::gpio::Levels::high);
+    sys::adc_0_cs.Write(rpp::gpio::Levels::high);
     ADCDelay();
 
     // Read 12 bits of data from ADS7042
     for (int i = 0; i < 14; i++) {
-      sys123::adc_0_sclk.Write(rpp::gpio::Levels::high);
+      sys::adc_0_sclk.Write(rpp::gpio::Levels::high);
       ADCDelay();
-      current_raw = (current_raw << 1) | std::to_underlying(sys123::adc_0_cipo.Read());
+      current_raw = (current_raw << 1) | std::to_underlying(sys::adc_0_cipo.Read());
       ADCDelay();
-      sys123::adc_0_sclk.Write(rpp::gpio::Levels::low);
+      sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
       ADCDelay();
     }
 
@@ -210,38 +227,38 @@ namespace sys123 {
   inline auto ReadADC1() -> std::tuple<uint16_t, uint16_t> { // Yes, I know there are better ways to do this, just give me a break
     uint16_t voltage_raw = 0;
 
-    sys123::adc_1_cs.Write(rpp::gpio::Levels::high);
+    sys::adc_1_cs.Write(rpp::gpio::Levels::high);
     ADCDelay();
-    sys123::adc_1_sclk.Write(rpp::gpio::Levels::low);
+    sys::adc_1_sclk.Write(rpp::gpio::Levels::low);
     ADCDelay();
-    sys123::adc_1_cs.Write(rpp::gpio::Levels::low);
+    sys::adc_1_cs.Write(rpp::gpio::Levels::low);
     ADCDelay();
 
     for (int i = 0; i < 14; i++) {
-      sys123::adc_1_sclk.Write(rpp::gpio::Levels::high);
+      sys::adc_1_sclk.Write(rpp::gpio::Levels::high);
       ADCDelay();
-      voltage_raw = (voltage_raw << 1) | std::to_underlying(sys123::adc_1_cipo.Read());
+      voltage_raw = (voltage_raw << 1) | std::to_underlying(sys::adc_1_cipo.Read());
       ADCDelay();
-      sys123::adc_1_sclk.Write(rpp::gpio::Levels::low);
+      sys::adc_1_sclk.Write(rpp::gpio::Levels::low);
       ADCDelay();
     }
 
     uint16_t current_raw = 0;
 
-    sys123::adc_1_cs.Write(rpp::gpio::Levels::low);
+    sys::adc_1_cs.Write(rpp::gpio::Levels::low);
     ADCDelay();
-    sys123::adc_1_sclk.Write(rpp::gpio::Levels::low);
+    sys::adc_1_sclk.Write(rpp::gpio::Levels::low);
     ADCDelay();
-    sys123::adc_1_cs.Write(rpp::gpio::Levels::high);
+    sys::adc_1_cs.Write(rpp::gpio::Levels::high);
     ADCDelay();
 
     // Read 12 bits of data from ADS7042
     for (int i = 0; i < 14; i++) {
-      sys123::adc_1_sclk.Write(rpp::gpio::Levels::high);
+      sys::adc_1_sclk.Write(rpp::gpio::Levels::high);
       ADCDelay();
-      current_raw = (current_raw << 1) | std::to_underlying(sys123::adc_1_cipo.Read());
+      current_raw = (current_raw << 1) | std::to_underlying(sys::adc_1_cipo.Read());
       ADCDelay();
-      sys123::adc_1_sclk.Write(rpp::gpio::Levels::low);
+      sys::adc_1_sclk.Write(rpp::gpio::Levels::low);
       ADCDelay();
     }
 
@@ -283,6 +300,6 @@ namespace sys123 {
 
   inline auto mppt_call = cfunc::FunctionManager(mppt::IncrementalConductance);
   inline auto coulomb_counter_call = cfunc::FunctionManager([manager = &bm](auto current, auto period) -> void { manager->Current(current,period); });
-}  // namespace sys123
+}  // namespace sys
 
 #endif  // SYSTEM_HPP

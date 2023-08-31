@@ -53,8 +53,8 @@ class RunState0 : public RunStateFSM {
   void entry() override {
     FMTDebug("ENTER: Run State 0\n");
     RunStateFSM::current_state(0);
-    sys123::pwm_enable_led_pin.Write(rpp::gpio::Levels::high);
-    sys123::pwm_smps.Disable();
+    sys::pwm_enable_led_pin.Write(rpp::gpio::Levels::high);
+    sys::pwm_smps.Disable();
   }
 
   void exit() override {
@@ -80,6 +80,10 @@ class RunState1 : public RunStateFSM {
   void entry() override {
     FMTDebug("ENTER: Run State 1\n");
     RunStateFSM::current_state(1);
+    sys::pwm_smps.Enable();
+    sys::pwm_smps.DutyCycle(sys::duty.Load());
+    sys::coulomb_counter_call.Enable();
+    sys::pwm_enable_led_pin.Write(rpp::gpio::Levels::low);
   }
 
   void exit() override {
@@ -104,17 +108,17 @@ class RunState1 : public RunStateFSM {
 
 class RunState2 : public RunStateFSM {
   void entry() override {
-    FMTDebug("ENTER: Run State 1\n");
+    FMTDebug("ENTER: Run State 2\n");
     RunStateFSM::current_state(2);
-    sys123::pwm_smps.Enable();
-    sys123::pwm_smps.DutyCycle(sys123::duty.Load() * 10'000);
-    sys123::coulomb_counter_call.Enable();
-    sys123::pwm_enable_led_pin.Write(rpp::gpio::Levels::low);
+    sys::pwm_smps.Enable();
+    sys::pwm_smps.DutyCycle(sys::duty.Load());
+    sys::coulomb_counter_call.Enable();
+    sys::pwm_enable_led_pin.Write(rpp::gpio::Levels::low);
   }
 
   void exit() override {
     FMTDebug("EXIT: Run State 1\n");
-    sys123::coulomb_counter_call.Disable();
+    sys::coulomb_counter_call.Disable();
   }
 
   void react(RS0 const &) override {
@@ -134,19 +138,19 @@ class RunState2 : public RunStateFSM {
 
 class RunState3 : public RunStateFSM {
   void entry() override {
-    FMTDebug("ENTER: Run State 1\n");
+    FMTDebug("ENTER: Run State 3\n");
     RunStateFSM::current_state(3);
-    sys123::pwm_smps.Enable();
-    sys123::pwm_smps.DutyCycle(sys123::duty.Load() * 10'000);
-    sys123::coulomb_counter_call.Enable();
-    sys123::mppt_call.Enable();
-    sys123::pwm_enable_led_pin.Write(rpp::gpio::Levels::low);
+    sys::pwm_smps.Enable();
+    sys::pwm_smps.DutyCycle(sys::duty.Load() * 10'000);
+    sys::coulomb_counter_call.Enable();
+    sys::mppt_call.Enable();
+    sys::pwm_enable_led_pin.Write(rpp::gpio::Levels::low);
   }
 
   void exit() override {
     FMTDebug("EXIT: Run State 1\n");
-    sys123::mppt_call.Disable();
-    sys123::coulomb_counter_call.Disable();
+    sys::mppt_call.Disable();
+    sys::coulomb_counter_call.Disable();
   }
 
   void react(RS0 const &) override {
