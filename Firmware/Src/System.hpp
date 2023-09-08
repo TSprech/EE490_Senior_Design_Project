@@ -89,11 +89,15 @@ namespace sys {
         }
       }
 
-      auto operator+=(T value) -> void {
-        if (this->number_.Load() + value > this->max_) {
-          this->number_ = (this->wrap_) ? this->min_ : this->max_;
-        }
-      }
+//      auto operator+=(T value) -> void {
+//        if (this->number_.Load() + value > this->max_) {
+//          this->number_ = (this->wrap_) ? this->min_ : this->max_;
+//        } else if (value < this->min_) {
+//          this->number_ = (this->wrap_) ? this->max_ : this->min_;
+//        } else {
+//          this->number_ = this->number_.Load() + value;
+//        }
+//      }
 
       auto operator=(T value) -> void {
         if (value > this->max_) {
@@ -141,6 +145,9 @@ namespace sys {
   inline auto& core_0_utilization = rpp::gpio::gpio_13;
   inline auto& core_1_utilization = rpp::gpio::gpio_21;
 
+  inline auto& ovp_enable = rpp::gpio::gpio_7;
+  inline auto& ovp_status = rpp::gpio::gpio_6;
+
 //  inline auto& pwm_a = rpp::gpio::gpio_16;
 //  inline auto& pwm_b = rpp::gpio::gpio_17;
 
@@ -151,24 +158,6 @@ namespace sys {
   inline auto& adc_1_cipo = rpp::gpio::gpio_3;
   inline auto& adc_1_cs = rpp::gpio::gpio_4;
   inline auto& adc_1_sclk = rpp::gpio::gpio_5;
-
-  inline auto Initialize() -> void {
-    sys::usb_right_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys::usb_left_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys::core_0_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys::core_1_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys::pwm_enable_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
-    sys::debug_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-
-    sys::adc_0_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
-    sys::adc_0_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
-    sys::adc_0_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-    sys::adc_1_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
-    sys::adc_1_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
-    sys::adc_1_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
-
-    sys::pwm_smps.Initialize().Frequency(425'000).DutyCycle(0).DeadBand(1).Disable();
-  }
 
   [[gnu::always_inline]]
   inline auto ADCDelay() -> void { // The goal is to take the clock rate for the ADC to 1/10 sys clock, who knows if this actually does it
@@ -181,6 +170,60 @@ namespace sys {
     asm("nop");
     asm("nop");
     asm("nop");
+  }
+
+  inline auto Initialize() -> void {
+    sys::usb_right_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::usb_left_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::core_0_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::core_1_uart_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::pwm_enable_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
+    sys::debug_led_pin.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+
+    sys::ovp_enable.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
+    sys::ovp_status.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
+
+    sys::adc_0_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
+    sys::adc_0_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
+    sys::adc_0_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+    sys::adc_1_cipo.Init().Direction(rpp::gpio::Directions::input).Pull(rpp::gpio::Pulls::disable).Schmitt(rpp::gpio::States::enabled);  // TODO: Maybe Schmitt?
+    sys::adc_1_cs.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::high);
+    sys::adc_1_sclk.Init().Direction(rpp::gpio::Directions::output).Pull(rpp::gpio::Pulls::disable).Write(rpp::gpio::Levels::low);
+
+    sys::pwm_smps.Initialize().Frequency(425'000).DutyCycle(0).DeadBand(1).Disable();
+
+      uint16_t voltage_raw = 0;
+
+      sys::adc_0_cs.Write(rpp::gpio::Levels::high);
+      ADCDelay();
+      sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
+      ADCDelay();
+      sys::adc_0_cs.Write(rpp::gpio::Levels::low);
+      ADCDelay();
+
+      for (int i = 0; i < 16; i++) {
+        sys::adc_0_sclk.Write(rpp::gpio::Levels::high);
+        ADCDelay();
+        sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
+        ADCDelay();
+      }
+
+      uint16_t current_raw = 0;
+
+      sys::adc_0_cs.Write(rpp::gpio::Levels::low);
+      ADCDelay();
+      sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
+      ADCDelay();
+      sys::adc_0_cs.Write(rpp::gpio::Levels::high);
+      ADCDelay();
+
+      // Read 12 bits of data from ADS7042
+      for (int i = 0; i < 16; i++) {
+        sys::adc_0_sclk.Write(rpp::gpio::Levels::high);
+        ADCDelay();
+        sys::adc_0_sclk.Write(rpp::gpio::Levels::low);
+        ADCDelay();
+      }
   }
 
   inline auto ReadADC0() -> std::tuple<uint16_t, uint16_t> { // Yes, I know there are better ways to do this, just give me a break

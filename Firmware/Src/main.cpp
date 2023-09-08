@@ -32,6 +32,8 @@ auto PrintData(repeating_timer_t *rt) -> bool {
            static_cast<float>(sys::battery_current.Value().value()) / 1000.0F, static_cast<float>(sys::battery_power.Value().value()) / 1000.0F,
            sys::bm.Charge().value(), static_cast<float>(sys::bm.ChargeState()),
            RunStateFSM::current_state(), static_cast<float>(sys::duty.Load()) / 10'000.0F);
+
+//FMTDebug("VPV={}, IPV={}\n", sys::battery_voltage.Value().value(), sys::battery_current.Value().value());
   return true;
 }
 
@@ -99,7 +101,7 @@ auto main() -> int {
         }
         case ('D'): {  // Change duty cycle
           sys::duty = (argument == std::clamp(argument, 1, 99)) ? argument * 10'000 : sys::duty.Load();  // If the argument is within the valid range, change the duty to the argument, otherwise do nothing
-          FMTDebug("DUTY VAR: {}", sys::duty.Load());
+          FMTDebug("Changing Duty Manually: {}", sys::duty.Load());
           sys::pwm_smps.DutyCycle(sys::duty.Load());
           break;
         }

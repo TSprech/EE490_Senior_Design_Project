@@ -85,12 +85,13 @@ namespace mppt {
     panel_current = i_panel;
     panel_power = v_panel * i_panel;
 
+    // Panel current ↑↑↑ panel voltage ↓
     if (panel_voltage.Delta().value() != 0) {
       auto ratio = panel_power.Delta().to<float>() / panel_voltage.Delta().to<float>();
       if (ratio > 0)
-        return duty_step_size;
-      else if (ratio < 0)
         return -duty_step_size;
+      else if (ratio < 0)
+        return duty_step_size;
     } else {
       if (panel_current.Delta().value() > 0)
         return duty_step_size;
