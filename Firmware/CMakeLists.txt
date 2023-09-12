@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.25)
 include(FetchContent)
 
+set(UNIT_TESTING 0)
+
+IF(NOT UNIT_TESTING)
 set(CMAKE_SYSTEM_NAME Generic) # No OS
 set(CMAKE_SYSTEM_VERSION 1)
 
@@ -22,6 +25,7 @@ set(PICO_SDK_FETCH_FROM_GIT on)
 # pico_sdk_import.cmake is a single file copied from this SDK
 # note: this must happen before project()
 include(pico_sdk_import.cmake)
+ENDIF()
 
 #include(Lib/pico-sdk/pico_sdk_init.cmake) # Gives access to all the pico-sdk CMake functions and libraries
 project(EE490_Firmware CXX C ASM) # CMake project that will be using C++, C, and Assembly
@@ -29,6 +33,7 @@ set(CMAKE_C_STANDARD 23) # C++23
 set(CMAKE_CXX_STANDARD 23) # C23
 
 
+IF(NOT UNIT_TESTING)
 pico_sdk_init() # Initialize the SDK
 if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
     message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
@@ -38,14 +43,17 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
 #        add_compile_options(-mfloat-abi=soft)
 #        add_compile_options(-march=cortex-m0 -mthumb -mthumb-interwork) # These lines are required for proper functionality when using CMakePresets (it sets it to THUMB instructions instead of ARM)
 
-    set(SOURCES Src/main.cpp) # Put all source files to build here
+    set(SOURCES Src/main.cpp
+            Src/main1.cpp
+            Src/main1.cpp
+            Src/main1.hpp) # Put all source files to build here
     add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
 
     # These must come after add_executable as the target needs to be created first
     pico_enable_stdio_usb(EE490_Firmware 1) # Enable USB output from stdio
     pico_enable_stdio_uart(EE490_Firmware 0) # Disable UART output from stdio
 
-    set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma) # These are the libs from the Pico SDK which will be used
+    set(RP2040_HW_LIBS pico_stdlib hardware_gpio hardware_pwm hardware_adc hardware_i2c hardware_spi hardware_dma pico_multicore) # These are the libs from the Pico SDK which will be used
     target_link_libraries(EE490_Firmware PUBLIC ${RP2040_HW_LIBS}) # Add the Pico SDK hardware libs to the build
 
     pico_add_extra_outputs(EE490_Firmware) # Create map/bin/hex file etc.
@@ -75,6 +83,23 @@ if (TARGET tinyusb_device) # This is required for the RP2040 to show up as a ser
 elseif (PICO_ON_DEVICE)
     message(WARNING "TinyUSB submodule is not initialized in the SDK, project will not build as USB serial will not work")
 endif ()
+ELSE()
+    enable_testing()
+    set(SOURCES Src/test_main.cpp) # Put all source files to build here
+    add_executable(EE490_Firmware ${SOURCES}) # Add all sources files to build (this line should be close to the top of the CMake file)
+
+    FetchContent_Declare(
+            googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG        release-1.11.0
+    )
+
+    FetchContent_MakeAvailable(googletest)
+
+    include(GoogleTest)
+
+    target_link_libraries(EE490_Firmware PUBLIC gtest_main)
+ENDIF()
 
 ##set(DISABLE_IOSTREAM ON)
 ##set(DISABLE_PREDEFINED_UNITS ON)
@@ -84,6 +109,8 @@ add_subdirectory(Inc/TypedUnits)
 add_subdirectory(Inc/FastPID)
 add_subdirectory(Inc/ModuloScheduler)
 add_subdirectory(Lib/fmt)
+add_subdirectory(Inc/MPPT)
+add_subdirectory(Inc/ConditionalFunction)
 
 target_link_libraries(EE490_Firmware PUBLIC
         units
@@ -91,6 +118,8 @@ target_link_libraries(EE490_Firmware PUBLIC
         FastPID
         ModuloScheduler
         fmt
+        MPPT
+        ConditionalFunction
 )
 
 FetchContent_Declare(
@@ -104,3 +133,12 @@ if(NOT tinyfsm_POPULATED)
     FetchContent_Populate(tinyfsm)
     target_include_directories(EE490_Firmware PUBLIC ${tinyfsm_SOURCE_DIR}/include)
 endif()
+
+FetchContent_Declare(
+        RP2040_Pseudo_Atomic
+        GIT_REPOSITORY https://github.com/TSprech/RP2040_Pseudo_Atomic.git
+        GIT_TAG main
+)
+
+FetchContent_MakeAvailable(RP2040_Pseudo_Atomic)
+target_link_libraries(EE490_Firmware PUBLIC RP2040Atomic)

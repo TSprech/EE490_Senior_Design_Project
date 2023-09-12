@@ -8,6 +8,7 @@
 
 #ifndef MODULOSCHEDULER_HPP
 #define MODULOSCHEDULER_HPP
+#include <algorithm>
 #include <concepts>
 #include <cstdint>
 #include <span>

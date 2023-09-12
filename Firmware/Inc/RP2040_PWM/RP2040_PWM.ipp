@@ -43,6 +43,7 @@ template <uint8_t a_pin, uint8_t b_pin>
 auto pwm::PWMManager<a_pin, b_pin>::DutyCycle(uint32_t dutycycle) -> PWMManager& {
   if (dutycycle > max_duty_) [[unlikely]] // If a value like 2,000,000 is given
     dutycycle = max_duty_; // Saturate to max duty
+  printf("CHANGING DUTY CYCLE TO %d\n", dutycycle);
   uint16_t level = Map<uint32_t>(dutycycle, 0, max_duty_, 0, Top()); // Map the number range from 0-1,000,000 to 0-top, where top is the
   uint16_t a_level = 0; // Represents A channel wrap value
   uint16_t b_level = 0; // Represents B channel wrap value
