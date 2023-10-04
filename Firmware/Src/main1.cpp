@@ -64,6 +64,14 @@ auto UpdateADC(repeating_timer_t *rt) -> bool {
   sys::panel_voltage = units::voltage::millivolt_i32_t{average_in_voltage * voltage_gain} - panel_voltage_offset;              // Do integer math to calculate the values
   sys::battery_voltage = units::voltage::millivolt_i32_t{average_out_voltage * voltage_gain} - battery_voltage_offset;              // Do integer math to calculate the values
 
+  if (sys::battery_voltage.Value() > 5000_mV_i32) {
+    FMTDebug("OVER VOLTAGE LOCKOUT!\n");
+    sys::duty = 0;
+    sys::pwm_smps.DutyCycle(sys::duty.Load());
+    sys::pwm_enable_led_pin.Write(rpp::gpio::Levels::high);
+    sys::pwm_smps.Disable();
+  }
+
   sys::panel_current = units::current::milliampere_i32_t{(average_in_current - current_offset) * 5 / 3}; // This nice ratio is the result of simplifying the following:
   sys::battery_current = units::current::milliampere_i32_t{(average_out_current - current_offset) * 5 / 3}; // Gain 200 V/V * 1 / 6mΩ shunt * 0.5 divider ratio
 
@@ -83,6 +91,8 @@ auto UpdateADC(repeating_timer_t *rt) -> bool {
     sys::battery_current = sys::battery_current.Value() - negative_battery_current_offset;
     sys::battery_current = sys::battery_current.Value() + units::current::milliampere_i32_t{sys::battery_current.Value().value() * negative_battery_current_scale / 10'000};
   }
+
+//  sys::battery_current = -1*sys::battery_current.Value();
 
 
 //  if (sys::panel_current.Value() <= 0_mA_i32) {
@@ -108,11 +118,11 @@ auto UpdateADC(repeating_timer_t *rt) -> bool {
   auto change = sys::mppt_call(sys::panel_voltage.Value(), sys::panel_current.Value());
   if (change) {
     if (sys::panel_power.Value() > 500_mW_i32) {
-      FMTDebug("Change: {}\n", change.value_or(0));
+//      FMTDebug("Change: {}\n", change.value_or(0));
       sys::duty = sys::duty.Load() + change.value_or(0) * mppt_duty_step_size;
       sys::pwm_smps.DutyCycle(sys::duty.Load());
     } else {
-      FMTDebug("Min power limit: {}\n", change.value_or(0));
+//      FMTDebug("Min power limit: {}\n", change.value_or(0));
       sys::duty = sys::duty.Load() + 1 * mppt_duty_step_size;
       sys::pwm_smps.DutyCycle(sys::duty.Load());
     }
@@ -123,7 +133,7 @@ auto UpdateADC(repeating_timer_t *rt) -> bool {
 
 auto main1() -> void {
   repeating_timer_t timer_adc;                                      // Timer used to manage the feedback loop callback
-  if (!add_repeating_timer_ms(500, UpdateADC, nullptr, &timer_adc))  // Create a timer which calls the print function at the specified rate
+  if (!add_repeating_timer_ms(250, UpdateADC, nullptr, &timer_adc))  // Create a timer which calls the print function at the specified rate
     FMTDebug("Failed to create feedback loop timer\n");
   while (true);
 }

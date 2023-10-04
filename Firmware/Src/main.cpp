@@ -1,18 +1,3 @@
-//#include "pico/stdlib.h"
-//
-//int main() {
-//  stdio_init_all();
-//
-//  gpio_init(16);
-//  gpio_init(17);
-//  gpio_set_dir(16, GPIO_OUT);
-//  gpio_set_dir(17, GPIO_OUT);
-//  gpio_put(16, true);
-//  gpio_put(17, true);
-//  while(true);
-//}
-
-
 #include <algorithm>
 #include <charconv>
 #include <functional>
@@ -25,15 +10,13 @@
 #include "pico/multicore.h"
 #include "main1.hpp"
 
-auto PrintData(repeating_timer_t *rt) -> bool {
+auto PrintData([[gnu::unused]] repeating_timer_t *rt) -> bool {
   FMTDebug("VPV={:.2f}, IPV={:.2f}, PPV={:.2f}, VBAT={:.2f}, IBAT={:.2f}, PBAT={:.2f}, QBAT={}, SOC={:.2f}, RS={}, D={:.2f}\n",
            static_cast<float>(sys::panel_voltage.Value().value()) / 1000.0F, static_cast<float>(sys::panel_current.Value().value()) / 1000.0F,
            static_cast<float>(sys::panel_power.Value().value()) / 1000.0F, static_cast<float>(sys::battery_voltage.Value().value()) / 1000.0F,
            static_cast<float>(sys::battery_current.Value().value()) / 1000.0F, static_cast<float>(sys::battery_power.Value().value()) / 1000.0F,
            sys::bm.Charge().value(), static_cast<float>(sys::bm.ChargeState()),
            RunStateFSM::current_state(), static_cast<float>(sys::duty.Load()) / 10'000.0F);
-
-//FMTDebug("VPV={}, IPV={}\n", sys::battery_voltage.Value().value(), sys::battery_current.Value().value());
   return true;
 }
 
@@ -61,9 +44,6 @@ auto main() -> int {
   stdio_init_all();
 
   sys::Initialize();
-
-//  sys::pwm_a.Write(rpp::gpio::Levels::high);
-//  sys::pwm_b.Write(rpp::gpio::Levels::high);
 
   multicore_launch_core1(main1);
 
